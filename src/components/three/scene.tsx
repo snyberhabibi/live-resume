@@ -6,6 +6,15 @@ import * as THREE from "three";
 import { DesertTerrain } from "./desert-terrain";
 import { SandParticles } from "./sand-particles";
 import { SkyAtmosphere } from "./sky-atmosphere";
+import { PostProcessing } from "./post-processing";
+import {
+  DesertStars,
+  DesertSparkles,
+  ChapterMonoliths,
+  AccentLight,
+} from "./desert-elements";
+import { HeroPortrait } from "./hero-portrait";
+import { DesertRocks } from "./desert-rocks";
 import { useScrollStore } from "@/store/scroll";
 import { chapters, chapterOrder, lerpColor } from "@/lib/colors";
 
@@ -103,9 +112,16 @@ export function SceneContent() {
       <ScrollCamera />
       <DynamicFog />
       <DesertLighting />
+      <AccentLight />
       <SkyAtmosphere />
       <DesertTerrain />
       <SandParticles />
+      <DesertStars />
+      <DesertSparkles />
+      <ChapterMonoliths />
+      <DesertRocks />
+      <HeroPortrait />
+      <PostProcessing />
     </>
   );
 }

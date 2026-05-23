@@ -1,8 +1,10 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { Nav } from "@/components/ui/nav";
 import { ChapterDots } from "@/components/ui/chapter-dots";
+import { Loader } from "@/components/ui/loader";
 import { HeroChapter } from "@/components/chapters/01-hero";
 import { OriginChapter } from "@/components/chapters/02-origin";
 import { BuilderChapter } from "@/components/chapters/03-builder";
@@ -21,13 +23,21 @@ const CanvasWrapper = dynamic(
 );
 
 export default function Home() {
+  const [loaded, setLoaded] = useState(false);
+  const handleLoaded = useCallback(() => setLoaded(true), []);
+
   useVirtualScroll();
 
   return (
     <>
+      <Loader onComplete={handleLoaded} />
       <CanvasWrapper />
-      <Nav />
-      <ChapterDots />
+      {loaded && (
+        <>
+          <Nav />
+          <ChapterDots />
+        </>
+      )}
       <HeroChapter />
       <OriginChapter />
       <BuilderChapter />
