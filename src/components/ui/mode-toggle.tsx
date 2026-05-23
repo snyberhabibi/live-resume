@@ -10,33 +10,31 @@ export function ModeToggle() {
   return (
     <button
       onClick={toggleMode}
-      className="relative flex items-center gap-3 rounded-full border border-white/10 bg-black/40 px-2 py-1.5 backdrop-blur-xl transition-colors hover:border-white/20"
+      className="relative flex items-center rounded-full border border-white/10 bg-black/30 backdrop-blur-md overflow-hidden"
+      aria-label={`Switch to ${isRecruiter ? "Yusuf" : "Recruiter"} mode`}
     >
       <span
-        className={`z-10 px-3 py-1 text-xs font-medium transition-colors ${
-          !isRecruiter ? "text-white" : "text-white/50"
+        className={`relative z-10 px-4 py-2 text-[11px] font-mono uppercase tracking-[0.15em] transition-colors duration-300 ${
+          !isRecruiter ? "text-white" : "text-white/30"
         }`}
       >
-        Builder
+        Yusuf
       </span>
       <span
-        className={`z-10 px-3 py-1 text-xs font-medium transition-colors ${
-          isRecruiter ? "text-white" : "text-white/50"
+        className={`relative z-10 px-4 py-2 text-[11px] font-mono uppercase tracking-[0.15em] transition-colors duration-300 ${
+          isRecruiter ? "text-white" : "text-white/30"
         }`}
       >
         Recruiter
       </span>
       <motion.div
-        className="absolute top-1 bottom-1 rounded-full"
+        className="absolute top-0.5 bottom-0.5 rounded-full bg-white/10"
         initial={false}
         animate={{
-          left: isRecruiter ? "50%" : "4px",
-          right: isRecruiter ? "4px" : "50%",
-          backgroundColor: isRecruiter
-            ? "rgba(99, 102, 241, 0.3)"
-            : "rgba(34, 211, 238, 0.3)",
+          left: isRecruiter ? "50%" : "2px",
+          right: isRecruiter ? "2px" : "50%",
         }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        transition={{ type: "spring", stiffness: 400, damping: 35 }}
       />
     </button>
   );

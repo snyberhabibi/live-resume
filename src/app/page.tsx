@@ -2,31 +2,39 @@
 
 import dynamic from "next/dynamic";
 import { Nav } from "@/components/ui/nav";
-import { Hero } from "@/components/sections/hero";
-import { Skills } from "@/components/sections/skills";
-import { Experience } from "@/components/sections/experience";
-import { Projects } from "@/components/sections/projects";
-import { Contact } from "@/components/sections/contact";
-import { GradientMesh } from "@/components/ui/gradient-mesh";
+import { ChapterDots } from "@/components/ui/chapter-dots";
+import { HeroChapter } from "@/components/chapters/01-hero";
+import { OriginChapter } from "@/components/chapters/02-origin";
+import { BuilderChapter } from "@/components/chapters/03-builder";
+import { CorporateChapter } from "@/components/chapters/04-corporate";
+import { ConvergenceChapter } from "@/components/chapters/05-convergence";
+import { CultureChapter } from "@/components/chapters/06-culture";
+import { ContactChapter } from "@/components/chapters/07-contact";
+import { useVirtualScroll } from "@/hooks/use-virtual-scroll";
 
-const Scene = dynamic(
-  () => import("@/components/three/scene").then((mod) => mod.Scene),
+const CanvasWrapper = dynamic(
+  () =>
+    import("@/components/three/canvas-wrapper").then(
+      (mod) => mod.CanvasWrapper
+    ),
   { ssr: false }
 );
 
 export default function Home() {
+  useVirtualScroll();
+
   return (
     <>
-      <GradientMesh />
-      <Scene />
+      <CanvasWrapper />
       <Nav />
-      <main>
-        <Hero />
-        <Skills />
-        <Experience />
-        <Projects />
-        <Contact />
-      </main>
+      <ChapterDots />
+      <HeroChapter />
+      <OriginChapter />
+      <BuilderChapter />
+      <CorporateChapter />
+      <ConvergenceChapter />
+      <CultureChapter />
+      <ContactChapter />
     </>
   );
 }

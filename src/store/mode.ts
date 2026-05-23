@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type Mode = "recruiter" | "builder";
+export type Mode = "recruiter" | "yusuf";
 
 interface ModeState {
   mode: Mode;
@@ -9,10 +9,8 @@ interface ModeState {
 }
 
 export const useModeStore = create<ModeState>((set) => ({
-  mode: "builder",
+  mode: "yusuf",
   setMode: (mode) => set({ mode }),
   toggleMode: () =>
-    set((state) => ({
-      mode: state.mode === "recruiter" ? "builder" : "recruiter",
-    })),
+    set((s) => ({ mode: s.mode === "recruiter" ? "yusuf" : "recruiter" })),
 }));
