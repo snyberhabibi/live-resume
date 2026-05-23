@@ -48,7 +48,7 @@ function ScenePlane({
     if (isActive && modeVisible) {
       const fadeIn = Math.min(1, chapterProgress * 4);
       const fadeOut = Math.min(1, (1 - chapterProgress) * 4);
-      targetOpacity = fadeIn * fadeOut * 0.7;
+      targetOpacity = fadeIn * fadeOut * 0.9;
     }
 
     materialRef.current.opacity +=

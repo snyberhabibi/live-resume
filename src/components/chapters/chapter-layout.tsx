@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useScrollStore } from "@/store/scroll";
 import { type ChapterKey } from "@/lib/colors";
 
@@ -19,7 +18,6 @@ export function ChapterLayout({
   const chapterProgress = useScrollStore((s) => s.chapterProgress);
   const isActive = currentChapter === chapter;
 
-  // First chapter starts visible, last chapter stays visible, middle chapters fade in/out
   const isFirst = chapter === "hero";
   const isLast = chapter === "contact";
   const fadeIn = isFirst ? 1 : Math.min(1, chapterProgress * 5);
@@ -37,11 +35,13 @@ export function ChapterLayout({
         : "items-start text-left";
 
   return (
-    <motion.div
-      className={`fixed inset-0 z-10 flex flex-col justify-center px-6 sm:px-12 lg:px-20 pointer-events-none ${alignClass}`}
+    <div
+      className={`fixed inset-0 z-10 flex flex-col justify-center px-5 sm:px-12 lg:px-20 pointer-events-none ${alignClass}`}
       style={{ opacity, transform: `translateY(${y}px)` }}
     >
-      <div className="max-w-xl pointer-events-auto">{children}</div>
-    </motion.div>
+      <div className="max-w-xl pointer-events-auto rounded-2xl bg-black/30 backdrop-blur-md border border-white/5 p-6 sm:p-8">
+        {children}
+      </div>
+    </div>
   );
 }

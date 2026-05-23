@@ -16,6 +16,7 @@ import {
 import { HeroPortrait } from "./hero-portrait";
 import { DesertRocks } from "./desert-rocks";
 import { ChapterScenes } from "./chapter-scenes";
+import { ClayFigures } from "./clay-figures";
 import { useScrollStore } from "@/store/scroll";
 import { chapters, chapterOrder, lerpColor } from "@/lib/colors";
 
@@ -123,6 +124,7 @@ export function SceneContent() {
       <DesertRocks />
       <HeroPortrait />
       <ChapterScenes />
+      <ClayFigures />
       <PostProcessing />
     </>
   );

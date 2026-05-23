@@ -1,18 +1,30 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useScrollStore } from "@/store/scroll";
 
-const SCROLL_SPEED = 0.0006;
-const TOUCH_MULTIPLIER = 0.003;
+const SCROLL_SPEED = 0.001;
+const TOUCH_MULTIPLIER = 0.004;
 const LERP = 0.08;
+const KEY_STEP = 0.04;
+
+/** Exposed so chapter dots can jump to a position */
+let _targetRef = { current: 0 };
+
+export function jumpToProgress(p: number) {
+  _targetRef.current = Math.max(0, Math.min(1, p));
+}
 
 export function useVirtualScroll() {
   const setProgress = useScrollStore((s) => s.setProgress);
-  const targetRef = useRef(0);
   const currentRef = useRef(0);
   const rafRef = useRef<number>(0);
   const touchStartRef = useRef(0);
+
+  // Expose targetRef globally
+  _targetRef.current = 0;
+  const targetRef = useRef(0);
+  _targetRef = targetRef;
 
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
@@ -36,10 +48,10 @@ export function useVirtualScroll() {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowDown" || e.key === " ") {
         e.preventDefault();
-        targetRef.current = Math.min(1, targetRef.current + 0.02);
+        targetRef.current = Math.min(1, targetRef.current + KEY_STEP);
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        targetRef.current = Math.max(0, targetRef.current - 0.02);
+        targetRef.current = Math.max(0, targetRef.current - KEY_STEP);
       }
     };
 
