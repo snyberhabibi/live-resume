@@ -10,9 +10,9 @@ import { PostProcessing } from "./post-processing";
 import {
   DesertStars,
   DesertSparkles,
-  ChapterMonoliths,
   AccentLight,
 } from "./desert-elements";
+import { ChapterStructures } from "./chapter-structures";
 import { HeroPortrait } from "./hero-portrait";
 import { DesertRocks } from "./desert-rocks";
 import { ChapterScenes } from "./chapter-scenes";
@@ -120,7 +120,7 @@ export function SceneContent() {
       <SandParticles />
       <DesertStars />
       <DesertSparkles />
-      <ChapterMonoliths />
+      <ChapterStructures />
       <DesertRocks />
       <HeroPortrait />
       <ChapterScenes />
