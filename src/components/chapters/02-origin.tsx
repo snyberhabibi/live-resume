@@ -52,7 +52,7 @@ export function OriginChapter() {
               <span className="font-mono text-[11px] text-white/30">
                 LOCATION
               </span>
-              <span>Dallas, TX → Dubai, UAE</span>
+              <span>Dallas, TX → Qatar</span>
             </div>
             <div className="flex justify-between border-b border-white/5 pb-2">
               <span className="font-mono text-[11px] text-white/30">

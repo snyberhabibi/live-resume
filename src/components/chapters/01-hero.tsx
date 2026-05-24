@@ -20,7 +20,7 @@ export function HeroChapter() {
       style={{ opacity }}
     >
       <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-white/30 mb-4">
-        Dubai, UAE
+        Qatar
       </p>
       <h1 className="font-display text-5xl sm:text-7xl lg:text-8xl font-medium text-white/90 tracking-tight leading-[0.9] mb-6 text-center">
         Yusuf
