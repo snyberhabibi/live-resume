@@ -101,7 +101,7 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
       className="fixed inset-0 z-[100] bg-[#0a0a0a] flex items-center justify-center"
       initial={{ opacity: 1 }}
       animate={{ opacity: 0 }}
-      transition={{ duration: 1, delay: 1.5, ease: "easeInOut" }}
+      transition={{ duration: 1.2, delay: 1.5, ease: "easeInOut" }}
       onAnimationComplete={onComplete}
     >
       <motion.div
@@ -113,6 +113,23 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
         Yusuf Rahman
       </motion.div>
     </motion.div>
+  );
+}
+
+// ─── Gradient transition between sections ──────────────
+function SectionGradient({ position }: { position: "top" | "bottom" }) {
+  return (
+    <div
+      className={`absolute left-0 right-0 z-[2] h-40 pointer-events-none ${
+        position === "top" ? "top-0" : "bottom-0"
+      }`}
+      style={{
+        background:
+          position === "top"
+            ? "linear-gradient(to bottom, rgba(10,10,10,0.8) 0%, transparent 100%)"
+            : "linear-gradient(to top, rgba(10,10,10,0.7) 0%, transparent 100%)",
+      }}
+    />
   );
 }
 
@@ -145,9 +162,16 @@ const chapters = [
     id: "builder",
     image: "/visuals/builder.jpg",
     label: "The Builder",
-    lines: ["Some still stand.", "Some returned to dust."],
+    lines: ["Some still stand.", "Some returned", "to dust."],
     body: [
-      "Age 8 — Glue Bookmarks · 2018 — @yusufstudios · 2017 — Arab Student Association · 2017 — Al-Kuffiyeh Group · 2018 — KASTEA · 2021 — Trippy · 2023 — FLUX Pickleball · 2024 — Dabka Academy · 2025 — Yalla Bites",
+      "Age 8 — Glue Bookmarks",
+      "2017 — Arab Student Association",
+      "2017 — Al-Kuffiyeh Group",
+      "2018 — KASTEA",
+      "2021 — Trippy",
+      "2023 — FLUX Pickleball",
+      "2024 — Dabka Academy",
+      "2025 — Yalla Bites",
     ],
     sub: null,
     accent: "#d4763c",
@@ -224,35 +248,41 @@ function Section({
     offset: ["start end", "end start"],
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "-15%"]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.1, 1, 1.05]);
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "-12%"]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1, 1.04]);
 
   const isHero = index === 0;
   const isContact = chapter.id === "contact";
-
-  const alignClass =
-    chapter.layout === "center"
-      ? "items-center justify-center text-center"
-      : chapter.layout === "right"
-        ? "items-end justify-end text-right pr-6 sm:pr-16 lg:pr-24 pb-20 sm:pb-28"
-        : "items-start justify-end text-left pl-6 sm:pl-16 lg:pl-24 pb-20 sm:pb-28";
+  const isLast = index === chapters.length - 1;
 
   return (
-    <section ref={ref} className="relative h-screen w-full overflow-hidden">
+    <section ref={ref} className="relative min-h-screen w-full overflow-hidden flex">
       {/* Parallax background */}
       <motion.div
-        className="absolute inset-0 w-full h-[130%] -top-[15%]"
+        className="absolute inset-0 w-full h-[125%] -top-[12%]"
         style={{ y, scale }}
       >
         <div
           className="w-full h-full bg-cover bg-center will-change-transform"
           style={{ backgroundImage: `url(${chapter.image})` }}
         />
-        <div className="absolute inset-0 bg-black/35" />
+        <div className="absolute inset-0 bg-black/40" />
       </motion.div>
 
+      {/* Top/bottom gradient blends for smooth section transitions */}
+      {index > 0 && <SectionGradient position="top" />}
+      {!isLast && <SectionGradient position="bottom" />}
+
       {/* Content */}
-      <div className={`relative z-10 h-full flex flex-col ${alignClass}`}>
+      <div
+        className={`relative z-10 w-full flex flex-col ${
+          chapter.layout === "center"
+            ? "items-center justify-center text-center px-8 sm:px-20"
+            : chapter.layout === "right"
+              ? "items-end justify-end text-right px-8 sm:px-16 lg:px-[12%] pb-24 sm:pb-32"
+              : "items-start justify-end text-left px-8 sm:px-16 lg:px-[12%] pb-24 sm:pb-32"
+        }`}
+      >
         {/* Label */}
         {chapter.label && (
           <ClipReveal delay={0.1}>
@@ -266,16 +296,16 @@ function Section({
         )}
 
         {/* Title — word by word reveal */}
-        <div className={`mb-6 ${isHero ? "" : "max-w-2xl"}`}>
+        <div className={`mb-8 ${isHero ? "" : "max-w-3xl"}`}>
           {chapter.lines.map((line, i) => (
             <div key={i} className="overflow-hidden">
               <RevealWords
                 text={line}
                 delay={0.2 + i * 0.12}
-                className={`block font-display font-medium leading-[1.0] tracking-tight text-white ${
+                className={`block font-display font-medium leading-[1.05] tracking-tight text-white ${
                   isHero
-                    ? "text-[clamp(3rem,10vw,9rem)]"
-                    : "text-[clamp(1.8rem,5vw,4rem)]"
+                    ? "text-[clamp(3rem,9vw,8rem)]"
+                    : "text-[clamp(1.6rem,4.5vw,3.5rem)]"
                 }`}
               />
             </div>
@@ -286,12 +316,12 @@ function Section({
         {chapter.sub && (
           <ClipReveal delay={0.5}>
             <p
-              className={`font-display italic leading-relaxed max-w-lg ${
+              className={`font-display italic leading-relaxed max-w-md ${
                 isHero
                   ? "text-base sm:text-lg text-white/40"
-                  : "text-sm sm:text-base mt-4"
+                  : "text-sm sm:text-base mb-6"
               }`}
-              style={!isHero ? { color: chapter.accent, opacity: 0.7 } : undefined}
+              style={!isHero ? { color: chapter.accent, opacity: 0.65 } : undefined}
             >
               {chapter.sub}
             </p>
@@ -300,10 +330,10 @@ function Section({
 
         {/* Body paragraphs */}
         {chapter.body && (
-          <div className={`max-w-lg mt-4 ${isHero ? "" : ""}`}>
+          <div className="max-w-md mt-2">
             {chapter.body.map((para, i) => (
-              <ClipReveal key={i} delay={0.6 + i * 0.1}>
-                <p className="text-[13px] sm:text-sm text-white/40 leading-relaxed mb-2">
+              <ClipReveal key={i} delay={0.6 + i * 0.08}>
+                <p className="text-sm sm:text-[15px] text-white/45 leading-relaxed mb-2.5">
                   {para}
                 </p>
               </ClipReveal>
@@ -313,13 +343,13 @@ function Section({
 
         {/* Links */}
         {isContact && chapter.links && (
-          <ClipReveal delay={0.8} className="mt-8">
-            <div className="flex gap-8">
+          <ClipReveal delay={0.8} className="mt-10">
+            <div className="flex gap-10">
               {chapter.links.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
-                  className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/30 hover:text-white transition-colors duration-500"
+                  className="font-mono text-[11px] uppercase tracking-[0.15em] text-white/30 hover:text-white transition-colors duration-500"
                   target={link.href.startsWith("http") ? "_blank" : undefined}
                   rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
                 >
@@ -333,15 +363,15 @@ function Section({
         {/* Scroll indicator (hero only) */}
         {isHero && (
           <motion.div
-            className="absolute bottom-10 left-1/2 -translate-x-1/2"
+            className="absolute bottom-12 left-1/2 -translate-x-1/2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2.5, duration: 1 }}
           >
             <motion.div
-              className="w-[1px] h-10 bg-white/20 mx-auto mb-3"
+              className="w-[1px] h-12 bg-white/15 mx-auto mb-3"
               animate={{ scaleY: [0, 1, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
               style={{ transformOrigin: "top" }}
             />
             <p className="font-mono text-[8px] uppercase tracking-[0.5em] text-white/15">
@@ -352,6 +382,11 @@ function Section({
       </div>
     </section>
   );
+}
+
+// ─── Journey spacer — breathing room between chapters ──
+function Spacer() {
+  return <div className="h-[20vh] bg-[#0a0a0a] relative z-[3]" />;
 }
 
 // ─── Main ──────────────────────────────────────────────
@@ -366,7 +401,11 @@ export default function Home() {
       </AnimatePresence>
       <main className="bg-[#0a0a0a]">
         {chapters.map((chapter, i) => (
-          <Section key={chapter.id} chapter={chapter} index={i} />
+          <div key={chapter.id}>
+            <Section chapter={chapter} index={i} />
+            {/* Add breathing spacer between chapters (not after last) */}
+            {i < chapters.length - 1 && i > 0 && <Spacer />}
+          </div>
         ))}
       </main>
     </>
