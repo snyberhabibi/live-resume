@@ -18,14 +18,13 @@
   box-sizing: border-box;
 }
 
-html,
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  overflow: hidden;
-  height: 100%;
-  width: 100%;
   background: #050505;
   color: #ededed;
-  touch-action: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
