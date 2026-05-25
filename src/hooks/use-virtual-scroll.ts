@@ -3,10 +3,10 @@
 import { useEffect, useRef, useCallback } from "react";
 import { useScrollStore } from "@/store/scroll";
 
-const SCROLL_SPEED = 0.001;
-const TOUCH_MULTIPLIER = 0.004;
-const LERP = 0.08;
-const KEY_STEP = 0.04;
+const SCROLL_SPEED = 0.0008;
+const TOUCH_MULTIPLIER = 0.003;
+const LERP = 0.04;
+const KEY_STEP = 0.03;
 
 /** Exposed so chapter dots can jump to a position */
 let _targetRef = { current: 0 };

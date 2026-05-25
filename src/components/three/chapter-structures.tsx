@@ -224,285 +224,162 @@ function Monolith({
 // ─────────────────────────────────────────────
 
 function OriginStructures() {
-  // Warm sandstone pillars — the mosque, the food cart, the first home
   return (
-    <group position={[3, -2, -12]}>
-      {/* Main archway pillar — tallest */}
+    <group position={[4, -2, -12]}>
       <Monolith
-        position={[0, 1.2, 0]}
-        width={0.3}
-        height={2.8}
-        depth={0.3}
-        baseColor="#8b6841"
+        position={[0, 1.8, 0]}
+        width={0.4}
+        height={4.0}
+        depth={0.4}
+        baseColor="#7a5c32"
         topColor="#d4a76a"
         accentColor="#e8a838"
         accentIntensity={0.4}
-        geometry="box"
-        rotationY={0.1}
+        geometry="hex"
       />
-      {/* Shorter companion */}
       <Monolith
-        position={[0.8, 0.7, 0.3]}
-        width={0.25}
-        height={1.8}
-        depth={0.25}
-        baseColor="#7a5c32"
+        position={[1.2, 0.8, 0.5]}
+        width={0.3}
+        height={2.0}
+        depth={0.3}
+        baseColor="#6b5035"
         topColor="#c9a067"
         accentColor="#e8a838"
-        accentIntensity={0.3}
+        accentIntensity={0.25}
         geometry="hex"
-        rotationY={-0.2}
-        tiltZ={0.04}
-      />
-      {/* Broken stump — something that didn't last */}
-      <Monolith
-        position={[-0.6, 0.25, -0.2]}
-        width={0.35}
-        height={0.7}
-        depth={0.35}
-        baseColor="#6b5035"
-        topColor="#a88a5c"
-        accentColor="#e8a838"
-        accentIntensity={0.2}
-        erode={1.8}
-        geometry="cylinder"
-        tiltX={0.08}
+        tiltZ={0.05}
       />
     </group>
   );
 }
 
 function BuilderStructures() {
-  // Ventures in various states — some still stand, some returned to dust
   return (
-    <group position={[-3, -2, -22]}>
-      {/* Yalla Bites — the one still standing, tallest */}
+    <group position={[-4, -2, -22]}>
+      {/* Still standing */}
       <Monolith
-        position={[0, 1.8, 0]}
-        width={0.3}
-        height={4.0}
-        depth={0.3}
-        baseColor="#8b6841"
+        position={[0, 2.5, 0]}
+        width={0.35}
+        height={5.5}
+        depth={0.35}
+        baseColor="#7a5c32"
         topColor="#c9a067"
         accentColor="#d4763c"
         accentIntensity={0.5}
         geometry="hex"
-        rotationY={0.15}
       />
-      {/* Standing venture — medium height */}
+      {/* Falling */}
       <Monolith
-        position={[1.2, 1.0, 0.5]}
-        width={0.25}
-        height={2.4}
-        depth={0.25}
-        baseColor="#7a5c32"
-        topColor="#b87d3a"
-        accentColor="#d4763c"
-        accentIntensity={0.3}
-        geometry="box"
-        rotationY={-0.3}
-      />
-      {/* Crumbling venture — tilted, shorter */}
-      <Monolith
-        position={[-0.8, 0.6, 0.2]}
+        position={[1.5, 1.0, 0.3]}
         width={0.3}
-        height={1.5}
-        depth={0.2}
-        baseColor="#6b5035"
+        height={2.5}
+        depth={0.3}
+        baseColor="#5a4228"
         topColor="#8b6841"
         accentColor="#d4763c"
-        accentIntensity={0.15}
+        accentIntensity={0.2}
         erode={2.0}
         geometry="box"
-        tiltZ={0.12}
-        tiltX={0.05}
-      />
-      {/* Fallen — returned to dust */}
-      <Monolith
-        position={[0.5, 0.12, -0.5]}
-        width={0.2}
-        height={0.9}
-        depth={0.2}
-        baseColor="#5a4228"
-        topColor="#7a5c32"
-        accentColor="#d4763c"
-        accentIntensity={0.1}
-        erode={2.5}
-        geometry="cylinder"
-        tiltX={1.3}
-        tiltZ={0.2}
-      />
-      {/* Another fallen stub */}
-      <Monolith
-        position={[-1.5, 0.15, -0.3]}
-        width={0.25}
-        height={0.5}
-        depth={0.25}
-        baseColor="#4a3520"
-        topColor="#6b5035"
-        accentColor="#d4763c"
-        accentIntensity={0.05}
-        erode={3.0}
-        geometry="box"
+        tiltZ={0.15}
       />
     </group>
   );
 }
 
 function CorporateMonoliths() {
-  // Brutalist towers — cold, imposing, sharp-edged
   return (
-    <group position={[2, -2, -36]}>
-      {/* JPMC — tallest, most imposing */}
+    <group position={[3, -2, -36]}>
       <Monolith
-        position={[0, 3.5, 0]}
-        width={0.9}
-        height={7.0}
+        position={[-2, 4.0, 0]}
+        width={1.0}
+        height={8.0}
         depth={0.4}
-        baseColor="#1a1a2e"
+        baseColor="#111827"
         topColor="#2a2a3a"
         accentColor="#475569"
-        accentIntensity={0.6}
-        erode={0.3}
-        geometry="box"
-      />
-      {/* Cisco — twisted, slightly shorter */}
-      <Monolith
-        position={[-2.0, 2.5, 0.5]}
-        width={0.6}
-        height={5.0}
-        depth={0.35}
-        baseColor="#111827"
-        topColor="#222233"
-        accentColor="#64748b"
         accentIntensity={0.5}
         erode={0.2}
         geometry="box"
-        rotationY={0.08}
       />
-      {/* HashiCorp — sleek, angled top */}
       <Monolith
-        position={[1.5, 3.0, -0.8]}
-        width={0.5}
+        position={[0.5, 3.0, 1.0]}
+        width={0.7}
         height={6.0}
-        depth={0.3}
+        depth={0.35}
         baseColor="#0f172a"
         topColor="#1e293b"
-        accentColor="#475569"
+        accentColor="#64748b"
         accentIntensity={0.4}
         erode={0.15}
         geometry="box"
-        rotationY={-0.05}
-        tiltZ={0.03}
+      />
+      <Monolith
+        position={[2.5, 3.5, -0.5]}
+        width={0.5}
+        height={7.0}
+        depth={0.3}
+        baseColor="#0a0e1a"
+        topColor="#222233"
+        accentColor="#475569"
+        accentIntensity={0.3}
+        erode={0.1}
+        geometry="box"
+        tiltZ={0.02}
       />
     </group>
   );
 }
 
 function ConvergenceBeacon() {
-  // Single bright beacon — everything comes together
-  const groupRef = useRef<THREE.Group>(null);
-
-  useFrame((state) => {
-    if (!groupRef.current) return;
-    groupRef.current.rotation.y = state.clock.elapsedTime * 0.05;
-  });
-
   return (
-    <group position={[0, -2, -48]} ref={groupRef}>
-      {/* Main beacon column */}
+    <group position={[0, -2, -48]}>
       <Monolith
-        position={[0, 2.0, 0]}
-        width={0.3}
-        height={4.5}
-        depth={0.3}
-        baseColor="#2d5a3d"
+        position={[0, 2.5, 0]}
+        width={0.35}
+        height={5.5}
+        depth={0.35}
+        baseColor="#1a3a2a"
         topColor="#4ade80"
         accentColor="#4ade80"
-        accentIntensity={1.2}
-        erode={0.5}
+        accentIntensity={1.0}
+        erode={0.4}
         geometry="hex"
-      />
-      {/* Flanking shard left */}
-      <Monolith
-        position={[-0.7, 0.8, 0.3]}
-        width={0.15}
-        height={1.8}
-        depth={0.15}
-        baseColor="#1a4030"
-        topColor="#22c55e"
-        accentColor="#4ade80"
-        accentIntensity={0.8}
-        geometry="box"
-        tiltZ={-0.1}
-        rotationY={0.3}
-      />
-      {/* Flanking shard right */}
-      <Monolith
-        position={[0.6, 0.6, -0.2]}
-        width={0.12}
-        height={1.4}
-        depth={0.12}
-        baseColor="#1a4030"
-        topColor="#22c55e"
-        accentColor="#4ade80"
-        accentIntensity={0.8}
-        geometry="box"
-        tiltZ={0.08}
-        rotationY={-0.4}
       />
     </group>
   );
 }
 
 function CultureStructures() {
-  // Circle of pillars — dabka gathering, community
   const pillars = useMemo(() => {
-    const count = 7;
-    const radius = 1.8;
-    const heights = [1.6, 2.2, 1.8, 2.6, 2.0, 2.4, 1.4];
+    const count = 5;
+    const radius = 2.0;
+    const heights = [2.0, 3.0, 2.5, 3.2, 1.8];
     return Array.from({ length: count }, (_, i) => {
-      const angle = Math.PI * 0.15 + (Math.PI * 0.7 / (count - 1)) * i;
+      const angle = Math.PI * 0.2 + (Math.PI * 0.6 / (count - 1)) * i;
       return {
         x: Math.cos(angle) * radius,
         z: Math.sin(angle) * radius,
         h: heights[i],
-        lean: -0.03,
-        rotY: angle + Math.PI,
       };
     });
   }, []);
 
   return (
-    <group position={[-1, -2, -56]}>
+    <group position={[-2, -2, -56]}>
       {pillars.map((p, i) => (
         <Monolith
           key={i}
           position={[p.x, p.h / 2, p.z]}
-          width={0.12}
+          width={0.15}
           height={p.h}
-          depth={0.12}
-          baseColor="#8b4513"
+          depth={0.15}
+          baseColor="#6b3020"
           topColor="#d4a076"
           accentColor="#e63946"
-          accentIntensity={0.6}
+          accentIntensity={0.5}
           geometry="cylinder"
-          rotationY={p.rotY}
-          tiltX={p.lean}
         />
       ))}
-      {/* Center fire marker */}
-      <Monolith
-        position={[0, 0.15, 0.8]}
-        width={0.3}
-        height={0.3}
-        depth={0.3}
-        baseColor="#7a2020"
-        topColor="#e63946"
-        accentColor="#e63946"
-        accentIntensity={2.0}
-        geometry="cylinder"
-      />
     </group>
   );
 }

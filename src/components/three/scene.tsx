@@ -2,59 +2,49 @@
 
 import { useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
+import { Environment } from "@react-three/drei";
 import * as THREE from "three";
 import { DesertTerrain } from "./desert-terrain";
 import { SandParticles } from "./sand-particles";
 import { SkyAtmosphere } from "./sky-atmosphere";
 import { PostProcessing } from "./post-processing";
-import {
-  DesertStars,
-  DesertSparkles,
-  AccentLight,
-} from "./desert-elements";
+import { DesertStars, AccentLight } from "./desert-elements";
 import { ChapterStructures } from "./chapter-structures";
-import { HeroPortrait } from "./hero-portrait";
-import { DesertRocks } from "./desert-rocks";
-import { ChapterScenes } from "./chapter-scenes";
-import { ClayFigures } from "./clay-figures";
 import { useScrollStore } from "@/store/scroll";
 import { chapters, chapterOrder, lerpColor } from "@/lib/colors";
 
 function ScrollCamera() {
   const { camera } = useThree();
-  const progress = useScrollStore((s) => s.progress);
-  const targetPos = useRef(new THREE.Vector3(0, 2, 8));
-  const targetLook = useRef(new THREE.Vector3(0, 0, 0));
+  const currentPos = useRef(new THREE.Vector3(0, 2.5, 8));
+  const currentLook = useRef(new THREE.Vector3(0, 0, 3));
 
   useFrame(() => {
-    // Camera path: starts high and pulls forward through the desert
+    const { progress } = useScrollStore.getState();
     const p = progress;
 
-    // Camera position along scroll
-    targetPos.current.set(
-      Math.sin(p * Math.PI * 0.5) * 3,
-      2.5 - p * 0.8 + Math.sin(p * Math.PI) * 1.5,
-      8 - p * 50
+    // Gentle drone-like path through the desert
+    // Smooth sine curves for x/y, linear z travel
+    const targetX = Math.sin(p * Math.PI * 0.8) * 2.5;
+    const targetY = 2.2 + Math.sin(p * Math.PI * 1.2) * 1.0;
+    const targetZ = 8 - p * 55;
+
+    // Look-at point — slightly ahead and lower
+    const lookX = Math.sin(p * Math.PI * 0.4) * 1.5;
+    const lookY = 0.8;
+    const lookZ = targetZ - 8;
+
+    // Buttery smooth lerp (0.03 = cinematic)
+    currentPos.current.lerp(
+      new THREE.Vector3(targetX, targetY, targetZ),
+      0.03
+    );
+    currentLook.current.lerp(
+      new THREE.Vector3(lookX, lookY, lookZ),
+      0.03
     );
 
-    // Look-at point leads the camera
-    targetLook.current.set(
-      Math.sin(p * Math.PI * 0.3) * 2,
-      0.5 + Math.sin(p * Math.PI * 0.5) * 0.5,
-      -p * 55
-    );
-
-    // Smooth lerp
-    camera.position.lerp(targetPos.current, 0.05);
-    const currentLook = new THREE.Vector3();
-    camera.getWorldDirection(currentLook);
-    camera.lookAt(
-      camera.position.x + (targetLook.current.x - camera.position.x) * 0.05,
-      camera.position.y +
-        (targetLook.current.y - camera.position.y) * 0.05 -
-        0.5,
-      camera.position.z + (targetLook.current.z - camera.position.z) * 0.05 - 5
-    );
+    camera.position.copy(currentPos.current);
+    camera.lookAt(currentLook.current);
   });
 
   return null;
@@ -73,7 +63,7 @@ function DynamicFog() {
       chapters[next].fog,
       chapterProgress
     );
-    scene.fog = new THREE.FogExp2(fogColor, 0.025);
+    scene.fog = new THREE.FogExp2(fogColor, 0.02);
     scene.background = new THREE.Color(chapters[current].sky);
   });
 
@@ -87,23 +77,22 @@ function DesertLighting() {
     if (dirRef.current) {
       const t = state.clock.elapsedTime;
       dirRef.current.position.set(
-        Math.sin(t * 0.1) * 10,
-        8,
-        Math.cos(t * 0.1) * 10
+        Math.sin(t * 0.05) * 15,
+        10,
+        Math.cos(t * 0.05) * 15
       );
     }
   });
 
   return (
     <>
-      <ambientLight intensity={0.3} color="#e8d5b7" />
+      <ambientLight intensity={0.2} color="#b8a088" />
       <directionalLight
         ref={dirRef}
-        intensity={0.8}
+        intensity={0.6}
         color="#ffd4a0"
-        position={[5, 8, 5]}
+        position={[5, 10, 5]}
       />
-      <pointLight position={[0, 5, -20]} intensity={0.3} color="#7ec8e3" />
     </>
   );
 }
@@ -115,16 +104,12 @@ export function SceneContent() {
       <DynamicFog />
       <DesertLighting />
       <AccentLight />
+      <Environment preset="night" environmentIntensity={0.15} />
       <SkyAtmosphere />
       <DesertTerrain />
       <SandParticles />
       <DesertStars />
-      <DesertSparkles />
       <ChapterStructures />
-      <DesertRocks />
-      <HeroPortrait />
-      <ChapterScenes />
-      <ClayFigures />
       <PostProcessing />
     </>
   );

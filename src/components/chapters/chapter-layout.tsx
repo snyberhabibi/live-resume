@@ -36,10 +36,14 @@ export function ChapterLayout({
 
   return (
     <div
-      className={`fixed inset-0 z-10 flex flex-col justify-center px-5 sm:px-12 lg:px-20 pointer-events-none ${alignClass}`}
-      style={{ opacity, transform: `translateY(${y}px)` }}
+      className={`fixed inset-0 z-10 flex flex-col justify-center px-6 sm:px-16 lg:px-24 pointer-events-none ${alignClass}`}
+      style={{
+        opacity,
+        transform: `translateY(${y}px)`,
+        textShadow: "0 2px 20px rgba(0,0,0,0.8), 0 0px 40px rgba(0,0,0,0.4)",
+      }}
     >
-      <div className="max-w-xl pointer-events-auto rounded-2xl bg-black/30 backdrop-blur-md border border-white/5 p-6 sm:p-8">
+      <div className="max-w-2xl">
         {children}
       </div>
     </div>
