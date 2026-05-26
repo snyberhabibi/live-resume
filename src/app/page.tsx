@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import {
   motion,
   useScroll,
   useTransform,
+  useMotionValueEvent,
   useInView,
   AnimatePresence,
 } from "framer-motion";
@@ -29,135 +30,63 @@ function useLenis() {
 
 // ─── Custom cursor ─────────────────────────────────────
 function CustomCursor() {
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const [hovering, setHovering] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const [hov, setHov] = useState(false);
 
   useEffect(() => {
     const move = (e: MouseEvent) => {
-      if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate(${e.clientX - 6}px, ${e.clientY - 6}px)`;
-      }
+      if (ref.current) ref.current.style.transform = `translate(${e.clientX - 6}px, ${e.clientY - 6}px)`;
     };
-    const over = () => setHovering(true);
-    const out = () => setHovering(false);
-
+    const over = () => setHov(true);
+    const out = () => setHov(false);
     window.addEventListener("mousemove", move);
     const els = document.querySelectorAll("a, button");
-    els.forEach((el) => {
-      el.addEventListener("mouseenter", over);
-      el.addEventListener("mouseleave", out);
-    });
+    els.forEach((el) => { el.addEventListener("mouseenter", over); el.addEventListener("mouseleave", out); });
     return () => {
       window.removeEventListener("mousemove", move);
-      els.forEach((el) => {
-        el.removeEventListener("mouseenter", over);
-        el.removeEventListener("mouseleave", out);
-      });
+      els.forEach((el) => { el.removeEventListener("mouseenter", over); el.removeEventListener("mouseleave", out); });
     };
   }, []);
 
   return (
-    <div
-      ref={cursorRef}
-      className="fixed top-0 left-0 z-[200] pointer-events-none mix-blend-difference hidden lg:block"
-      style={{
-        width: hovering ? 40 : 12,
-        height: hovering ? 40 : 12,
-        borderRadius: "50%",
-        backgroundColor: "white",
-        transition: "width 0.3s ease, height 0.3s ease",
-        marginLeft: hovering ? -14 : 0,
-        marginTop: hovering ? -14 : 0,
-      }}
-    />
-  );
-}
-
-// ─── Nav ───────────────────────────────────────────────
-function Nav({ currentChapter }: { currentChapter: string }) {
-  return (
-    <motion.nav
-      className="fixed top-0 left-0 right-0 z-[90] flex items-center justify-between px-6 sm:px-10 py-5 mix-blend-difference"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 2.5, duration: 1 }}
-    >
-      <span className="font-display text-sm text-white tracking-wide">YR</span>
-      <span className="font-mono text-[9px] uppercase tracking-[0.4em] text-white/50">
-        {currentChapter}
-      </span>
-    </motion.nav>
+    <div ref={ref} className="fixed top-0 left-0 z-[200] pointer-events-none mix-blend-difference hidden lg:block"
+      style={{ width: hov ? 40 : 12, height: hov ? 40 : 12, borderRadius: "50%", backgroundColor: "white",
+        transition: "width 0.3s ease, height 0.3s ease", marginLeft: hov ? -14 : 0, marginTop: hov ? -14 : 0 }} />
   );
 }
 
 // ─── Typewriter ────────────────────────────────────────
-function Typewriter({
-  text,
-  delay = 0,
-  speed = 20,
-  className,
-}: {
-  text: string;
-  delay?: number;
-  speed?: number;
-  className?: string;
-}) {
+function Typewriter({ text, delay = 0, speed = 15, className }: { text: string; delay?: number; speed?: number; className?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-5%" });
-  const [displayed, setDisplayed] = useState("");
+  const inView = useInView(ref, { once: true, margin: "-5%" });
+  const [shown, setShown] = useState("");
 
   useEffect(() => {
-    if (!isInView) return;
+    if (!inView) return;
     let i = 0;
-    const timeout = setTimeout(() => {
-      const interval = setInterval(() => {
-        i++;
-        setDisplayed(text.slice(0, i));
-        if (i >= text.length) clearInterval(interval);
-      }, speed);
-      return () => clearInterval(interval);
+    const t = setTimeout(() => {
+      const iv = setInterval(() => { i++; setShown(text.slice(0, i)); if (i >= text.length) clearInterval(iv); }, speed);
+      return () => clearInterval(iv);
     }, delay * 1000);
-    return () => clearTimeout(timeout);
-  }, [isInView, text, delay, speed]);
+    return () => clearTimeout(t);
+  }, [inView, text, delay, speed]);
 
-  return (
-    <span ref={ref} className={className}>
-      {displayed}
-      {displayed.length < text.length && isInView && (
-        <span className="animate-pulse">_</span>
-      )}
-    </span>
-  );
+  return <span ref={ref} className={className}>{shown}{shown.length < text.length && inView && <span className="animate-pulse">_</span>}</span>;
 }
 
 // ─── Word reveal ───────────────────────────────────────
-function RevealWords({
-  text,
-  className,
-  delay = 0,
-}: {
-  text: string;
-  className?: string;
-  delay?: number;
-}) {
+function RevealWords({ text, className, delay = 0 }: { text: string; className?: string; delay?: number }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-10%" });
+  const inView = useInView(ref, { once: true, margin: "-10%" });
 
   return (
     <span ref={ref} className={className}>
-      {text.split(" ").map((word, i) => (
+      {text.split(" ").map((w, i) => (
         <span key={i} className="inline-block overflow-hidden mr-[0.3em]">
-          <motion.span
-            className="inline-block"
-            initial={{ y: "110%" }}
-            animate={isInView ? { y: 0 } : { y: "110%" }}
-            transition={{
-              duration: 0.7,
-              ease: [0.22, 1, 0.36, 1],
-              delay: delay + i * 0.04,
-            }}
-          >
-            {word}
+          <motion.span className="inline-block" initial={{ y: "110%" }}
+            animate={inView ? { y: 0 } : { y: "110%" }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: delay + i * 0.04 }}>
+            {w}
           </motion.span>
         </span>
       ))}
@@ -168,36 +97,16 @@ function RevealWords({
 // ─── Preloader ─────────────────────────────────────────
 function Preloader({ onComplete }: { onComplete: () => void }) {
   return (
-    <motion.div
-      className="fixed inset-0 z-[100] bg-[#0a0a0a] flex items-center justify-center"
-      initial={{ opacity: 1 }}
-      animate={{ opacity: 0 }}
-      transition={{ duration: 1.2, delay: 2, ease: "easeInOut" }}
-      onAnimationComplete={onComplete}
-    >
+    <motion.div className="fixed inset-0 z-[100] bg-[#0a0a0a] flex items-center justify-center"
+      initial={{ opacity: 1 }} animate={{ opacity: 0 }} transition={{ duration: 1.2, delay: 2, ease: "easeInOut" }}
+      onAnimationComplete={onComplete}>
       <div className="text-center">
-        <motion.div
-          className="font-mono text-[9px] uppercase tracking-[0.6em] text-white/15 mb-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          Initializing
-        </motion.div>
-        <motion.div
-          className="font-display text-xl text-white/50 tracking-wide"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-        >
-          Yusuf Rahman
-        </motion.div>
-        <motion.div
-          className="w-20 h-[1px] bg-white/10 mx-auto mt-5 origin-left"
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 1.5, delay: 0.5, ease: "easeInOut" }}
-        />
+        <motion.div className="font-mono text-[9px] uppercase tracking-[0.6em] text-white/15 mb-4"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.3 }}>Initializing</motion.div>
+        <motion.div className="font-display text-xl text-white/50 tracking-wide"
+          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.6 }}>Yusuf Rahman</motion.div>
+        <motion.div className="w-20 h-[1px] bg-white/10 mx-auto mt-5 origin-left"
+          initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 1.5, delay: 0.5, ease: "easeInOut" }} />
       </div>
     </motion.div>
   );
@@ -205,154 +114,83 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
 
 // ─── Scanlines ─────────────────────────────────────────
 function Scanlines() {
-  return (
-    <div
-      className="fixed inset-0 z-[50] pointer-events-none opacity-[0.02]"
-      style={{
-        backgroundImage:
-          "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)",
-      }}
-    />
-  );
+  return <div className="fixed inset-0 z-[50] pointer-events-none opacity-[0.015]"
+    style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)" }} />;
 }
 
-// ─── Data ──────────────────────────────────────────────
-type Chapter = {
-  id: string;
-  type: "visual" | "interstitial";
-  image?: string;
-  mobileImage?: string;
-  transition?: string;
-  label?: string;
-  lines: string[];
-  terminal?: string[];
-  sub?: string;
-  accent: string;
-  layout: "center" | "left" | "right";
-  links?: { text: string; href: string }[];
-};
+// ─── Scene data ────────────────────────────────────────
+// Each scene: a background image + optional video transition from previous scene
+// The fixed background crossfades between these based on scroll
+const scenes = [
+  { id: "hero", image: "/visuals/hero.jpg", mobileImage: "/visuals/hero-mobile.jpg" },
+  { id: "origin", image: "/visuals/origin.jpg", mobileImage: "/visuals/origin-mobile.jpg", video: "/visuals/transition-hero-origin.mp4" },
+  { id: "builder", image: "/visuals/builder.jpg", video: "/visuals/transition-origin-builder.mp4" },
+  { id: "corporate", image: "/visuals/corporate.jpg", video: "/visuals/transition-builder-corporate.mp4" },
+  { id: "convergence", image: "/visuals/convergence.jpg", video: "/visuals/transition-corporate-convergence.mp4" },
+  { id: "culture", image: "/visuals/culture.jpg", mobileImage: "/visuals/culture-mobile.jpg", video: "/visuals/transition-convergence-culture.mp4" },
+  { id: "contact", image: "/visuals/contact.jpg", video: "/visuals/transition-culture-contact.mp4" },
+];
 
-const chapters: Chapter[] = [
+// Content sections that scroll over the fixed background
+const sections = [
   {
-    id: "hero",
-    type: "visual",
-    image: "/visuals/hero.jpg",
-    mobileImage: "/visuals/hero-mobile.jpg",
-    label: "QATAR",
-    lines: ["Yusuf", "Rahman"],
+    sceneIndex: 0, // hero
+    label: "QATAR", lines: ["Yusuf", "Rahman"],
     sub: "Everything reduces to dust. Everything can be rebuilt.",
-    accent: "#e8a838",
-    layout: "center",
+    accent: "#e8a838", layout: "center" as const, height: "100vh",
   },
   {
-    id: "origin",
-    type: "visual",
-    image: "/visuals/origin.jpg",
-    mobileImage: "/visuals/origin-mobile.jpg",
-    transition: "/visuals/transition-hero-origin.mp4",
-    label: "THE ORIGIN",
-    lines: ["Gaza. Kuwait.", "New York. Dallas.", "Qatar."],
-    terminal: [
-      "grandparents fled post-Nakba Palestine",
-      "parents earned a scholarship to New York",
-      "mom sold shawarma outside the mosque",
-    ],
+    sceneIndex: 1, // origin
+    label: "THE ORIGIN", lines: ["Gaza. Kuwait.", "New York. Dallas.", "Qatar."],
+    terminal: ["grandparents fled post-Nakba Palestine", "parents earned a scholarship to New York", "mom sold shawarma outside the mosque"],
     sub: "That was the first seed.",
-    accent: "#e8a838",
-    layout: "left",
+    accent: "#e8a838", layout: "left" as const, height: "100vh",
   },
   {
-    id: "interstitial-1",
-    type: "interstitial",
+    sceneIndex: -1, // interstitial (no scene change)
     lines: ["The origin of homemade food —", "that bloomed into Yalla Bites."],
-    accent: "#e8a838",
-    layout: "center",
+    accent: "#e8a838", layout: "center" as const, height: "60vh", interstitial: true,
   },
   {
-    id: "builder",
-    type: "visual",
-    image: "/visuals/builder.jpg",
-    transition: "/visuals/transition-origin-builder.mp4",
-    label: "THE BUILDER",
-    lines: ["Some still stand.", "Some returned", "to dust."],
-    terminal: [
-      "age_8  :: Glue Bookmarks",
-      "2017   :: Al-Kuffiyeh Group",
-      "2018   :: KASTEA",
-      "2024   :: Dabka Academy",
-      "2025   :: Yalla Bites ■",
-    ],
-    accent: "#d4763c",
-    layout: "right",
+    sceneIndex: 2, // builder
+    label: "THE BUILDER", lines: ["Some still stand.", "Some returned", "to dust."],
+    terminal: ["age_8  :: Glue Bookmarks", "2017   :: Al-Kuffiyeh Group", "2018   :: KASTEA", "2024   :: Dabka Academy", "2025   :: Yalla Bites ■"],
+    accent: "#d4763c", layout: "right" as const, height: "100vh",
   },
   {
-    id: "corporate",
-    type: "visual",
-    image: "/visuals/corporate.jpg",
-    transition: "/visuals/transition-builder-corporate.mp4",
-    label: "THE CORPORATE BRIDGE",
-    lines: ["Monoliths I", "walked through."],
-    terminal: [
-      "JPMC  :: SRE          2020-2022",
-      "Cisco :: Sr. Sales Eng 2022-2023",
-      "Hashi :: Sales Eng     2023-now",
-    ],
-    accent: "#64748b",
-    layout: "left",
+    sceneIndex: 3, // corporate
+    label: "THE CORPORATE BRIDGE", lines: ["Monoliths I", "walked through."],
+    terminal: ["JPMC  :: SRE          2020-2022", "Cisco :: Sr. Sales Eng 2022-2023", "Hashi :: Sales Eng     2023-now"],
+    accent: "#64748b", layout: "left" as const, height: "100vh",
   },
   {
-    id: "interstitial-2",
-    type: "interstitial",
+    sceneIndex: -1, // interstitial
     lines: ["The real work", "happens after hours."],
-    accent: "#64748b",
-    layout: "center",
+    accent: "#64748b", layout: "center" as const, height: "60vh", interstitial: true,
   },
   {
-    id: "convergence",
-    type: "visual",
-    image: "/visuals/convergence.jpg",
-    transition: "/visuals/transition-corporate-convergence.mp4",
-    label: "THE CONVERGENCE",
-    lines: ["Then my", "brother called."],
-    terminal: [
-      "cultural work + tech + failures + food",
-      "= Yalla Bites",
-    ],
+    sceneIndex: 4, // convergence
+    label: "THE CONVERGENCE", lines: ["Then my", "brother called."],
+    terminal: ["cultural work + tech + failures + food", "= Yalla Bites"],
     sub: "This time, it wasn't a side project.",
-    accent: "#4ade80",
-    layout: "right",
+    accent: "#4ade80", layout: "right" as const, height: "100vh",
   },
   {
-    id: "culture",
-    type: "visual",
-    image: "/visuals/culture.jpg",
-    mobileImage: "/visuals/culture-mobile.jpg",
-    transition: "/visuals/transition-convergence-culture.mp4",
-    label: "THE CULTURE",
-    lines: ["The part nobody", "guesses from", "my LinkedIn."],
-    terminal: [
-      "500+ weddings :: Al-Kuffiyeh Group",
-      "Dabka Academy :: 100+ students",
-    ],
-    accent: "#e63946",
-    layout: "left",
+    sceneIndex: 5, // culture
+    label: "THE CULTURE", lines: ["The part nobody", "guesses from", "my LinkedIn."],
+    terminal: ["500+ weddings :: Al-Kuffiyeh Group", "Dabka Academy :: 100+ students"],
+    accent: "#e63946", layout: "left" as const, height: "100vh",
   },
   {
-    id: "interstitial-3",
-    type: "interstitial",
+    sceneIndex: -1, // interstitial
     lines: ["I fell in love with community."],
-    accent: "#e63946",
-    layout: "center",
+    accent: "#e63946", layout: "center" as const, height: "60vh", interstitial: true,
   },
   {
-    id: "contact",
-    type: "visual",
-    image: "/visuals/contact.jpg",
-    transition: "/visuals/transition-culture-contact.mp4",
+    sceneIndex: 6, // contact
     lines: ["Let's build."],
     terminal: ["agent systems, community, wild ideas"],
-    accent: "#7ec8e3",
-    layout: "center",
+    accent: "#7ec8e3", layout: "center" as const, height: "100vh",
     links: [
       { text: "Email", href: "mailto:yusuf@aai.agency" },
       { text: "GitHub", href: "https://github.com/snyberhabibi" },
@@ -361,240 +199,167 @@ const chapters: Chapter[] = [
   },
 ];
 
-// ─── Video transition (crossfade overlay) ──────────────
-function VideoTransition({ src }: { src: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
+// ─── Fixed fullscreen background ───────────────────────
+// One continuous visual canvas. Images and videos crossfade based on
+// which section is currently in view. You TRAVEL into the scene.
+function FixedBackground({ activeScene, progress }: { activeScene: number; progress: number }) {
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
+  // Scrub active video based on transition progress
   useEffect(() => {
-    return scrollYProgress.on("change", (v) => {
-      if (videoRef.current && videoRef.current.duration) {
-        const mapped = Math.max(0, Math.min(1, (v - 0.15) / 0.7));
-        videoRef.current.currentTime = mapped * videoRef.current.duration;
-      }
-    });
-  }, [scrollYProgress]);
-
-  // Opacity: fade in as you scroll into it, fade out as you leave
-  const opacity = useTransform(
-    scrollYProgress,
-    [0, 0.15, 0.85, 1],
-    [0, 1, 1, 0]
-  );
+    const vid = videoRefs.current[activeScene];
+    if (vid && vid.duration) {
+      // progress 0-0.4 = scrub video, 0.4-1 = hold on final frame
+      const scrub = Math.min(1, progress / 0.4);
+      vid.currentTime = scrub * vid.duration;
+    }
+  }, [activeScene, progress]);
 
   return (
-    <motion.div
-      ref={ref}
-      className="relative h-[50vh] sm:h-[70vh] w-full overflow-hidden"
-      style={{ opacity }}
-    >
-      <video
-        ref={videoRef}
-        src={src}
-        muted
-        playsInline
-        preload="auto"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
-    </motion.div>
-  );
-}
+    <div className="fixed inset-0 z-0">
+      {scenes.map((scene, i) => {
+        const isActive = i === activeScene;
+        const isPrev = i === activeScene - 1;
+        // Active scene: show. Previous scene: show during video transition (progress < 0.3)
+        const showVideo = isActive && scene.video && progress < 0.5;
+        const showImage = isActive && progress >= 0.3;
+        const showPrevImage = isPrev && progress < 0.3;
 
-// ─── Interstitial (text-only dark screen) ──────────────
-function Interstitial({ chapter }: { chapter: Chapter }) {
-  return (
-    <section className="relative h-[60vh] sm:h-[70vh] w-full bg-[#0a0a0a] flex items-center justify-center px-10 sm:px-24">
-      <div className="text-center max-w-2xl">
-        {chapter.lines.map((line, i) => (
-          <div key={i} className="overflow-hidden">
-            <RevealWords
-              text={line}
-              delay={0.1 + i * 0.1}
-              className="block font-display italic text-[clamp(1.2rem,3vw,2.2rem)] leading-[1.3] tracking-tight"
+        return (
+          <div key={scene.id}>
+            {/* Video transition layer */}
+            {scene.video && (
+              <video
+                ref={(el) => { videoRefs.current[i] = el; }}
+                src={scene.video}
+                muted
+                playsInline
+                preload="auto"
+                className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+                style={{ opacity: showVideo ? 1 : 0, zIndex: 2 }}
+              />
+            )}
+            {/* Image layer */}
+            <div
+              className="absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-700"
+              style={{
+                backgroundImage: `url(${scene.image})`,
+                opacity: showImage || showPrevImage ? 1 : 0,
+                zIndex: showPrevImage ? 1 : showImage ? 3 : 0,
+              }}
             />
           </div>
-        ))}
-      </div>
-      {/* Accent line */}
-      <motion.div
-        className="absolute bottom-16 left-1/2 w-8 h-[1px] -translate-x-1/2"
-        style={{ backgroundColor: chapter.accent, opacity: 0.3 }}
-        initial={{ scaleX: 0 }}
-        whileInView={{ scaleX: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 0.5 }}
-      />
-    </section>
+        );
+      })}
+      {/* Dark overlay for text contrast */}
+      <div className="absolute inset-0 bg-black/40 z-[4]" />
+    </div>
   );
 }
 
-// ─── Visual section ────────────────────────────────────
-function VisualSection({
-  chapter,
-  index,
-}: {
-  chapter: Chapter;
-  index: number;
-}) {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
+// ─── Nav ───────────────────────────────────────────────
+function Nav({ label }: { label: string }) {
+  return (
+    <motion.nav className="fixed top-0 left-0 right-0 z-[90] flex items-center justify-between px-6 sm:px-10 py-5 mix-blend-difference"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5, duration: 1 }}>
+      <span className="font-display text-sm text-white tracking-wide">YR</span>
+      <span className="font-mono text-[9px] uppercase tracking-[0.4em] text-white/50">{label}</span>
+    </motion.nav>
+  );
+}
 
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "-10%"]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.05, 1, 1.02]);
+// ─── Content section ───────────────────────────────────
+function ContentSection({ section, index }: { section: typeof sections[number]; index: number }) {
+  const isHero = index === 0;
+  const isContact = section.links !== undefined;
 
-  const isHero = chapter.id === "hero";
-  const isContact = chapter.id === "contact";
+  if (section.interstitial) {
+    return (
+      <section className="relative z-10 flex items-center justify-center px-10 sm:px-24" style={{ height: section.height }}>
+        <div className="text-center max-w-2xl">
+          {section.lines.map((line, i) => (
+            <div key={i} className="overflow-hidden">
+              <RevealWords text={line} delay={0.1 + i * 0.1}
+                className="block font-display italic text-[clamp(1.2rem,3vw,2.2rem)] leading-[1.3] tracking-tight text-white/70" />
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section ref={ref} className="relative min-h-screen w-full overflow-hidden flex">
-      {/* Background — mobile image swap via <picture> */}
-      <motion.div
-        className="absolute inset-0 w-full h-[115%] -top-[8%]"
-        style={{ y, scale }}
-      >
-        <picture className="block w-full h-full">
-          {chapter.mobileImage && (
-            <source media="(max-width: 768px)" srcSet={chapter.mobileImage} />
-          )}
-          <img
-            src={chapter.image}
-            alt=""
-            className="w-full h-full object-cover will-change-transform"
-          />
-        </picture>
-        <div className="absolute inset-0 bg-black/45" />
-      </motion.div>
+    <section className="relative z-10 flex" style={{ minHeight: section.height }}>
+      <div className={`w-full flex flex-col ${
+        section.layout === "center" ? "items-center justify-center text-center px-8 sm:px-20"
+        : section.layout === "right" ? "items-end justify-end text-right px-8 sm:px-16 lg:px-[14%] pb-24 sm:pb-32"
+        : "items-start justify-end text-left px-8 sm:px-16 lg:px-[14%] pb-24 sm:pb-32"
+      }`}>
 
-      {/* Content */}
-      <div
-        className={`relative z-10 w-full flex flex-col ${
-          chapter.layout === "center"
-            ? "items-center justify-center text-center px-8 sm:px-20"
-            : chapter.layout === "right"
-              ? "items-end justify-end text-right px-8 sm:px-16 lg:px-[14%] pb-24 sm:pb-32"
-              : "items-start justify-end text-left px-8 sm:px-16 lg:px-[14%] pb-24 sm:pb-32"
-        }`}
-      >
-        {/* Label */}
-        {chapter.label && (
-          <motion.p
-            className="font-mono text-[9px] uppercase tracking-[0.6em] mb-5"
-            style={{ color: isHero ? "rgba(255,255,255,0.25)" : chapter.accent }}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            {chapter.label}
+        {section.label && (
+          <motion.p className="font-mono text-[9px] uppercase tracking-[0.6em] mb-5"
+            style={{ color: isHero ? "rgba(255,255,255,0.25)" : section.accent }}
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}>
+            {section.label}
           </motion.p>
         )}
 
-        {/* Title */}
         <div className={`mb-6 ${isHero ? "" : "max-w-3xl"}`}>
-          {chapter.lines.map((line, i) => (
+          {section.lines.map((line, i) => (
             <div key={i} className="overflow-hidden">
-              <RevealWords
-                text={line}
-                delay={0.15 + i * 0.1}
+              <RevealWords text={line} delay={0.15 + i * 0.1}
                 className={`block font-display font-medium leading-[1.05] tracking-tight text-white ${
-                  isHero
-                    ? "text-[clamp(2.5rem,8vw,7rem)]"
-                    : "text-[clamp(1.4rem,3.5vw,3rem)]"
-                }`}
-              />
+                  isHero ? "text-[clamp(2.5rem,8vw,7rem)]" : "text-[clamp(1.4rem,3.5vw,3rem)]"
+                }`} />
             </div>
           ))}
         </div>
 
-        {/* Subtitle */}
-        {chapter.sub && (
-          <motion.p
-            className={`font-display italic max-w-md mb-6 ${
-              isHero ? "text-sm sm:text-base text-white/35" : "text-sm"
-            }`}
-            style={!isHero ? { color: chapter.accent, opacity: 0.5 } : undefined}
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            {chapter.sub}
+        {section.sub && (
+          <motion.p className={`font-display italic max-w-md mb-6 ${isHero ? "text-sm sm:text-base text-white/35" : "text-sm"}`}
+            style={!isHero ? { color: section.accent, opacity: 0.5 } : undefined}
+            initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.5 }}>
+            {section.sub}
           </motion.p>
         )}
 
-        {/* Terminal */}
-        {chapter.terminal && (
-          <div className={`max-w-md mt-1 ${chapter.layout === "right" ? "text-left" : ""}`}>
-            {chapter.terminal.map((line, i) => (
-              <motion.div
-                key={i}
-                className="font-mono text-[11px] sm:text-[13px] leading-relaxed mb-1"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: 0.6 + i * 0.12 }}
-              >
-                <span style={{ color: chapter.accent, opacity: 0.4 }}>
-                  {i === 0 ? "$ " : "> "}
-                </span>
-                <Typewriter
-                  text={line}
-                  delay={0.7 + i * 0.15}
-                  speed={15}
-                  className="text-white/40"
-                />
+        {section.terminal && (
+          <div className={`max-w-md mt-1 ${section.layout === "right" ? "text-left" : ""}`}>
+            {section.terminal.map((line, i) => (
+              <motion.div key={i} className="font-mono text-[11px] sm:text-[13px] leading-relaxed mb-1"
+                initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: 0.6 + i * 0.12 }}>
+                <span style={{ color: section.accent, opacity: 0.4 }}>{i === 0 ? "$ " : "> "}</span>
+                <Typewriter text={line} delay={0.7 + i * 0.15} className="text-white/40" />
               </motion.div>
             ))}
           </div>
         )}
 
-        {/* Links */}
-        {isContact && chapter.links && (
-          <motion.div
-            className="flex gap-8 sm:gap-12 mt-10"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 1 }}
-          >
-            {chapter.links.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
+        {isContact && section.links && (
+          <motion.div className="flex gap-8 sm:gap-12 mt-10"
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 1 }}>
+            {section.links.map((link) => (
+              <a key={link.href} href={link.href}
                 className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.15em] text-white/25 hover:text-white transition-colors duration-500"
                 target={link.href.startsWith("http") ? "_blank" : undefined}
-                rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-              >
+                rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}>
                 {link.text}
               </a>
             ))}
           </motion.div>
         )}
 
-        {/* Scroll indicator */}
         {isHero && (
-          <motion.div
-            className="absolute bottom-12 left-1/2 -translate-x-1/2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 3, duration: 1 }}
-          >
-            <motion.div
-              className="w-[1px] h-10 bg-white/12 mx-auto mb-2"
-              animate={{ scaleY: [0, 1, 0] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-              style={{ transformOrigin: "top" }}
-            />
-            <p className="font-mono text-[7px] uppercase tracking-[0.5em] text-white/10">
-              Scroll
-            </p>
+          <motion.div className="absolute bottom-12 left-1/2 -translate-x-1/2"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3, duration: 1 }}>
+            <motion.div className="w-[1px] h-10 bg-white/12 mx-auto mb-2"
+              animate={{ scaleY: [0, 1, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+              style={{ transformOrigin: "top" }} />
+            <p className="font-mono text-[7px] uppercase tracking-[0.5em] text-white/10">Scroll</p>
           </motion.div>
         )}
       </div>
@@ -602,41 +367,52 @@ function VisualSection({
   );
 }
 
-// ─── Chapter tracker ───────────────────────────────────
-function useChapterTracker() {
-  const [current, setCurrent] = useState("hero");
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
-            const id = entry.target.getAttribute("data-chapter");
-            if (id) setCurrent(id);
-          }
-        });
-      },
-      { threshold: 0.3 }
-    );
-
-    document.querySelectorAll("[data-chapter]").forEach((el) => {
-      observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  return current;
-}
-
 // ─── Main ──────────────────────────────────────────────
 export default function Home() {
   const [loaded, setLoaded] = useState(false);
-  const currentChapter = useChapterTracker();
+  const [activeScene, setActiveScene] = useState(0);
+  const [sceneProgress, setSceneProgress] = useState(0);
+  const [navLabel, setNavLabel] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
   useLenis();
 
-  const visualChapters = chapters.filter((c) => c.type === "visual");
-  const chapterLabel = visualChapters.find((c) => c.id === currentChapter)?.label || "";
+  const { scrollYProgress } = useScroll({ target: containerRef });
+
+  // Map scroll to active scene + progress within that scene
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    // Count visual sections (non-interstitial) to map to scenes
+    const visualSections = sections.filter((s) => !s.interstitial);
+    const totalSections = sections.length;
+
+    // Find which section we're in based on cumulative height ratios
+    // Each 100vh = 1 unit, 60vh = 0.6 unit
+    const heights = sections.map((s) => s.height === "60vh" ? 0.6 : 1);
+    const totalHeight = heights.reduce((a, b) => a + b, 0);
+    const scrollPos = v * totalHeight;
+
+    let cum = 0;
+    let currentIdx = 0;
+    for (let i = 0; i < heights.length; i++) {
+      if (scrollPos < cum + heights[i]) {
+        currentIdx = i;
+        break;
+      }
+      cum += heights[i];
+      if (i === heights.length - 1) currentIdx = i;
+    }
+
+    const section = sections[currentIdx];
+    const progressInSection = Math.max(0, Math.min(1, (scrollPos - cum) / heights[currentIdx]));
+
+    if (section.sceneIndex >= 0) {
+      setActiveScene(section.sceneIndex);
+      setSceneProgress(progressInSection);
+    }
+
+    // Update nav label
+    const label = section.label || "";
+    setNavLabel(label);
+  });
 
   return (
     <>
@@ -645,25 +421,17 @@ export default function Home() {
       </AnimatePresence>
       <CustomCursor />
       <Scanlines />
-      {loaded && <Nav currentChapter={chapterLabel} />}
+      {loaded && <Nav label={navLabel} />}
 
-      <main className="bg-[#0a0a0a] cursor-none lg:cursor-none">
-        {chapters.map((chapter, i) => (
-          <div key={chapter.id} data-chapter={chapter.id}>
-            {/* Video transition before visual sections */}
-            {chapter.type === "visual" && chapter.transition && (
-              <VideoTransition src={chapter.transition} />
-            )}
+      {/* Fixed background — one continuous visual canvas */}
+      <FixedBackground activeScene={activeScene} progress={sceneProgress} />
 
-            {/* Section */}
-            {chapter.type === "visual" ? (
-              <VisualSection chapter={chapter} index={i} />
-            ) : (
-              <Interstitial chapter={chapter} />
-            )}
-          </div>
+      {/* Scrollable content floating over the fixed background */}
+      <div ref={containerRef} className="relative z-10 cursor-none lg:cursor-none">
+        {sections.map((section, i) => (
+          <ContentSection key={i} section={section} index={i} />
         ))}
-      </main>
+      </div>
     </>
   );
 }
