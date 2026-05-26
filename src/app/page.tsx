@@ -42,12 +42,17 @@ function CustomCursor() {
     const out = () => setHovering(false);
 
     window.addEventListener("mousemove", move);
-    document.querySelectorAll("a, button").forEach((el) => {
+    const els = document.querySelectorAll("a, button");
+    els.forEach((el) => {
       el.addEventListener("mouseenter", over);
       el.addEventListener("mouseleave", out);
     });
     return () => {
       window.removeEventListener("mousemove", move);
+      els.forEach((el) => {
+        el.removeEventListener("mouseenter", over);
+        el.removeEventListener("mouseleave", out);
+      });
     };
   }, []);
 
@@ -216,6 +221,7 @@ type Chapter = {
   id: string;
   type: "visual" | "interstitial";
   image?: string;
+  mobileImage?: string;
   transition?: string;
   label?: string;
   lines: string[];
@@ -231,6 +237,7 @@ const chapters: Chapter[] = [
     id: "hero",
     type: "visual",
     image: "/visuals/hero.jpg",
+    mobileImage: "/visuals/hero-mobile.jpg",
     label: "QATAR",
     lines: ["Yusuf", "Rahman"],
     sub: "Everything reduces to dust. Everything can be rebuilt.",
@@ -241,6 +248,7 @@ const chapters: Chapter[] = [
     id: "origin",
     type: "visual",
     image: "/visuals/origin.jpg",
+    mobileImage: "/visuals/origin-mobile.jpg",
     transition: "/visuals/transition-hero-origin.mp4",
     label: "THE ORIGIN",
     lines: ["Gaza. Kuwait.", "New York. Dallas.", "Qatar."],
@@ -318,6 +326,7 @@ const chapters: Chapter[] = [
     id: "culture",
     type: "visual",
     image: "/visuals/culture.jpg",
+    mobileImage: "/visuals/culture-mobile.jpg",
     transition: "/visuals/transition-convergence-culture.mp4",
     label: "THE CULTURE",
     lines: ["The part nobody", "guesses from", "my LinkedIn."],
@@ -445,15 +454,21 @@ function VisualSection({
 
   return (
     <section ref={ref} className="relative min-h-screen w-full overflow-hidden flex">
-      {/* Background */}
+      {/* Background — mobile image swap via <picture> */}
       <motion.div
         className="absolute inset-0 w-full h-[115%] -top-[8%]"
         style={{ y, scale }}
       >
-        <div
-          className="w-full h-full bg-cover bg-center will-change-transform"
-          style={{ backgroundImage: `url(${chapter.image})` }}
-        />
+        <picture className="block w-full h-full">
+          {chapter.mobileImage && (
+            <source media="(max-width: 768px)" srcSet={chapter.mobileImage} />
+          )}
+          <img
+            src={chapter.image}
+            alt=""
+            className="w-full h-full object-cover will-change-transform"
+          />
+        </picture>
         <div className="absolute inset-0 bg-black/45" />
       </motion.div>
 

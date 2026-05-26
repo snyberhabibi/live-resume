@@ -17,13 +17,20 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Yusuf Rahman — Sandbox",
+  title: "Yusuf Rahman",
   description:
-    "Everything reduces to dust. Everything can be rebuilt. Interactive 3D resume.",
+    "Everything reduces to dust. Everything can be rebuilt.",
   openGraph: {
-    title: "Yusuf Rahman — Sandbox",
+    title: "Yusuf Rahman",
     description: "Everything reduces to dust. Everything can be rebuilt.",
     type: "website",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 675 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Yusuf Rahman",
+    description: "Everything reduces to dust. Everything can be rebuilt.",
+    images: ["/og-image.jpg"],
   },
 };
 
