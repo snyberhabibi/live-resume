@@ -10,7 +10,7 @@ import {
 } from "framer-motion";
 import Lenis from "lenis";
 
-// ─── Lenis smooth scroll ───────────────────────────────
+// ─── Lenis ─────────────────────────────────────────────
 function useLenis() {
   useEffect(() => {
     const lenis = new Lenis({
@@ -27,11 +27,69 @@ function useLenis() {
   }, []);
 }
 
-// ─── Typewriter text — character by character reveal ───
+// ─── Custom cursor ─────────────────────────────────────
+function CustomCursor() {
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const [hovering, setHovering] = useState(false);
+
+  useEffect(() => {
+    const move = (e: MouseEvent) => {
+      if (cursorRef.current) {
+        cursorRef.current.style.transform = `translate(${e.clientX - 6}px, ${e.clientY - 6}px)`;
+      }
+    };
+    const over = () => setHovering(true);
+    const out = () => setHovering(false);
+
+    window.addEventListener("mousemove", move);
+    document.querySelectorAll("a, button").forEach((el) => {
+      el.addEventListener("mouseenter", over);
+      el.addEventListener("mouseleave", out);
+    });
+    return () => {
+      window.removeEventListener("mousemove", move);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={cursorRef}
+      className="fixed top-0 left-0 z-[200] pointer-events-none mix-blend-difference hidden lg:block"
+      style={{
+        width: hovering ? 40 : 12,
+        height: hovering ? 40 : 12,
+        borderRadius: "50%",
+        backgroundColor: "white",
+        transition: "width 0.3s ease, height 0.3s ease",
+        marginLeft: hovering ? -14 : 0,
+        marginTop: hovering ? -14 : 0,
+      }}
+    />
+  );
+}
+
+// ─── Nav ───────────────────────────────────────────────
+function Nav({ currentChapter }: { currentChapter: string }) {
+  return (
+    <motion.nav
+      className="fixed top-0 left-0 right-0 z-[90] flex items-center justify-between px-6 sm:px-10 py-5 mix-blend-difference"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 2.5, duration: 1 }}
+    >
+      <span className="font-display text-sm text-white tracking-wide">YR</span>
+      <span className="font-mono text-[9px] uppercase tracking-[0.4em] text-white/50">
+        {currentChapter}
+      </span>
+    </motion.nav>
+  );
+}
+
+// ─── Typewriter ────────────────────────────────────────
 function Typewriter({
   text,
   delay = 0,
-  speed = 25,
+  speed = 20,
   className,
 }: {
   text: string;
@@ -61,13 +119,13 @@ function Typewriter({
     <span ref={ref} className={className}>
       {displayed}
       {displayed.length < text.length && isInView && (
-        <span className="animate-pulse text-current">_</span>
+        <span className="animate-pulse">_</span>
       )}
     </span>
   );
 }
 
-// ─── Staggered word reveal for titles ──────────────────
+// ─── Word reveal ───────────────────────────────────────
 function RevealWords({
   text,
   className,
@@ -79,11 +137,10 @@ function RevealWords({
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-10%" });
-  const words = text.split(" ");
 
   return (
     <span ref={ref} className={className}>
-      {words.map((word, i) => (
+      {text.split(" ").map((word, i) => (
         <span key={i} className="inline-block overflow-hidden mr-[0.3em]">
           <motion.span
             className="inline-block"
@@ -103,40 +160,6 @@ function RevealWords({
   );
 }
 
-// ─── Terminal line — single line with typewriter ───────
-function TerminalLine({
-  text,
-  delay = 0,
-  prefix = ">",
-  accent,
-}: {
-  text: string;
-  delay?: number;
-  prefix?: string;
-  accent: string;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-5%" });
-
-  return (
-    <motion.div
-      ref={ref}
-      className="font-mono text-[12px] sm:text-[13px] leading-relaxed mb-1.5"
-      initial={{ opacity: 0 }}
-      animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-      transition={{ duration: 0.3, delay }}
-    >
-      <span style={{ color: accent, opacity: 0.5 }}>{prefix} </span>
-      <Typewriter
-        text={text}
-        delay={delay + 0.2}
-        speed={18}
-        className="text-white/50"
-      />
-    </motion.div>
-  );
-}
-
 // ─── Preloader ─────────────────────────────────────────
 function Preloader({ onComplete }: { onComplete: () => void }) {
   return (
@@ -149,7 +172,7 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
     >
       <div className="text-center">
         <motion.div
-          className="font-mono text-[10px] uppercase tracking-[0.6em] text-white/20 mb-4"
+          className="font-mono text-[9px] uppercase tracking-[0.6em] text-white/15 mb-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
@@ -157,15 +180,15 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
           Initializing
         </motion.div>
         <motion.div
-          className="font-display text-2xl text-white/60 tracking-wide"
-          initial={{ opacity: 0, y: 10 }}
+          className="font-display text-xl text-white/50 tracking-wide"
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
           Yusuf Rahman
         </motion.div>
         <motion.div
-          className="w-24 h-[1px] bg-white/10 mx-auto mt-6 origin-left"
+          className="w-20 h-[1px] bg-white/10 mx-auto mt-5 origin-left"
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ duration: 1.5, delay: 0.5, ease: "easeInOut" }}
@@ -175,11 +198,11 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
   );
 }
 
-// ─── CRT scanline overlay ──────────────────────────────
+// ─── Scanlines ─────────────────────────────────────────
 function Scanlines() {
   return (
     <div
-      className="fixed inset-0 z-[50] pointer-events-none opacity-[0.03]"
+      className="fixed inset-0 z-[50] pointer-events-none opacity-[0.02]"
       style={{
         backgroundImage:
           "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)",
@@ -188,126 +211,148 @@ function Scanlines() {
   );
 }
 
-// ─── Chapter data ──────────────────────────────────────
-const chapters = [
+// ─── Data ──────────────────────────────────────────────
+type Chapter = {
+  id: string;
+  type: "visual" | "interstitial";
+  image?: string;
+  transition?: string;
+  label?: string;
+  lines: string[];
+  terminal?: string[];
+  sub?: string;
+  accent: string;
+  layout: "center" | "left" | "right";
+  links?: { text: string; href: string }[];
+};
+
+const chapters: Chapter[] = [
   {
     id: "hero",
+    type: "visual",
     image: "/visuals/hero.jpg",
-    transition: null,
     label: "QATAR",
     lines: ["Yusuf", "Rahman"],
-    terminal: null,
     sub: "Everything reduces to dust. Everything can be rebuilt.",
     accent: "#e8a838",
-    layout: "center" as const,
+    layout: "center",
   },
   {
     id: "origin",
+    type: "visual",
     image: "/visuals/origin.jpg",
     transition: "/visuals/transition-hero-origin.mp4",
     label: "THE ORIGIN",
     lines: ["Gaza. Kuwait.", "New York. Dallas.", "Qatar."],
     terminal: [
-      "grandparents fled post-Nakba Palestine for Kuwait",
+      "grandparents fled post-Nakba Palestine",
       "parents earned a scholarship to New York",
-      "flight was three days before the Gulf War",
-      "dad worked three jobs while studying for his PhD",
-      "mom sold shawarma outside the mosque after Friday prayers",
-      "that was the first seed",
+      "mom sold shawarma outside the mosque",
     ],
-    sub: "The origin of homemade food — that bloomed into Yalla Bites.",
+    sub: "That was the first seed.",
     accent: "#e8a838",
-    layout: "left" as const,
+    layout: "left",
+  },
+  {
+    id: "interstitial-1",
+    type: "interstitial",
+    lines: ["The origin of homemade food —", "that bloomed into Yalla Bites."],
+    accent: "#e8a838",
+    layout: "center",
   },
   {
     id: "builder",
+    type: "visual",
     image: "/visuals/builder.jpg",
     transition: "/visuals/transition-origin-builder.mp4",
     label: "THE BUILDER",
     lines: ["Some still stand.", "Some returned", "to dust."],
     terminal: [
-      "age_8     :: Glue Bookmarks",
-      "2017      :: Arab Student Association",
-      "2017      :: Al-Kuffiyeh Group",
-      "2018      :: KASTEA",
-      "2021      :: Trippy",
-      "2023      :: FLUX Pickleball",
-      "2024      :: Dabka Academy",
-      "2025      :: Yalla Bites ■",
+      "age_8  :: Glue Bookmarks",
+      "2017   :: Al-Kuffiyeh Group",
+      "2018   :: KASTEA",
+      "2024   :: Dabka Academy",
+      "2025   :: Yalla Bites ■",
     ],
-    sub: null,
     accent: "#d4763c",
-    layout: "right" as const,
+    layout: "right",
   },
   {
     id: "corporate",
+    type: "visual",
     image: "/visuals/corporate.jpg",
     transition: "/visuals/transition-builder-corporate.mp4",
     label: "THE CORPORATE BRIDGE",
     lines: ["Monoliths I", "walked through."],
     terminal: [
-      "JPMC    :: Site Reliability Engineer    2020-2022",
-      "Cisco   :: Senior Sales Engineer        2022-2023",
-      "Hashi   :: Sales Engineer               2023-now",
+      "JPMC  :: SRE          2020-2022",
+      "Cisco :: Sr. Sales Eng 2022-2023",
+      "Hashi :: Sales Eng     2023-now",
     ],
-    sub: "The real work happens after hours.",
     accent: "#64748b",
-    layout: "left" as const,
+    layout: "left",
+  },
+  {
+    id: "interstitial-2",
+    type: "interstitial",
+    lines: ["The real work", "happens after hours."],
+    accent: "#64748b",
+    layout: "center",
   },
   {
     id: "convergence",
+    type: "visual",
     image: "/visuals/convergence.jpg",
     transition: "/visuals/transition-corporate-convergence.mp4",
     label: "THE CONVERGENCE",
     lines: ["Then my", "brother called."],
     terminal: [
-      "cultural work + tech career + failures + community + food",
+      "cultural work + tech + failures + food",
       "= Yalla Bites",
-      "connecting homemade food from immigrant kitchens",
-      "to the people who miss it most",
     ],
-    sub: "This time, it wasn't a side project. It was the project.",
+    sub: "This time, it wasn't a side project.",
     accent: "#4ade80",
-    layout: "right" as const,
+    layout: "right",
   },
   {
     id: "culture",
+    type: "visual",
     image: "/visuals/culture.jpg",
     transition: "/visuals/transition-convergence-culture.mp4",
     label: "THE CULTURE",
     lines: ["The part nobody", "guesses from", "my LinkedIn."],
     terminal: [
-      "500+ weddings performed with Al-Kuffiyeh Group",
-      "largest Middle Eastern zaffa and dabka group in the south",
-      "still performing. still preserving.",
-      "Dabka Academy :: 5+ courses :: 100+ students",
-      "for the love of Palestinian culture",
+      "500+ weddings :: Al-Kuffiyeh Group",
+      "Dabka Academy :: 100+ students",
     ],
-    sub: "I fell in love with community.",
     accent: "#e63946",
-    layout: "left" as const,
+    layout: "left",
+  },
+  {
+    id: "interstitial-3",
+    type: "interstitial",
+    lines: ["I fell in love with community."],
+    accent: "#e63946",
+    layout: "center",
   },
   {
     id: "contact",
+    type: "visual",
     image: "/visuals/contact.jpg",
     transition: "/visuals/transition-culture-contact.mp4",
-    label: "",
     lines: ["Let's build."],
-    terminal: [
-      "agent systems, community projects, wild ideas",
-    ],
-    sub: null,
+    terminal: ["agent systems, community, wild ideas"],
     accent: "#7ec8e3",
-    layout: "center" as const,
+    layout: "center",
     links: [
-      { text: "yusuf@aai.agency", href: "mailto:yusuf@aai.agency" },
+      { text: "Email", href: "mailto:yusuf@aai.agency" },
       { text: "GitHub", href: "https://github.com/snyberhabibi" },
       { text: "LinkedIn", href: "https://linkedin.com/in/yusufrahman" },
     ],
   },
 ];
 
-// ─── Video transition between chapters ─────────────────
+// ─── Video transition (crossfade overlay) ──────────────
 function VideoTransition({ src }: { src: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -316,19 +361,28 @@ function VideoTransition({ src }: { src: string }) {
     offset: ["start end", "end start"],
   });
 
-  // Play video based on scroll position through this section
   useEffect(() => {
     return scrollYProgress.on("change", (v) => {
       if (videoRef.current && videoRef.current.duration) {
-        // Map scroll 0.2-0.8 to video 0-duration
-        const mapped = Math.max(0, Math.min(1, (v - 0.2) / 0.6));
+        const mapped = Math.max(0, Math.min(1, (v - 0.15) / 0.7));
         videoRef.current.currentTime = mapped * videoRef.current.duration;
       }
     });
   }, [scrollYProgress]);
 
+  // Opacity: fade in as you scroll into it, fade out as you leave
+  const opacity = useTransform(
+    scrollYProgress,
+    [0, 0.15, 0.85, 1],
+    [0, 1, 1, 0]
+  );
+
   return (
-    <div ref={ref} className="relative h-[60vh] w-full overflow-hidden">
+    <motion.div
+      ref={ref}
+      className="relative h-[50vh] sm:h-[70vh] w-full overflow-hidden"
+      style={{ opacity }}
+    >
       <video
         ref={videoRef}
         src={src}
@@ -337,25 +391,44 @@ function VideoTransition({ src }: { src: string }) {
         preload="auto"
         className="absolute inset-0 w-full h-full object-cover"
       />
-      {/* Gradient blends */}
-      <div
-        className="absolute inset-x-0 top-0 h-32 z-[1]"
-        style={{ background: "linear-gradient(to bottom, #0a0a0a, transparent)" }}
-      />
-      <div
-        className="absolute inset-x-0 bottom-0 h-32 z-[1]"
-        style={{ background: "linear-gradient(to top, #0a0a0a, transparent)" }}
-      />
-    </div>
+    </motion.div>
   );
 }
 
-// ─── Image section component ───────────────────────────
-function ImageSection({
+// ─── Interstitial (text-only dark screen) ──────────────
+function Interstitial({ chapter }: { chapter: Chapter }) {
+  return (
+    <section className="relative h-[60vh] sm:h-[70vh] w-full bg-[#0a0a0a] flex items-center justify-center px-10 sm:px-24">
+      <div className="text-center max-w-2xl">
+        {chapter.lines.map((line, i) => (
+          <div key={i} className="overflow-hidden">
+            <RevealWords
+              text={line}
+              delay={0.1 + i * 0.1}
+              className="block font-display italic text-[clamp(1.2rem,3vw,2.2rem)] leading-[1.3] tracking-tight"
+            />
+          </div>
+        ))}
+      </div>
+      {/* Accent line */}
+      <motion.div
+        className="absolute bottom-16 left-1/2 w-8 h-[1px] -translate-x-1/2"
+        style={{ backgroundColor: chapter.accent, opacity: 0.3 }}
+        initial={{ scaleX: 0 }}
+        whileInView={{ scaleX: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, delay: 0.5 }}
+      />
+    </section>
+  );
+}
+
+// ─── Visual section ────────────────────────────────────
+function VisualSection({
   chapter,
   index,
 }: {
-  chapter: (typeof chapters)[number];
+  chapter: Chapter;
   index: number;
 }) {
   const ref = useRef<HTMLElement>(null);
@@ -364,17 +437,17 @@ function ImageSection({
     offset: ["start end", "end start"],
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "-12%"]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.06, 1, 1.03]);
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "-10%"]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.05, 1, 1.02]);
 
-  const isHero = index === 0;
+  const isHero = chapter.id === "hero";
   const isContact = chapter.id === "contact";
 
   return (
     <section ref={ref} className="relative min-h-screen w-full overflow-hidden flex">
-      {/* Parallax background */}
+      {/* Background */}
       <motion.div
-        className="absolute inset-0 w-full h-[120%] -top-[10%]"
+        className="absolute inset-0 w-full h-[115%] -top-[8%]"
         style={{ y, scale }}
       >
         <div
@@ -388,16 +461,16 @@ function ImageSection({
       <div
         className={`relative z-10 w-full flex flex-col ${
           chapter.layout === "center"
-            ? "items-center justify-center text-center px-10 sm:px-24"
+            ? "items-center justify-center text-center px-8 sm:px-20"
             : chapter.layout === "right"
-              ? "items-end justify-end text-right px-10 sm:px-20 lg:px-[14%] pb-28 sm:pb-36"
-              : "items-start justify-end text-left px-10 sm:px-20 lg:px-[14%] pb-28 sm:pb-36"
+              ? "items-end justify-end text-right px-8 sm:px-16 lg:px-[14%] pb-24 sm:pb-32"
+              : "items-start justify-end text-left px-8 sm:px-16 lg:px-[14%] pb-24 sm:pb-32"
         }`}
       >
         {/* Label */}
         {chapter.label && (
           <motion.p
-            className="font-mono text-[9px] uppercase tracking-[0.6em] mb-6"
+            className="font-mono text-[9px] uppercase tracking-[0.6em] mb-5"
             style={{ color: isHero ? "rgba(255,255,255,0.25)" : chapter.accent }}
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -409,7 +482,7 @@ function ImageSection({
         )}
 
         {/* Title */}
-        <div className={`mb-8 ${isHero ? "" : "max-w-3xl"}`}>
+        <div className={`mb-6 ${isHero ? "" : "max-w-3xl"}`}>
           {chapter.lines.map((line, i) => (
             <div key={i} className="overflow-hidden">
               <RevealWords
@@ -417,8 +490,8 @@ function ImageSection({
                 delay={0.15 + i * 0.1}
                 className={`block font-display font-medium leading-[1.05] tracking-tight text-white ${
                   isHero
-                    ? "text-[clamp(3rem,9vw,8rem)]"
-                    : "text-[clamp(1.5rem,4vw,3.2rem)]"
+                    ? "text-[clamp(2.5rem,8vw,7rem)]"
+                    : "text-[clamp(1.4rem,3.5vw,3rem)]"
                 }`}
               />
             </div>
@@ -428,11 +501,11 @@ function ImageSection({
         {/* Subtitle */}
         {chapter.sub && (
           <motion.p
-            className={`font-display italic leading-relaxed max-w-md mb-8 ${
-              isHero ? "text-base sm:text-lg text-white/35" : "text-sm sm:text-base"
+            className={`font-display italic max-w-md mb-6 ${
+              isHero ? "text-sm sm:text-base text-white/35" : "text-sm"
             }`}
-            style={!isHero ? { color: chapter.accent, opacity: 0.55 } : undefined}
-            initial={{ opacity: 0, y: 20 }}
+            style={!isHero ? { color: chapter.accent, opacity: 0.5 } : undefined}
+            initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.5 }}
@@ -441,17 +514,28 @@ function ImageSection({
           </motion.p>
         )}
 
-        {/* Terminal body */}
+        {/* Terminal */}
         {chapter.terminal && (
-          <div className={`max-w-lg mt-2 ${chapter.layout === "right" ? "text-left" : ""}`}>
+          <div className={`max-w-md mt-1 ${chapter.layout === "right" ? "text-left" : ""}`}>
             {chapter.terminal.map((line, i) => (
-              <TerminalLine
+              <motion.div
                 key={i}
-                text={line}
-                delay={0.6 + i * 0.15}
-                prefix={i === 0 ? "$" : ">"}
-                accent={chapter.accent}
-              />
+                className="font-mono text-[11px] sm:text-[13px] leading-relaxed mb-1"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: 0.6 + i * 0.12 }}
+              >
+                <span style={{ color: chapter.accent, opacity: 0.4 }}>
+                  {i === 0 ? "$ " : "> "}
+                </span>
+                <Typewriter
+                  text={line}
+                  delay={0.7 + i * 0.15}
+                  speed={15}
+                  className="text-white/40"
+                />
+              </motion.div>
             ))}
           </div>
         )}
@@ -459,7 +543,7 @@ function ImageSection({
         {/* Links */}
         {isContact && chapter.links && (
           <motion.div
-            className="flex gap-10 mt-10"
+            className="flex gap-8 sm:gap-12 mt-10"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -469,7 +553,7 @@ function ImageSection({
               <a
                 key={link.href}
                 href={link.href}
-                className="font-mono text-[11px] uppercase tracking-[0.15em] text-white/25 hover:text-white transition-colors duration-500"
+                className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.15em] text-white/25 hover:text-white transition-colors duration-500"
                 target={link.href.startsWith("http") ? "_blank" : undefined}
                 rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
               >
@@ -479,21 +563,21 @@ function ImageSection({
           </motion.div>
         )}
 
-        {/* Scroll indicator (hero only) */}
+        {/* Scroll indicator */}
         {isHero && (
           <motion.div
-            className="absolute bottom-14 left-1/2 -translate-x-1/2"
+            className="absolute bottom-12 left-1/2 -translate-x-1/2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 3, duration: 1 }}
           >
             <motion.div
-              className="w-[1px] h-12 bg-white/15 mx-auto mb-3"
+              className="w-[1px] h-10 bg-white/12 mx-auto mb-2"
               animate={{ scaleY: [0, 1, 0] }}
               transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
               style={{ transformOrigin: "top" }}
             />
-            <p className="font-mono text-[8px] uppercase tracking-[0.5em] text-white/12">
+            <p className="font-mono text-[7px] uppercase tracking-[0.5em] text-white/10">
               Scroll
             </p>
           </motion.div>
@@ -503,26 +587,65 @@ function ImageSection({
   );
 }
 
+// ─── Chapter tracker ───────────────────────────────────
+function useChapterTracker() {
+  const [current, setCurrent] = useState("hero");
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
+            const id = entry.target.getAttribute("data-chapter");
+            if (id) setCurrent(id);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    document.querySelectorAll("[data-chapter]").forEach((el) => {
+      observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return current;
+}
+
 // ─── Main ──────────────────────────────────────────────
 export default function Home() {
   const [loaded, setLoaded] = useState(false);
+  const currentChapter = useChapterTracker();
   useLenis();
+
+  const visualChapters = chapters.filter((c) => c.type === "visual");
+  const chapterLabel = visualChapters.find((c) => c.id === currentChapter)?.label || "";
 
   return (
     <>
       <AnimatePresence>
         {!loaded && <Preloader onComplete={() => setLoaded(true)} />}
       </AnimatePresence>
+      <CustomCursor />
       <Scanlines />
-      <main className="bg-[#0a0a0a]">
+      {loaded && <Nav currentChapter={chapterLabel} />}
+
+      <main className="bg-[#0a0a0a] cursor-none lg:cursor-none">
         {chapters.map((chapter, i) => (
-          <div key={chapter.id}>
-            {/* Video transition between chapters */}
-            {chapter.transition && (
+          <div key={chapter.id} data-chapter={chapter.id}>
+            {/* Video transition before visual sections */}
+            {chapter.type === "visual" && chapter.transition && (
               <VideoTransition src={chapter.transition} />
             )}
-            {/* Chapter section */}
-            <ImageSection chapter={chapter} index={i} />
+
+            {/* Section */}
+            {chapter.type === "visual" ? (
+              <VisualSection chapter={chapter} index={i} />
+            ) : (
+              <Interstitial chapter={chapter} />
+            )}
           </div>
         ))}
       </main>
