@@ -185,7 +185,7 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
 }
 
 // ─── Frame sequence data ─────────────────────────────────
-// Each transition has 40 JPEG frames extracted at 10fps
+// Transition frames: 40 JPEG frames at 10fps
 const FRAME_COUNT = 40;
 const transitions: Record<string, string> = {
   "hero-origin": "/frames/hero-origin",
@@ -194,6 +194,13 @@ const transitions: Record<string, string> = {
   "corporate-convergence": "/frames/corporate-convergence",
   "convergence-culture": "/frames/convergence-culture",
   "culture-contact": "/frames/culture-contact",
+};
+
+// Ambient loop frames: 50 JPEG frames at 10fps (Kling 3.0 generated)
+const LOOP_FRAME_COUNT = 50;
+const ambientLoops: Record<number, string> = {
+  0: "/frames/hero-loop",    // hero scene
+  6: "/frames/contact-loop", // contact scene
 };
 
 function getFramePath(transition: string, frameIndex: number): string {
@@ -353,6 +360,65 @@ const sections = [
   },
 ];
 
+// ─── Ambient loop playback hook ──────────────────────────
+function useAmbientLoop(activeScene: number) {
+  const frameRef = useRef(1);
+  const rafRef = useRef<number>(0);
+  const lastTimeRef = useRef(0);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const cacheRef = useRef<Map<string, HTMLImageElement>>(new Map());
+  const loopPath = ambientLoops[activeScene];
+
+  useEffect(() => {
+    if (!loopPath) return;
+
+    // Preload all loop frames
+    for (let i = 1; i <= LOOP_FRAME_COUNT; i++) {
+      const src = `${loopPath}/frame_${String(i).padStart(3, "0")}.jpg`;
+      if (!cacheRef.current.has(src)) {
+        const img = new Image();
+        img.src = src;
+        cacheRef.current.set(src, img);
+      }
+    }
+
+    const fps = 10;
+    const interval = 1000 / fps;
+
+    function tick(time: number) {
+      if (time - lastTimeRef.current >= interval) {
+        lastTimeRef.current = time;
+        frameRef.current = (frameRef.current % LOOP_FRAME_COUNT) + 1;
+        const src = `${loopPath}/frame_${String(frameRef.current).padStart(3, "0")}.jpg`;
+        const img = cacheRef.current.get(src);
+        if (img?.complete) drawToCanvas(canvasRef.current, img);
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    }
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [loopPath]);
+
+  return canvasRef;
+}
+
+function drawToCanvas(canvas: HTMLCanvasElement | null, img: HTMLImageElement) {
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  const scale = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+  const w = img.naturalWidth * scale;
+  const h = img.naturalHeight * scale;
+  ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+}
+
 // ─── Fixed background with frame-sequence transitions ────
 function FixedBackground({
   activeScene,
@@ -361,10 +427,11 @@ function FixedBackground({
   activeScene: number;
   progress: number;
 }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const transitionCanvasRef = useRef<HTMLCanvasElement>(null);
   const frameCache = useRef<Map<string, HTMLImageElement>>(new Map());
+  const ambientCanvasRef = useAmbientLoop(activeScene);
 
-  // Draw current frame to canvas
+  // Draw transition frame to canvas
   useEffect(() => {
     const scene = scenes[activeScene];
     if (!scene?.transition) return;
@@ -377,37 +444,19 @@ function FixedBackground({
 
     const cached = frameCache.current.get(src);
     if (cached?.complete) {
-      drawToCanvas(cached);
+      drawToCanvas(transitionCanvasRef.current, cached);
     } else {
       const img = new Image();
       img.onload = () => {
         frameCache.current.set(src, img);
-        drawToCanvas(img);
+        drawToCanvas(transitionCanvasRef.current, img);
       };
       img.src = src;
     }
   }, [activeScene, progress]);
 
-  function drawToCanvas(img: HTMLImageElement) {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-
-    // Cover-fit the image
-    const scale = Math.max(
-      canvas.width / img.naturalWidth,
-      canvas.height / img.naturalHeight
-    );
-    const w = img.naturalWidth * scale;
-    const h = img.naturalHeight * scale;
-    ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
-  }
+  const hasAmbientLoop = activeScene in ambientLoops;
+  const showTransition = scenes[activeScene]?.transition && progress < 0.5;
 
   return (
     <div className="fixed inset-0 z-0">
@@ -415,7 +464,6 @@ function FixedBackground({
       {scenes.map((scene, i) => {
         const isActive = i === activeScene;
         const isPrev = i === activeScene - 1;
-        const showTransition = isActive && scene.transition && progress < 0.5;
         const showImage = isActive && (progress >= 0.3 || !scene.transition);
         const showPrevImage = isPrev && progress < 0.3;
 
@@ -433,21 +481,31 @@ function FixedBackground({
         );
       })}
 
-      {/* Frame-sequence canvas for transitions */}
+      {/* Ambient loop canvas (hero/contact Kling animations) */}
       <canvas
-        ref={canvasRef}
+        ref={ambientCanvasRef}
         className="absolute inset-0 w-full h-full"
         style={{
-          opacity:
-            scenes[activeScene]?.transition && progress < 0.5 ? 1 : 0,
-          zIndex: 2,
+          opacity: hasAmbientLoop && !showTransition ? 1 : 0,
+          zIndex: 3,
+          transition: "opacity 1s cubic-bezier(0.32,0.72,0,1)",
+        }}
+      />
+
+      {/* Transition frame-sequence canvas */}
+      <canvas
+        ref={transitionCanvasRef}
+        className="absolute inset-0 w-full h-full"
+        style={{
+          opacity: showTransition ? 1 : 0,
+          zIndex: 4,
           transition: "opacity 0.5s cubic-bezier(0.32,0.72,0,1)",
         }}
       />
 
       {/* Gradient overlay for text contrast */}
       <div
-        className="absolute inset-0 z-[4]"
+        className="absolute inset-0 z-[5]"
         style={{
           background:
             "linear-gradient(to bottom, rgba(9,9,11,0.45) 0%, rgba(9,9,11,0.35) 40%, rgba(9,9,11,0.45) 65%, rgba(9,9,11,0.7) 100%)",
