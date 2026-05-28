@@ -130,7 +130,7 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
 }
 
 // ─── Frame data ─────────────────────────────────────────
-const FRAME_COUNT = 40;
+const FRAME_COUNT = 50;
 const transitions: Record<string, string> = {
   "hero-origin": "/frames/hero-origin",
   "origin-builder": "/frames/origin-builder",
