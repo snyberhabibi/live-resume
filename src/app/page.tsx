@@ -176,7 +176,7 @@ const scenes = [
   { id: "builder", image: "/visuals/builder.jpg", transition: "origin-builder" },
   { id: "corporate", image: "/visuals/corporate.jpg", transition: "builder-corporate" },
   { id: "convergence", image: "/visuals/convergence.jpg", transition: "corporate-convergence" },
-  { id: "contact", image: "/visuals/hero.jpg", transition: "convergence-culture" },
+  { id: "contact", image: "/visuals/hero.jpg", transition: null },
 ];
 
 // ─── Content sections ───────────────────────────────────
