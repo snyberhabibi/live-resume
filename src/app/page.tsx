@@ -219,18 +219,18 @@ const sections = [
     label: "THE BUILDER",
     lines: ["Some still stand.", "Some returned to dust."],
     terminal: [
-      "age 8  :: Glue Bookmarks",
-      "2017   :: Al-Kuffiyeh Group                              \u{1F7E2}",
-      "2017   :: Arab Student Association                       \u{1F7E2}",
-      "2017   :: YusufStudios (25K followers, 50M views)        \u{1F534}",
-      "2018   :: KASTEA                                         \u{1F534}",
-      "2020   :: Frui2ee (Animated Fruit E-Commerce)            \u{1F534}",
-      "2021   :: TRIPPY (Group Travel Payment Splitting)        \u{1F534}",
-      "2022   :: Custom Made Easy (Custom Clothing Mfg)         \u{1F534}",
-      "2023   :: FLUX Pickleball (E-Commerce)                   \u{1F534}",
-      "2024   :: Dabka Academy (In-Person Classes)              \u{1F7E2}",
-      "2025   :: Yalla Bites                                    \u{1F7E2}",
-    ],
+      { text: "age 8  :: Glue Bookmarks", status: "red" },
+      { text: "2017   :: Al-Kuffiyeh Group", status: "green" },
+      { text: "2017   :: Arab Student Association", status: "green" },
+      { text: "2017   :: YusufStudios (25K, 50M views)", status: "red" },
+      { text: "2018   :: KASTEA", status: "red" },
+      { text: "2020   :: Frui2ee (Animated E-Commerce)", status: "red" },
+      { text: "2021   :: TRIPPY (Group Travel Payments)", status: "red" },
+      { text: "2022   :: Custom Made Easy (Clothing Mfg)", status: "red" },
+      { text: "2023   :: FLUX Pickleball (E-Commerce)", status: "red" },
+      { text: "2024   :: Dabka Academy (In-Person)", status: "green" },
+      { text: "2025   :: Yalla Bites", status: "green" },
+    ] as { text: string; status: string }[],
     accent: "#e8a838",
     layout: "left" as const,
     height: "100dvh",
@@ -470,15 +470,23 @@ function ContentSection({ section, index }: { section: (typeof sections)[number]
           </motion.p>
         )}
         {section.terminal && (
-          <div className="max-w-lg mt-3 text-readable-subtle">
-            {section.terminal.map((line, i) => (
-              <motion.div key={i} className="font-mono text-[11px] sm:text-[13px] leading-relaxed mb-1"
-                initial={{ opacity: 0, x: -8 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
-                transition={{ ...SPRING_SNAPPY, delay: 0.6 + i * 0.1 }}>
-                <span style={{ color: section.accent, opacity: 0.6 }}>{i === 0 ? "$ " : "> "}</span>
-                <Typewriter text={line} delay={0.7 + i * 0.15} className="text-white/60" />
-              </motion.div>
-            ))}
+          <div className="max-w-2xl mt-3 text-readable-subtle">
+            {section.terminal.map((item, i) => {
+              const isObj = typeof item === "object" && item !== null;
+              const text = isObj ? (item as { text: string }).text : (item as string);
+              const status = isObj ? (item as { status: string }).status : null;
+              return (
+                <motion.div key={i} className="font-mono text-[10px] sm:text-[12px] leading-relaxed mb-0.5 flex items-center gap-2"
+                  initial={{ opacity: 0, x: -8 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+                  transition={{ ...SPRING_SNAPPY, delay: 0.6 + i * 0.08 }}>
+                  <span className="shrink-0" style={{ color: section.accent, opacity: 0.6 }}>{i === 0 ? "$ " : "> "}</span>
+                  <Typewriter text={text} delay={0.7 + i * 0.12} className="text-white/60 whitespace-nowrap" />
+                  {status && (
+                    <span className={`shrink-0 w-1.5 h-1.5 rounded-full animate-pulse ${status === "green" ? "bg-emerald-400" : "bg-red-400"}`} />
+                  )}
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </div>
