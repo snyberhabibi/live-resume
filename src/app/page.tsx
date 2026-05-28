@@ -121,6 +121,10 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ ...SPRING, delay: 0.6 }}>
           Yusuf Abdel-Rahman
         </motion.div>
+        <motion.div className="font-mono text-[8px] uppercase tracking-[0.5em] text-white/20 mt-3"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 1.2 }}>
+          Builder
+        </motion.div>
         <motion.div className="w-20 h-[1px] bg-white/10 mx-auto mt-5 origin-left"
           initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
           transition={{ duration: 1.5, delay: 0.5, ease: [0.32, 0.72, 0, 1] }} />
@@ -181,7 +185,7 @@ const scenes = [
 const sections = [
   {
     sceneIndex: 0,
-    label: "QATAR",
+    label: "BUILDER",
     lines: ["Yusuf", "Abdel-Rahman"],
     sub: "Everything reduces to dust. Everything can be rebuilt.",
     accent: "#e8a838",
@@ -193,9 +197,10 @@ const sections = [
     label: "THE ORIGIN",
     lines: ["Gaza. Kuwait.", "New York. Dallas.", "Qatar."],
     terminal: [
+      "a product of diaspora",
       "grandparents fled post-Nakba Palestine",
-      "parents earned a scholarship to New York",
-      "mom sold shawarma outside the mosque",
+      "parents earned a scholarship to New York days before the Gulf War",
+      "mom sold shawarma outside the mosque to make ends meet",
     ],
     sub: "That was the first seed.",
     accent: "#e8a838",
@@ -215,13 +220,19 @@ const sections = [
     label: "THE BUILDER",
     lines: ["Some still stand.", "Some returned to dust."],
     terminal: [
-      "age_8  :: Glue Bookmarks",
-      "2017   :: Al-Kuffiyeh Group",
-      "2018   :: KASTEA",
-      "2024   :: Dabka Academy",
-      "2025   :: Yalla Bites",
+      "age 8  :: Glue Bookmarks",
+      "2017   :: Al-Kuffiyeh Group                              \u{1F7E2}",
+      "2017   :: Arab Student Association                       \u{1F7E2}",
+      "2017   :: YusufStudios (25K followers, 50M views)        \u{1F534}",
+      "2018   :: KASTEA                                         \u{1F534}",
+      "2020   :: Frui2ee (Animated Fruit E-Commerce)            \u{1F534}",
+      "2021   :: TRIPPY (Group Travel Payment Splitting)        \u{1F534}",
+      "2022   :: Custom Made Easy (Custom Clothing Mfg)         \u{1F534}",
+      "2023   :: FLUX Pickleball (E-Commerce)                   \u{1F534}",
+      "2024   :: Dabka Academy (In-Person Classes)              \u{1F7E2}",
+      "2025   :: Yalla Bites                                    \u{1F7E2}",
     ],
-    accent: "#d4763c",
+    accent: "#e8a838",
     layout: "left" as const,
     height: "100dvh",
   },
@@ -230,11 +241,12 @@ const sections = [
     label: "THE CORPORATE BRIDGE",
     lines: ["Monoliths I walked through."],
     terminal: [
-      "JPMC  :: SRE            2020-2022",
-      "Cisco :: Sr. Sales Eng  2022-2023",
-      "Hashi :: Sales Eng      2023-now",
+      "JPMorgan Chase :: SRE                  2020-2022",
+      "Cisco          :: Sr. Sales Engineer   2022-2023",
+      "IBM            :: Sales Engineer       2023-2024",
+      "HashiCorp      :: Sales Engineer       2024-now",
     ],
-    accent: "#64748b",
+    accent: "#94a3b8",
     layout: "left" as const,
     height: "100dvh",
   },
@@ -251,10 +263,10 @@ const sections = [
   {
     sceneIndex: 5,
     label: "THE CULTURE",
-    lines: ["The part nobody guesses", "from my LinkedIn."],
+    lines: ["500+ weddings.", "100+ students.", "One community."],
     terminal: [
-      "500+ weddings :: Al-Kuffiyeh Group",
-      "Dabka Academy :: 100+ students",
+      "Al-Kuffiyeh Group :: Palestinian dance troupe",
+      "Dabka Academy     :: teaching the next generation",
     ],
     accent: "#e63946",
     layout: "left" as const,
@@ -271,14 +283,13 @@ const sections = [
   {
     sceneIndex: 6,
     lines: ["Let's build."],
-    sub: "yusuf@aai.agency",
+    sub: "yusuf@yallabites.com",
     accent: "#e8a838",
     layout: "center" as const,
     height: "100dvh",
     links: [
-      { text: "Email", href: "mailto:yusuf@aai.agency" },
-      { text: "GitHub", href: "https://github.com/snyberhabibi" },
-      { text: "LinkedIn", href: "https://linkedin.com/in/yusufrahman" },
+      { text: "Email", href: "mailto:yusuf@yallabites.com" },
+      { text: "LinkedIn", href: "https://www.linkedin.com/in/yusufarahman/" },
     ],
   },
 ];
