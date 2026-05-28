@@ -207,14 +207,6 @@ const sections = [
     height: "100dvh",
   },
   {
-    sceneIndex: -1,
-    lines: ["The origin of homemade food", "that bloomed into Yalla Bites."],
-    accent: "#e8a838",
-    layout: "center" as const,
-    height: "60dvh",
-    interstitial: true,
-  },
-  {
     sceneIndex: 2,
     label: "THE BUILDER",
     lines: ["Some still stand.", "Some returned to dust."],
@@ -382,22 +374,6 @@ function ContentSection({ section, index }: { section: (typeof sections)[number]
   const isHero = index === 0;
   const isContact = section.links !== undefined;
 
-  // Interstitial — centered italic bridge text
-  if (section.interstitial) {
-    return (
-      <section className="relative z-10 flex items-center justify-center px-6 sm:px-16" style={{ minHeight: section.height }}>
-        <div className="text-center max-w-xl text-readable-subtle">
-          {section.lines.map((line, i) => (
-            <div key={i} className="overflow-hidden">
-              <RevealWords text={line} delay={0.1 + i * 0.1}
-                className="block font-display italic text-[clamp(1.1rem,2.5vw,1.8rem)] leading-[1.4] tracking-tight text-white/80" />
-            </div>
-          ))}
-        </div>
-      </section>
-    );
-  }
-
   // Hero + Contact — large centered text
   if (section.layout === "center") {
     return (
@@ -507,7 +483,7 @@ export default function Home() {
   const { scrollYProgress } = useScroll({ target: containerRef });
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
-    const heights = sections.map((s) => s.height === "60dvh" ? 0.6 : 1);
+    const heights = sections.map(() => 1);
     const totalHeight = heights.reduce((a, b) => a + b, 0);
     const scrollPos = v * totalHeight;
 
