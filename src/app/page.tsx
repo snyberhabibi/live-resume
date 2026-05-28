@@ -508,7 +508,7 @@ function FixedBackground({
         className="absolute inset-0 z-[5]"
         style={{
           background:
-            "linear-gradient(to bottom, rgba(9,9,11,0.45) 0%, rgba(9,9,11,0.35) 40%, rgba(9,9,11,0.45) 65%, rgba(9,9,11,0.7) 100%)",
+            "linear-gradient(to bottom, rgba(9,9,11,0.5) 0%, rgba(9,9,11,0.4) 35%, rgba(9,9,11,0.5) 60%, rgba(9,9,11,0.75) 100%)",
         }}
       />
     </div>
@@ -557,13 +557,13 @@ function ContentSection({
         className="relative z-10 flex items-center justify-center px-10 sm:px-24"
         style={{ minHeight: section.height }}
       >
-        <div className="text-center max-w-2xl">
+        <div className="text-center max-w-2xl text-readable-subtle">
           {section.lines.map((line, i) => (
             <div key={i} className="overflow-hidden">
               <RevealWords
                 text={line}
                 delay={0.1 + i * 0.1}
-                className="block font-display italic text-[clamp(1.2rem,3vw,2.2rem)] leading-[1.3] tracking-tight text-white/60"
+                className="block font-display italic text-[clamp(1.2rem,3vw,2.2rem)] leading-[1.3] tracking-tight text-white/80"
               />
             </div>
           ))}
@@ -588,10 +588,9 @@ function ContentSection({
       >
         {section.label && (
           <motion.p
-            className="font-mono text-[9px] uppercase tracking-[0.5em] mb-5"
+            className="font-mono text-[10px] uppercase tracking-[0.5em] mb-5 text-readable-subtle"
             style={{
-              color: isHero ? "rgba(255,255,255,0.2)" : section.accent,
-              opacity: isHero ? 1 : 0.7,
+              color: isHero ? "rgba(255,255,255,0.4)" : section.accent,
             }}
             initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -602,16 +601,16 @@ function ContentSection({
           </motion.p>
         )}
 
-        <div className={`mb-6 ${isHero ? "" : "max-w-3xl"}`}>
+        <div className={`mb-6 text-readable ${isHero ? "" : "max-w-3xl"}`}>
           {section.lines.map((line, i) => (
             <div key={i} className="overflow-hidden">
               <RevealWords
                 text={line}
                 delay={0.15 + i * 0.1}
-                className={`block font-display font-medium leading-[1.05] tracking-tighter text-white ${
+                className={`block font-display font-semibold leading-[1.05] tracking-tighter text-white ${
                   isHero
-                    ? "text-[clamp(2.8rem,9vw,7.5rem)]"
-                    : "text-[clamp(1.5rem,4vw,3.2rem)]"
+                    ? "text-[clamp(3rem,9vw,7.5rem)]"
+                    : "text-[clamp(1.6rem,4vw,3.4rem)]"
                 }`}
               />
             </div>
@@ -620,13 +619,13 @@ function ContentSection({
 
         {section.sub && (
           <motion.p
-            className={`font-display italic max-w-md mb-6 ${
+            className={`font-display italic max-w-md mb-6 text-readable-subtle ${
               isHero
-                ? "text-sm sm:text-base text-white/30"
-                : "text-sm"
+                ? "text-base sm:text-lg text-white/60"
+                : "text-sm text-white/70"
             }`}
             style={
-              !isHero ? { color: section.accent, opacity: 0.45 } : undefined
+              !isHero ? { color: section.accent } : undefined
             }
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -639,7 +638,7 @@ function ContentSection({
 
         {section.terminal && (
           <div
-            className={`max-w-md mt-2 ${
+            className={`max-w-md mt-2 text-readable-subtle ${
               section.layout === "right" ? "text-left" : ""
             }`}
           >
@@ -652,13 +651,13 @@ function ContentSection({
                 viewport={{ once: true }}
                 transition={{ ...SPRING_SNAPPY, delay: 0.6 + i * 0.1 }}
               >
-                <span style={{ color: section.accent, opacity: 0.35 }}>
+                <span style={{ color: section.accent, opacity: 0.6 }}>
                   {i === 0 ? "$ " : "> "}
                 </span>
                 <Typewriter
                   text={line}
                   delay={0.7 + i * 0.15}
-                  className="text-white/35"
+                  className="text-white/60"
                 />
               </motion.div>
             ))}
@@ -667,7 +666,7 @@ function ContentSection({
 
         {isContact && section.links && (
           <motion.div
-            className="flex gap-10 sm:gap-14 mt-12"
+            className="flex gap-10 sm:gap-14 mt-12 text-readable-subtle"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -677,7 +676,7 @@ function ContentSection({
               <a
                 key={link.href}
                 href={link.href}
-                className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.15em] text-white/20 hover:text-white/80 transition-colors duration-700"
+                className="font-mono text-[10px] sm:text-[12px] uppercase tracking-[0.15em] text-white/50 hover:text-white transition-colors duration-700"
                 target={link.href.startsWith("http") ? "_blank" : undefined}
                 rel={
                   link.href.startsWith("http")
