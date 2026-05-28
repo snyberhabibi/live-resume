@@ -176,8 +176,7 @@ const scenes = [
   { id: "builder", image: "/visuals/builder.jpg", transition: "origin-builder" },
   { id: "corporate", image: "/visuals/corporate.jpg", transition: "builder-corporate" },
   { id: "convergence", image: "/visuals/convergence.jpg", transition: "corporate-convergence" },
-  { id: "culture", image: "/visuals/culture.jpg", transition: "convergence-culture" },
-  { id: "contact", image: "/visuals/hero.jpg", transition: null },
+  { id: "contact", image: "/visuals/hero.jpg", transition: "convergence-culture" },
 ];
 
 // ─── Content sections ───────────────────────────────────
@@ -262,26 +261,6 @@ const sections = [
   },
   {
     sceneIndex: 5,
-    label: "THE CULTURE",
-    lines: ["500+ weddings.", "100+ students.", "One community."],
-    terminal: [
-      "Al-Kuffiyeh Group :: Palestinian dance troupe",
-      "Dabka Academy     :: teaching the next generation",
-    ],
-    accent: "#e63946",
-    layout: "left" as const,
-    height: "100dvh",
-  },
-  {
-    sceneIndex: -1,
-    lines: ["I fell in love with community."],
-    accent: "#e63946",
-    layout: "center" as const,
-    height: "60dvh",
-    interstitial: true,
-  },
-  {
-    sceneIndex: 6,
     lines: ["Let's build."],
     sub: "yusuf@yallabites.com",
     accent: "#e8a838",
