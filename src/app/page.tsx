@@ -196,11 +196,10 @@ const transitions: Record<string, string> = {
   "culture-contact": "/frames/culture-contact",
 };
 
-// Ambient loop frames: 50 JPEG frames at 10fps (Kling 3.0 generated)
+// Ambient loop frames: 50 JPEG frames (Kling 3.0 generated)
 const LOOP_FRAME_COUNT = 50;
 const ambientLoops: Record<number, string> = {
-  0: "/frames/hero-loop",    // hero scene
-  6: "/frames/contact-loop", // contact scene
+  0: "/frames/hero-loop",    // hero scene — cinematic desert pan
 };
 
 function getFramePath(transition: string, frameIndex: number): string {
@@ -243,7 +242,7 @@ const scenes = [
   { id: "corporate", image: "/visuals/corporate.jpg", transition: "builder-corporate" },
   { id: "convergence", image: "/visuals/convergence.jpg", transition: "corporate-convergence" },
   { id: "culture", image: "/visuals/culture.jpg", transition: "convergence-culture" },
-  { id: "contact", image: "/visuals/contact.jpg", transition: "culture-contact" },
+  { id: "contact", image: "/visuals/hero.jpg", transition: null },
 ];
 
 // ─── Content sections ────────────────────────────────────
@@ -348,8 +347,8 @@ const sections = [
   {
     sceneIndex: 6,
     lines: ["Let's build."],
-    terminal: ["agent systems, community, wild ideas"],
-    accent: "#7ec8e3",
+    sub: "yusuf@aai.agency",
+    accent: "#e8a838",
     layout: "center" as const,
     height: "100dvh",
     links: [
@@ -382,7 +381,7 @@ function useAmbientLoop(activeScene: number) {
       }
     }
 
-    const fps = 10;
+    const fps = 24;
     const interval = 1000 / fps;
 
     function tick(time: number) {
@@ -608,7 +607,7 @@ function ContentSection({
                 text={line}
                 delay={0.15 + i * 0.1}
                 className={`block font-display font-semibold leading-[1.05] tracking-tighter text-white ${
-                  isHero
+                  isHero || isContact
                     ? "text-[clamp(3rem,9vw,7.5rem)]"
                     : "text-[clamp(1.6rem,4vw,3.4rem)]"
                 }`}
