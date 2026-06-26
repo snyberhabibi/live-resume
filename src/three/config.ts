@@ -92,9 +92,9 @@ export const CHAPTER_ACCENT_LIGHT: string[] = [
   "#2f6f8e", // 2 how I work - trust teal-blue
   "#2f7d7a", // 3 approach   - teal (clarity)
   "#44567f", // 4 experience - indigo slate
-  "#b07d2b", // 5 record     - bronze/gold (the 100% mark)
+  "#2f8f5f", // 5 record     - emerald (every number in the green)
   "#4a6076", // 6 toolbelt   - steel blue
-  "#355f9e", // 7 contact    - confident blue
+  "#1f9d55", // 7 contact    - go-green (the checkmark)
 ];
 
 // Dark theme accents - cooler, luminous (drive bloom/godrays).
@@ -104,9 +104,9 @@ export const CHAPTER_ACCENT: string[] = [
   "#6fb8d8", // 2 how I work - trust teal-blue
   "#4fd0c0", // 3 approach - cyan clarity
   "#9fb6cc", // 4 experience - cold steel
-  "#f4b14a", // 5 record - warm gold (achievement)
+  "#57c98a", // 5 record - emerald (every number in the green)
   "#a6b0f0", // 6 toolbelt - indigo
-  "#8fc0ff", // 7 contact - sky blue
+  "#34c759", // 7 contact - iOS go-green (the checkmark)
 ];
 
 // ─── Sky top/horizon per section ─────────────────────────────────────────────
@@ -164,8 +164,9 @@ export const CAM_KEYS_MOBILE: CamKey[] = [
 export const CHAPTER_COUNT = CAM_KEYS.length;
 
 // Sections where the particle graphic should fade away to a clean background
-// (so personal content isn't fighting a distracting dot field). Index 1 = about.
-export const MINIMAL_GRAPHIC_SECTIONS = new Set<number>([1]);
+// (so dense, text-heavy content isn't fighting a distracting dot field).
+//   1 = about (personal beat)   2 = how I work (strengths + growth read clean)
+export const MINIMAL_GRAPHIC_SECTIONS = new Set<number>([1, 2]);
 
 // Morph timing.
 export const MORPH_DURATION = 1.25; // seconds for a dissolve→reform (snappy)

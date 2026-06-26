@@ -275,23 +275,21 @@ function TerminalRole({ role, accent, delay }: { role: RoleEntry; accent: string
 // ─── the record (stats) ───────────────────────────────────────────────────────
 function Stats({ stats, accent }: { stats: { value: string; label: string }[]; accent: string }) {
   return (
-    <div className="mx-auto mt-10 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-4">
+    <div className="mx-auto mt-10 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
       {stats.map((s, i) => (
         <motion.div
           key={i}
-          className="text-center"
+          className="rounded-2xl border border-[var(--fg)]/12 bg-[rgb(var(--scrim))]/80 px-4 py-5 text-center shadow-[0_16px_44px_-20px_rgba(0,0,0,0.45)] backdrop-blur-md"
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ ...SPRING, delay: 0.4 + i * 0.1 }}
         >
-          <div
-            className="font-display text-[clamp(2rem,5vw,3.2rem)] font-bold leading-none text-readable"
-            style={{ color: accent }}
-          >
+          <div className="font-display text-[clamp(1.9rem,4.8vw,2.9rem)] font-bold leading-none text-[var(--fg)]">
             {s.value}
           </div>
-          <div className="mx-auto mt-2 max-w-[10rem] text-[11px] leading-snug text-[var(--fg)]/75 sm:text-[12px]">
+          <div className="mx-auto mt-2.5 h-0.5 w-7 rounded-full" style={{ background: accent }} />
+          <div className="mx-auto mt-2.5 max-w-[11rem] text-[11px] leading-snug text-[var(--fg)]/70 sm:text-[12px]">
             {s.label}
           </div>
         </motion.div>
@@ -345,7 +343,74 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
   const accent = light ? CHAPTER_ACCENT_LIGHT[index] : CHAPTER_ACCENT[index];
   const isHero = index === 0;
 
-  // ── CENTER sections: hero, approach, record, contact ──
+  // ── HERO: face → name → role → cycling hats line, then the morphing glyph
+  //    shows through below it, then the welcoming line at the very bottom ──
+  if (isHero) {
+    return (
+      <section
+        id={`chapter-${chapter.id}`}
+        aria-label={chapter.nav}
+        tabIndex={-1}
+        className="relative flex min-h-[100svh] flex-col items-center justify-between overflow-hidden px-6 py-[7vh] text-center outline-none sm:px-12 sm:py-[8vh]"
+      >
+        {/* legibility washes: top behind the title, bottom behind the closing line */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-[46%] bg-gradient-to-b from-[rgb(var(--scrim))]/90 via-[rgb(var(--scrim))]/40 to-transparent"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[26%] bg-gradient-to-t from-[rgb(var(--scrim))]/88 to-transparent"
+        />
+
+        {/* TOP: photo → name → role → the cycling "many hats" line */}
+        <div className="relative z-[1] flex w-full max-w-4xl flex-col items-center">
+          {chapter.portrait && (
+            <motion.img
+              src={chapter.portrait}
+              alt="Yusuf Rahman"
+              width={104}
+              height={104}
+              className="mb-5 h-20 w-20 rounded-full object-cover shadow-xl ring-1 ring-[var(--fg)]/25 sm:h-24 sm:w-24"
+              style={{ objectPosition: "center 22%" }}
+              initial={{ opacity: 0, scale: 0.92, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ ...SPRING, delay: 0.15 }}
+            />
+          )}
+          {chapter.eyebrow && <Eyebrow label={chapter.eyebrow} accent={accent} />}
+          <Headline lines={chapter.lines} isHero center />
+          {chapter.role && (
+            <motion.p
+              className="mt-2 font-mono text-[12px] uppercase tracking-[0.4em] text-[var(--fg)]/70 text-readable-subtle sm:text-[13px]"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...SPRING, delay: 0.5 }}
+            >
+              {chapter.role}
+            </motion.p>
+          )}
+          {chapter.hats && <ManyHats hats={chapter.hats} accent={accent} />}
+        </div>
+
+        {/* MIDDLE: the morphing "many hats" glyph renders here (3D canvas behind) */}
+
+        {/* BOTTOM: the welcoming line */}
+        {chapter.sub && (
+          <motion.p
+            className="relative z-[1] mx-auto max-w-sm text-balance font-display text-[15px] text-[var(--fg)]/85 text-readable sm:max-w-xl sm:text-lg"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...SPRING, delay: 1.0 }}
+          >
+            {chapter.sub}
+          </motion.p>
+        )}
+      </section>
+    );
+  }
+
+  // ── CENTER sections: approach, record, contact ──
   if (chapter.kind === "center") {
     const isContact = chapter.id === "contact";
     return (
@@ -354,15 +419,12 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
         aria-label={chapter.nav}
         tabIndex={-1}
         className={`relative flex min-h-[100svh] justify-center overflow-hidden px-6 outline-none sm:px-12 ${
-          isContact ? "items-end pb-[8vh]" : isHero ? "items-end pb-[9vh] sm:pb-[11vh]" : "items-center"
+          isContact ? "items-end pb-[8vh]" : "items-center"
         }`}
       >
-        {/* hero + contact: the title sits low; a bottom scrim lifts it off the form.
-            the morphing "many hats" glyph owns the clear upper half. */}
-        {(isContact || isHero) && (
-          <div aria-hidden className={`${SCRIM} ${isHero ? "h-[62%]" : "h-[58%]"}`} />
-        )}
-        {!isContact && !isHero && (
+        {/* contact: the title sits low; a bottom scrim lifts it off the form */}
+        {isContact && <div aria-hidden className={`${SCRIM} h-[58%]`} />}
+        {!isContact && (
           // soft paper halo lifts the centered text/code off the dark ink form
           <div
             aria-hidden
@@ -374,50 +436,11 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
           />
         )}
         <div className="relative z-[1] max-w-4xl text-center">
-          {/* hero lead: the morphing "many hats" glyph rides above; the portrait
-              sits between "Hi, I'm" and the name as a human anchor */}
           {chapter.eyebrow && <Eyebrow label={chapter.eyebrow} accent={accent} />}
-          {isHero && chapter.portrait && (
-            <motion.img
-              src={chapter.portrait}
-              alt="Yusuf Rahman"
-              width={88}
-              height={88}
-              className="mx-auto mb-4 mt-1 h-16 w-16 rounded-full object-cover shadow-lg ring-1 ring-[var(--fg)]/25 sm:h-20 sm:w-20"
-              style={{ objectPosition: "center 22%" }}
-              initial={{ opacity: 0, scale: 0.92, y: 8 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ ...SPRING, delay: 0.3 }}
-            />
-          )}
-          <Headline lines={chapter.lines} isHero={isHero} center />
-
-          {isHero && chapter.role && (
-            <motion.p
-              className="mt-3 font-mono text-[12px] uppercase tracking-[0.4em] text-[var(--fg)]/70 text-readable-subtle sm:text-[13px]"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...SPRING, delay: 0.5 }}
-            >
-              {chapter.role}
-            </motion.p>
-          )}
-
-          {isHero && chapter.hats && <ManyHats hats={chapter.hats} accent={accent} />}
-
-          {isHero && chapter.sub && (
-            <motion.p
-              className="mx-auto mt-5 max-w-sm text-balance font-display text-[15px] text-[var(--fg)]/85 text-readable sm:max-w-xl sm:text-lg"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...SPRING, delay: 0.95 }}
-            >
-              {chapter.sub}
-            </motion.p>
-          )}
+          <Headline lines={chapter.lines} isHero={false} center />
 
           {/* sub line - for non-hero centers shows directly under the headline */}
-          {chapter.sub && !isHero && (
+          {chapter.sub && (
             <motion.p
               className={`mx-auto max-w-lg font-display text-readable ${
                 isContact ? "text-base sm:text-xl" : "text-base italic sm:text-lg"
