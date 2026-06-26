@@ -1,8 +1,8 @@
 // =============================================================================
 //  Content: the resume itself. A Solutions Engineer's story in eight beats,
 //  ordered "person first, then proof". One throughline end to end: I make
-//  complex technology simple for the people deciding to buy it, and I win on
-//  trust. Strictly professional; the words a hiring manager reads.
+//  complex technology and concepts simple to understand, prove their value,
+//  and win on trust. Strictly professional; the words a hiring manager reads.
 // =============================================================================
 
 export interface RoleEntry {
@@ -59,7 +59,7 @@ export const CHAPTERS: Chapter[] = [
     role: "Solutions Engineer · Dallas, TX",
     hats: ["Solutions Engineer", "Father", "Performer", "Community builder", "Tinkerer", "Problem solver"],
     portrait: "/portrait.jpg",
-    sub: "I make complex technology simple for the people deciding whether to buy it. Scroll down and I'll introduce myself.",
+    sub: "I make complex technology and concepts simple to understand, and demonstrate the value they deliver. Scroll down and I'll introduce myself.",
   },
 
   // 1  WHO I AM (person first)
@@ -77,7 +77,7 @@ export const CHAPTERS: Chapter[] = [
       caption: "Teaching Middle Eastern folklore dance to a room of students",
     },
     persona: [
-      "I'm a father to Talia, one year old, and the reason behind everything I do.",
+      "I'm a proud husband, and a proud father to Talia, my one-year-old daughter, who makes every day brighter.",
       "I'm a performer of Middle Eastern folklore dance at weddings, going on 10+ years.",
       "I'm a community guy who loves supporting local and meeting new people.",
       "I'm a builder, always tinkering with new tech and AI tools.",

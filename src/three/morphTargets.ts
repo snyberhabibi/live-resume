@@ -7,12 +7,12 @@
 //  Order is person-first (matches CHAPTERS / the config arrays):
 //   0 hero       cycles through "many hats" glyphs - who Yusuf is
 //   1 about      a constellation (FADED OUT)  - the personal beat stays clean
-//   2 how I work an upward arrow              - direction, growth, revenue
+//   2 how I work an upward arrow (FADED OUT)  - text reads clean, no distraction
 //   3 approach   a converging funnel          - complexity narrowed to a point
 //   4 experience four ascending tower frames  - JPMorgan · Cisco · HashiCorp · IBM
 //   5 record     a rising performance graph   - never below the 100% baseline
 //   6 toolbelt   a 4×4×4 lattice cube         - the structured toolkit
-//   7 contact    a hub-and-spoke network      - let's connect
+//   7 contact    a green check in a rounded box - let's connect
 //
 //  RGBA-packed (xyz = position, w = 1) for a FloatType DataTexture, count = SIZE².
 // ───────────────────────────────────────────────────────────────────────────
@@ -233,34 +233,7 @@ function buildLattice(count: number, seed: number): Float32Array {
   return arr;
 }
 
-// ─── 5 - contact: a hub-and-spoke network (let's connect) ────────────────────
-function hub(): Graph {
-  const nodes: Vec3[] = [];
-  const edges: Edge[] = [];
-  const cy = 6.0;
-  const center = nodes.length;
-  nodes.push([0, cy, 0]);
-  const OUT = 8;
-  const rr = R * 0.8;
-  const tilt = 0.3;
-  const c = Math.cos(tilt);
-  const s = Math.sin(tilt);
-  const outer: number[] = [];
-  for (let i = 0; i < OUT; i++) {
-    const a = (i / OUT) * TAU;
-    const px = Math.cos(a) * rr;
-    const py = Math.sin(a) * rr;
-    const idx = nodes.length;
-    nodes.push([px, py * c + cy, py * s]); // tilt around X for depth
-    outer.push(idx);
-    edges.push([center, idx]); // spoke
-  }
-  for (let i = 0; i < OUT; i++) edges.push([outer[i], outer[(i + 1) % OUT]]); // ring
-  return { nodes, edges };
-}
-const HUB = hub();
-
-// ─── 5 - about: a loose constellation (community / people / connection) ──────
+// ─── 1 - about: a loose constellation (community / people / connection) ──────
 function constellation(): Graph {
   const rng = mulberry32(77);
   const N = 20;
@@ -321,9 +294,9 @@ const ARROW = arrow();
 //  a parent + child (Father), a dancer (Performer), a circle of people
 //  (Community builder), a wrench (Tinkerer), a lightbulb (Problem solver).
 //  Each icon is a flat, camera-facing glyph so it reads cleanly head-on. The
-//  glyphs ride high (above the lower-third title block) so they're never hidden
-//  behind the portrait or name.
-const HAT_CY = 10.2;
+//  glyphs sit in the mid-lower screen, directly under the "I wear many hats"
+//  line (the title block - photo, name, hats - rides above them).
+const HAT_CY = 2.6;
 
 // shared graph utilities for composing/normalising the glyphs
 function offsetY(g: Graph, dy: number): Graph {
@@ -523,7 +496,7 @@ function bulbIcon(): Graph {
 }
 
 // each glyph: recentre, scale to a common size, lift to the hero height
-const HAT_HALF = 4.9;
+const HAT_HALF = 4.4;
 const HATS: Graph[] = [
   hatIcon(), // 0 Solutions Engineer
   fatherIcon(), // 1 Father
@@ -538,6 +511,34 @@ function buildHats(count: number): Float32Array[] {
     buildGraph(count, 20 + i, g, { nodeFrac: 0.3, nodeJitter: 0.12, edgeJitter: 0.06 }),
   );
 }
+
+// ─── 7 - contact: an iOS-style green check inside a rounded box ───────────────
+function roundedRectPath(S: number, r: number, seg: number): Vec3[] {
+  const centers: [number, number][] = [
+    [S - r, S - r], [-(S - r), S - r], [-(S - r), -(S - r)], [S - r, -(S - r)],
+  ];
+  const start = [0, Math.PI / 2, Math.PI, 1.5 * Math.PI];
+  const pts: Vec3[] = [];
+  for (let c = 0; c < 4; c++) {
+    const [cx, cy] = centers[c];
+    for (let k = 0; k <= seg; k++) {
+      const a = start[c] + (k / seg) * (Math.PI / 2);
+      pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r, 0]);
+    }
+  }
+  return pts;
+}
+function checkmarkBox(): Graph {
+  const rim = roundedRectPath(4.2, 1.35, 5);
+  const nodes: Vec3[] = rim.slice();
+  const edges: Edge[] = [];
+  for (let i = 0; i < nodes.length; i++) edges.push([i, (i + 1) % nodes.length]);
+  const c0 = nodes.length;
+  nodes.push([-2.2, 0.2, 0], [-0.7, -1.5, 0], [2.5, 2.0, 0]); // the check stroke
+  edges.push([c0, c0 + 1], [c0, c0 + 1], [c0 + 1, c0 + 2], [c0 + 1, c0 + 2]); // weighted bold
+  return { nodes, edges };
+}
+const CHECK = offsetY(fit(recenter(checkmarkBox()), 4.8), 7.0);
 
 // ─── intro - scattered cloud the experience reforms from ─────────────────────
 function introCloud(count: number): Float32Array {
@@ -569,7 +570,7 @@ export function generateTargets(count: number): {
       buildGraph(count, 3, TOWERS, { nodeFrac: 0.3, nodeJitter: 0.11, edgeJitter: 0.05 }), // 4 experience
       buildGraph(count, 4, GRAPH, { nodeFrac: 0.26, nodeJitter: 0.12, edgeJitter: 0.05 }), // 5 record
       buildLattice(count, 5), // 6 toolbelt
-      buildGraph(count, 7, HUB, { nodeFrac: 0.3, nodeJitter: 0.14, edgeJitter: 0.05 }), // 7 contact
+      buildGraph(count, 7, CHECK, { nodeFrac: 0.28, nodeJitter: 0.1, edgeJitter: 0.05 }), // 7 contact
     ],
     hats,
   };
