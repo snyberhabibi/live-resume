@@ -38,20 +38,18 @@ function ScrollHint() {
   return (
     <motion.div
       aria-hidden
-      className="pointer-events-none fixed inset-x-0 bottom-3 z-[80] flex justify-center"
-      animate={{ opacity: show ? 0.9 : 0, y: show ? 0 : 8 }}
+      className="pointer-events-none fixed inset-x-0 bottom-[7vh] z-[80] flex justify-center sm:bottom-4"
+      animate={{ opacity: show ? 0.92 : 0, y: show ? 0 : 8 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex items-center gap-2 rounded-full border border-[var(--fg)]/10 bg-[rgb(var(--scrim))]/70 px-3 py-1.5 backdrop-blur-md">
-        <span className="font-mono text-[8px] uppercase tracking-[0.35em] text-[var(--fg)]/60">
+      <div className="flex items-center gap-2.5 rounded-full border border-[var(--fg)]/12 bg-[rgb(var(--scrim))]/75 px-4 py-2.5 backdrop-blur-md sm:gap-2 sm:px-3 sm:py-1.5">
+        <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-[var(--fg)]/65 sm:text-[8px]">
           scroll
         </span>
         <motion.svg
-          width="10"
-          height="13"
           viewBox="0 0 10 13"
           fill="none"
-          className="text-[var(--fg)]/60"
+          className="h-[15px] w-[11px] text-[var(--fg)]/65 sm:h-[13px] sm:w-[10px]"
           animate={{ y: [0, 3, 0] }}
           transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
         >
@@ -71,7 +69,7 @@ function ScrollHint() {
 function Headline({ lines, isHero, center }: { lines: string[]; isHero: boolean; center: boolean }) {
   const Tag = isHero ? "h1" : "h2";
   const size = isHero
-    ? "text-[clamp(2.1rem,8vw,5.8rem)]"
+    ? "text-[clamp(1.9rem,7.5vw,5.8rem)]"
     : center
       ? "text-[clamp(1.9rem,6vw,4.2rem)]"
       : "text-[clamp(1.5rem,4.4vw,3.1rem)]";
@@ -351,16 +349,17 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
         id={`chapter-${chapter.id}`}
         aria-label={chapter.nav}
         tabIndex={-1}
-        className="relative flex min-h-[100svh] flex-col items-center justify-between overflow-hidden px-6 py-[7vh] text-center outline-none sm:px-12 sm:py-[8vh]"
+        className="relative flex min-h-[100svh] flex-col items-center justify-between overflow-hidden px-6 pt-[5vh] pb-[19vh] text-center outline-none sm:px-12 sm:py-[8vh]"
       >
-        {/* legibility washes: top behind the title, bottom behind the closing line */}
+        {/* legibility washes: top behind the title, bottom behind the closing line.
+            Mobile drops the glyph low + lifts the line, so the bottom wash runs taller. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[46%] bg-gradient-to-b from-[rgb(var(--scrim))]/90 via-[rgb(var(--scrim))]/40 to-transparent"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[42%] bg-gradient-to-b from-[rgb(var(--scrim))]/90 via-[rgb(var(--scrim))]/40 to-transparent sm:h-[46%]"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[26%] bg-gradient-to-t from-[rgb(var(--scrim))]/88 to-transparent"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[34%] bg-gradient-to-t from-[rgb(var(--scrim))]/90 to-transparent sm:h-[26%]"
         />
 
         {/* TOP: photo → name → role → the cycling "many hats" line */}
@@ -371,7 +370,7 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
               alt="Yusuf Rahman"
               width={104}
               height={104}
-              className="mb-5 h-20 w-20 rounded-full object-cover shadow-xl ring-1 ring-[var(--fg)]/25 sm:h-24 sm:w-24"
+              className="mb-4 h-16 w-16 rounded-full object-cover shadow-xl ring-1 ring-[var(--fg)]/25 sm:mb-5 sm:h-24 sm:w-24"
               style={{ objectPosition: "center 22%" }}
               initial={{ opacity: 0, scale: 0.92, y: 8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
