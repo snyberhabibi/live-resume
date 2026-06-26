@@ -9,7 +9,8 @@
 //   2 experience four ascending tower frames  — JPMorgan · Cisco · HashiCorp · IBM
 //   3 impact     a rising performance graph   — never below the 100% baseline
 //   4 toolbelt   a 4×4×4 lattice cube         — the structured toolkit
-//   5 contact    a hub-and-spoke network      — let's connect
+//   5 about      a loose constellation        — community, family, connection
+//   6 contact    a hub-and-spoke network      — let's connect
 //
 //  RGBA-packed (xyz = position, w = 1) for a FloatType DataTexture, count = SIZE².
 // ───────────────────────────────────────────────────────────────────────────
@@ -291,6 +292,35 @@ function hub(): Graph {
 }
 const HUB = hub();
 
+// ─── 5 — about: a loose constellation (community / people / connection) ──────
+function constellation(): Graph {
+  const rng = mulberry32(77);
+  const N = 20;
+  const cx = 5.0;
+  const cy = 6.2;
+  const nodes: Vec3[] = [];
+  for (let i = 0; i < N; i++) {
+    nodes.push([cx + gauss(rng, R * 0.5), cy + gauss(rng, R * 0.52), gauss(rng, R * 0.45)]);
+  }
+  const edges: Edge[] = [];
+  const seen = new Set<string>();
+  for (let i = 0; i < N; i++) {
+    const order = nodes
+      .map((n, j) => ({ j, d: j === i ? Infinity : dist3(nodes[i], n) }))
+      .sort((a, b) => a.d - b.d);
+    for (let k = 0; k < 2; k++) {
+      const j = order[k].j;
+      const key = i < j ? `${i}-${j}` : `${j}-${i}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        edges.push([i, j]);
+      }
+    }
+  }
+  return { nodes, edges };
+}
+const CONSTELLATION = constellation();
+
 // ─── intro — scattered cloud the experience reforms from ─────────────────────
 function introCloud(count: number): Float32Array {
   return build(count, 99, (i, t, rng) => {
@@ -317,7 +347,8 @@ export function generateTargets(count: number): {
       buildGraph(count, 3, TOWERS, { nodeFrac: 0.3, nodeJitter: 0.11, edgeJitter: 0.05 }),
       buildGraph(count, 4, GRAPH, { nodeFrac: 0.26, nodeJitter: 0.12, edgeJitter: 0.05 }),
       buildLattice(count, 5),
-      buildGraph(count, 6, HUB, { nodeFrac: 0.3, nodeJitter: 0.14, edgeJitter: 0.05 }),
+      buildGraph(count, 6, CONSTELLATION, { nodeFrac: 0.38, nodeJitter: 0.17, edgeJitter: 0.05 }),
+      buildGraph(count, 7, HUB, { nodeFrac: 0.3, nodeJitter: 0.14, edgeJitter: 0.05 }),
     ],
   };
 }

@@ -29,12 +29,16 @@ export interface Chapter {
   kind: "center" | "left";
   eyebrow?: string;
   lines: string[];
+  role?: string; // hero subtitle (e.g. "Solutions Engineer")
   sub?: string;
   body?: string; // a short supporting paragraph
   code?: string[]; // monospace code block (the motto)
   roles?: RoleEntry[]; // experience cards
   stats?: Stat[]; // the record
   skills?: SkillGroup[]; // the toolbelt
+  persona?: string[]; // about — the "I'm a …" lines
+  portrait?: string; // about — circular headshot src
+  photo?: { src: string; alt: string; caption?: string }; // about — feature photo
   note?: string; // small footer note
   links?: { text: string; href: string }[];
 }
@@ -43,11 +47,12 @@ export const CHAPTERS: Chapter[] = [
   // 0 ── HERO ────────────────────────────────────────────────────────────────
   {
     id: "hero",
-    nav: "Intro",
+    nav: "Welcome",
     kind: "center",
-    eyebrow: "SOLUTIONS ENGINEER",
+    eyebrow: "YOUR SEARCH FOR TALENT ENDS HERE",
     lines: ["Yusuf", "Rahman"],
-    sub: "I turn complexity into clarity.",
+    role: "Solutions Engineer",
+    sub: "Give me 60 seconds — scroll, and I'll tell you the whole story.",
   },
 
   // 1 ── APPROACH ──────────────────────────────────────────────────────────────
@@ -141,20 +146,43 @@ export const CHAPTERS: Chapter[] = [
     eyebrow: "THE TOOLBELT",
     lines: ["Deep enough to build it.", "Fluent enough to sell it."],
     skills: [
-      { group: "Cloud & Infra", items: ["AWS", "Azure", "Terraform", "Vault", "Consul", "Nomad"] },
+      { group: "Cloud & IaC", items: ["AWS", "Azure", "Terraform", "Vault", "Consul", "Nomad"] },
       {
-        group: "Reliability & Observability",
-        items: ["AppDynamics", "Splunk", "Grafana", "ThousandEyes", "Geneos", "Intersight"],
+        group: "Containers & Delivery",
+        items: ["Kubernetes", "Docker", "Ansible", "GitHub Actions", "Git"],
       },
       {
-        group: "Containers & CI/CD",
-        items: ["Docker", "Kubernetes", "Ansible", "Jenkins", "Git"],
+        group: "Observability",
+        items: ["OpenTelemetry", "Grafana", "Datadog", "Splunk", "AppDynamics"],
       },
-      { group: "Languages", items: ["Python", "Bash", "SQL", "JavaScript", "Java", "C++"] },
+      { group: "Languages & AI", items: ["Python", "TypeScript", "SQL", "Bash", "LLMs & RAG", "MCP"] },
     ],
   },
 
-  // 5 ── CONTACT ───────────────────────────────────────────────────────────────
+  // 5 ── OFF THE CLOCK (the human) ─────────────────────────────────────────────
+  {
+    id: "about",
+    nav: "Life",
+    kind: "left",
+    eyebrow: "OFF THE CLOCK",
+    lines: ["A family man,", "first."],
+    sub: "Relationships are the whole job — so here's who you'd actually be working with.",
+    portrait: "/portrait.jpg",
+    photo: {
+      src: "/dabka.jpg",
+      alt: "Yusuf teaching Palestinian Dabka to a group of kids",
+      caption: "Passing on Palestinian Dabka — off the clock",
+    },
+    persona: [
+      "I'm a father to Talia — one year old, and the purpose behind all of it.",
+      "I'm a performer — Palestinian Dabka & Zaffa at weddings for 10+ years.",
+      "I'm a community guy — I support local and love meeting new people.",
+      "I'm a builder — always playing with new tech and AI tools.",
+      "I work to live, not the other way around.",
+    ],
+  },
+
+  // 6 ── CONTACT ───────────────────────────────────────────────────────────────
   {
     id: "contact",
     nav: "Contact",

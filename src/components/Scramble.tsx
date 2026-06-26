@@ -26,13 +26,11 @@ export function Scramble({
   const [display, setDisplay] = useState("");
 
   const active = inView && start;
+  // derive during render so reduced-motion never needs a setState in the effect
+  const shown = reduce ? text : display;
 
   useEffect(() => {
-    if (reduce) {
-      setDisplay(text);
-      return;
-    }
-    if (!active) return;
+    if (reduce || !active) return;
     let raf = 0;
     const timer = setTimeout(() => {
       const begin = performance.now();
@@ -66,7 +64,7 @@ export function Scramble({
 
   return (
     <span ref={ref} className={className} aria-label={text}>
-      <span aria-hidden="true">{display}</span>
+      <span aria-hidden="true">{shown}</span>
     </span>
   );
 }

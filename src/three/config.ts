@@ -90,7 +90,8 @@ export const CHAPTER_ACCENT_LIGHT: string[] = [
   "#44567f", // 2 experience— indigo slate
   "#b07d2b", // 3 impact    — bronze/gold (the 100% mark)
   "#4a6076", // 4 toolbelt  — steel blue
-  "#355f9e", // 5 contact   — confident blue
+  "#9c6450", // 5 about     — warm terracotta (the human)
+  "#355f9e", // 6 contact   — confident blue
 ];
 
 // Dark theme accents — cooler, luminous (drive bloom/godrays).
@@ -100,7 +101,8 @@ export const CHAPTER_ACCENT: string[] = [
   "#9fb6cc", // 2 experience — cold steel
   "#f4b14a", // 3 impact — warm gold (achievement)
   "#a6b0f0", // 4 toolbelt — indigo
-  "#8fc0ff", // 5 contact — sky blue
+  "#e0a07a", // 5 about — warm amber (the human)
+  "#8fc0ff", // 6 contact — sky blue
 ];
 
 // ─── Sky top/horizon per section ─────────────────────────────────────────────
@@ -112,6 +114,7 @@ export const CHAPTER_SKY_LIGHT: { top: string; horizon: string }[] = [
   { top: "#edeef4", horizon: "#d9dce8" }, // experience — faint indigo
   { top: "#f3f0ea", horizon: "#e7ddca" }, // impact — faint warm
   { top: "#eef0f5", horizon: "#dadfe9" }, // toolbelt — faint steel
+  { top: "#f4efe9", horizon: "#e8d8c8" }, // about — faint warm
   { top: "#edf0f6", horizon: "#d8e0ee" }, // contact — faint blue
 ];
 
@@ -121,6 +124,7 @@ export const CHAPTER_SKY: { top: string; horizon: string }[] = [
   { top: "#070a12", horizon: "#16202c" }, // experience
   { top: "#0a0810", horizon: "#2a1e10" }, // impact — warm horizon
   { top: "#06070e", horizon: "#181830" }, // toolbelt
+  { top: "#0a0710", horizon: "#2a1a12" }, // about — warm
   { top: "#06060e", horizon: "#1c2c46" }, // contact
 ];
 
@@ -133,12 +137,13 @@ export interface CamKey {
   fov: number;
 }
 export const CAM_KEYS: CamKey[] = [
-  { pos: [0, 4.2, 30], target: [0, 4.2, 0], fov: 42 }, // 0 hero — face the forming seed
-  { pos: [-7, 7, 27], target: [0, 7, 0], fov: 46 }, // 1 approach — the single clean line
-  { pos: [7, 9.5, 50], target: [6, 8, 0], fov: 50 }, // 2 experience — towers, biased right of the cards
-  { pos: [0, 6.5, 29], target: [0, 6.5, 0], fov: 40 }, // 3 impact — the vase, centered
-  { pos: [-11, 7.5, 31], target: [0, 6.5, 0], fov: 50 }, // 4 toolbelt — orbit the lattice
-  { pos: [0, 6, 30], target: [0, 6, 0], fov: 42 }, // 5 contact — face the ring
+  { pos: [0, 4.2, 30], target: [0, 4.2, 0], fov: 42 }, // 0 hero — face the icosahedron
+  { pos: [-7, 7, 27], target: [0, 7, 0], fov: 46 }, // 1 approach — the converging funnel
+  { pos: [7, 9.5, 50], target: [6, 8, 0], fov: 50 }, // 2 experience — towers, right of the cards
+  { pos: [0, 6.5, 29], target: [0, 6.5, 0], fov: 40 }, // 3 impact — the rising graph
+  { pos: [-11, 7.5, 31], target: [0, 6.5, 0], fov: 50 }, // 4 toolbelt — orbit the lattice cube
+  { pos: [9, 6.2, 34], target: [5, 6, 0], fov: 48 }, // 5 about — constellation, right of the photos
+  { pos: [0, 6, 30], target: [0, 6, 0], fov: 42 }, // 6 contact — face the hub
 ];
 
 export const CHAPTER_COUNT = CAM_KEYS.length;

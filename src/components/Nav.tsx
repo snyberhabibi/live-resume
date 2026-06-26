@@ -11,7 +11,7 @@ export function Nav() {
   const theme = useScene((s) => s.theme);
   const toggleTheme = useScene((s) => s.toggleTheme);
   const accents = theme === "light" ? CHAPTER_ACCENT_LIGHT : CHAPTER_ACCENT;
-  const inactiveDot = theme === "light" ? "rgba(20,28,40,0.22)" : "rgba(255,255,255,0.28)";
+  const inactiveDot = theme === "light" ? "rgba(20,28,40,0.4)" : "rgba(255,255,255,0.3)";
   return (
     <>
       <motion.nav

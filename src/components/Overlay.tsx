@@ -32,7 +32,7 @@ function Eyebrow({ label, accent, left = false }: { label: string; accent: strin
 function ScrollCue() {
   return (
     <div className="flex flex-col items-center gap-2">
-      <span className="font-mono text-[8px] uppercase tracking-[0.45em] text-[var(--fg)]/35">
+      <span className="font-mono text-[8px] uppercase tracking-[0.45em] text-[var(--fg)]/55">
         Scroll
       </span>
       <span className="relative block h-9 w-px overflow-hidden bg-[var(--fg)]/15">
@@ -74,7 +74,7 @@ const LITERALS = new Set(["true", "false", "null", "undefined"]);
 
 function CodeLine({ line, accent }: { line: string; accent: string }) {
   if (line.trim().startsWith("//")) {
-    return <div className="italic text-[var(--fg)]/45">{line}</div>;
+    return <div className="italic text-[var(--fg)]/65">{line}</div>;
   }
   const tokens = line.match(/[A-Za-z_]\w*|[^A-Za-z_]+/g) ?? [line];
   return (
@@ -119,7 +119,7 @@ function CodeCard({ code, accent }: { code: string[]; accent: string }) {
         <span className="h-2 w-2 rounded-full bg-[var(--fg)]/20" />
         <span className="h-2 w-2 rounded-full bg-[var(--fg)]/20" />
         <span className="h-2 w-2 rounded-full bg-[var(--fg)]/20" />
-        <span className="ml-2 font-mono text-[9px] uppercase tracking-[0.25em] text-[var(--fg)]/40">
+        <span className="ml-2 font-mono text-[9px] uppercase tracking-[0.25em] text-[var(--fg)]/60">
           life.ts
         </span>
       </div>
@@ -146,7 +146,7 @@ function RoleCard({ role, accent, delay }: { role: RoleEntry; accent: string; de
         <h3 className="font-display text-[15px] font-semibold text-[var(--fg)] sm:text-[17px]">
           {role.company}
         </h3>
-        <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.12em] text-[var(--fg)]/50">
+        <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.12em] text-[var(--fg)]/65">
           {role.period}
           {role.current && (
             <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: accent }} />
@@ -158,7 +158,7 @@ function RoleCard({ role, accent, delay }: { role: RoleEntry; accent: string; de
         style={{ color: accent }}
       >
         {role.role}
-        {role.note && <span className="ml-2 text-[var(--fg)]/40 normal-case">· {role.note}</span>}
+        {role.note && <span className="ml-2 text-[var(--fg)]/60 normal-case">· {role.note}</span>}
       </p>
       <ul className="space-y-1">
         {role.bullets.map((b, i) => (
@@ -272,8 +272,19 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
           />
         )}
         <div className="relative z-[1] max-w-4xl text-center">
-          {!isHero && chapter.eyebrow && <Eyebrow label={chapter.eyebrow} accent={accent} />}
+          {chapter.eyebrow && <Eyebrow label={chapter.eyebrow} accent={accent} />}
           <Headline lines={chapter.lines} isHero={isHero} center />
+
+          {isHero && chapter.role && (
+            <motion.p
+              className="mt-3 font-mono text-[12px] uppercase tracking-[0.4em] text-[var(--fg)]/70 text-readable-subtle sm:text-[13px]"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...SPRING, delay: 0.5 }}
+            >
+              {chapter.role}
+            </motion.p>
+          )}
 
           {/* sub line — for non-hero centers shows directly under the headline */}
           {chapter.sub && !isHero && (
@@ -371,6 +382,19 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
         {chapter.eyebrow && <Eyebrow label={chapter.eyebrow} accent={accent} left />}
         <Headline lines={chapter.lines} isHero={false} center={false} />
 
+        {chapter.sub && (
+          <motion.p
+            className="mb-1 max-w-xl font-display text-[15px] italic text-readable-subtle sm:text-base"
+            style={{ color: accent }}
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ ...SPRING, delay: 0.35 }}
+          >
+            {chapter.sub}
+          </motion.p>
+        )}
+
         {chapter.roles && (
           <div className="mt-6 grid max-w-4xl gap-x-10 gap-y-6 sm:grid-cols-2">
             {chapter.roles.map((role, i) => (
@@ -380,6 +404,66 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
         )}
 
         {chapter.skills && <Skills skills={chapter.skills} accent={accent} />}
+
+        {chapter.persona && (
+          <div className="mt-6 grid max-w-4xl items-center gap-6 lg:grid-cols-2 lg:gap-10">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
+              {chapter.portrait && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={chapter.portrait}
+                  alt="Yusuf Rahman"
+                  loading="lazy"
+                  width={104}
+                  height={104}
+                  className="h-20 w-20 shrink-0 rounded-full object-cover shadow-lg ring-1 ring-[var(--fg)]/20 sm:h-24 sm:w-24"
+                  style={{ objectPosition: "center 22%" }}
+                />
+              )}
+              <ul className="space-y-2">
+                {chapter.persona.map((p, i) => (
+                  <motion.li
+                    key={i}
+                    className="flex gap-2.5 text-[13px] leading-relaxed text-readable-subtle text-[var(--fg)]/85 sm:text-[13.5px]"
+                    initial={{ opacity: 0, x: -8 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ ...SPRING_SNAPPY, delay: 0.4 + i * 0.07 }}
+                  >
+                    <span className="shrink-0" style={{ color: accent }}>
+                      ▸
+                    </span>
+                    <span>{p}</span>
+                  </motion.li>
+                ))}
+              </ul>
+            </div>
+            {chapter.photo && (
+              <motion.figure
+                className="w-full max-w-md overflow-hidden rounded-2xl shadow-xl ring-1 ring-[var(--fg)]/12 lg:max-w-none"
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ ...SPRING, delay: 0.5 }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={chapter.photo.src}
+                  alt={chapter.photo.alt}
+                  loading="lazy"
+                  width={1000}
+                  height={721}
+                  className="block max-h-[42vh] w-full object-cover lg:max-h-[48vh]"
+                />
+                {chapter.photo.caption && (
+                  <figcaption className="bg-[rgb(var(--scrim))]/75 px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--fg)]/60 backdrop-blur">
+                    {chapter.photo.caption}
+                  </figcaption>
+                )}
+              </motion.figure>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );
