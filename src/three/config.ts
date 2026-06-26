@@ -151,7 +151,7 @@ export const CAM_KEYS: CamKey[] = [
 
 // Portrait/phone framing - each shape re-centred + pulled back to fit a narrow screen.
 export const CAM_KEYS_MOBILE: CamKey[] = [
-  { pos: [0, 4.6, 36], target: [0, 4.6, 0], fov: 56 }, // 0 hero
+  { pos: [0, 6.8, 58], target: [0, 6.8, 0], fov: 52 }, // 0 hero - glyph pulled back + low, clears title above and line below
   { pos: [5, 6.0, 44], target: [5, 6.0, 0], fov: 54 }, // 1 about
   { pos: [2, 7.5, 48], target: [2, 7.5, 0], fov: 54 }, // 2 how I work
   { pos: [0, 7.0, 40], target: [0, 7.0, 0], fov: 56 }, // 3 approach
