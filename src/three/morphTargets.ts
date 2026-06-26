@@ -368,14 +368,14 @@ export function generateTargets(count: number): {
   return {
     initial: introCloud(count),
     chapters: [
-      buildGraph(count, 1, HERO, { nodeFrac: 0.22, nodeJitter: 0.13, edgeJitter: 0.045 }),
-      buildGraph(count, 2, FUNNEL, { nodeFrac: 0.24, nodeJitter: 0.12, edgeJitter: 0.05 }),
-      buildGraph(count, 3, TOWERS, { nodeFrac: 0.3, nodeJitter: 0.11, edgeJitter: 0.05 }),
-      buildGraph(count, 4, GRAPH, { nodeFrac: 0.26, nodeJitter: 0.12, edgeJitter: 0.05 }),
-      buildGraph(count, 8, ARROW, { nodeFrac: 0.24, nodeJitter: 0.14, edgeJitter: 0.05 }),
-      buildLattice(count, 5),
-      buildGraph(count, 6, CONSTELLATION, { nodeFrac: 0.38, nodeJitter: 0.17, edgeJitter: 0.05 }),
-      buildGraph(count, 7, HUB, { nodeFrac: 0.3, nodeJitter: 0.14, edgeJitter: 0.05 }),
+      buildGraph(count, 1, HERO, { nodeFrac: 0.22, nodeJitter: 0.13, edgeJitter: 0.045 }), // 0 hero
+      buildGraph(count, 6, CONSTELLATION, { nodeFrac: 0.38, nodeJitter: 0.17, edgeJitter: 0.05 }), // 1 about (faded)
+      buildGraph(count, 8, ARROW, { nodeFrac: 0.24, nodeJitter: 0.14, edgeJitter: 0.05 }), // 2 how I work
+      buildGraph(count, 2, FUNNEL, { nodeFrac: 0.24, nodeJitter: 0.12, edgeJitter: 0.05 }), // 3 approach
+      buildGraph(count, 3, TOWERS, { nodeFrac: 0.3, nodeJitter: 0.11, edgeJitter: 0.05 }), // 4 experience
+      buildGraph(count, 4, GRAPH, { nodeFrac: 0.26, nodeJitter: 0.12, edgeJitter: 0.05 }), // 5 record
+      buildLattice(count, 5), // 6 toolbelt
+      buildGraph(count, 7, HUB, { nodeFrac: 0.3, nodeJitter: 0.14, edgeJitter: 0.05 }), // 7 contact
     ],
   };
 }

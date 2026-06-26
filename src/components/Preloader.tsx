@@ -18,7 +18,7 @@ export function Preloader() {
   const [gone, setGone] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setMinDone(true), 2100);
+    const t = setTimeout(() => setMinDone(true), 1100);
     return () => clearTimeout(t);
   }, []);
 
@@ -26,7 +26,7 @@ export function Preloader() {
 
   useEffect(() => {
     if (!done) return;
-    const t = setTimeout(() => setGone(true), 1200);
+    const t = setTimeout(() => setGone(true), 800);
     return () => clearTimeout(t);
   }, [done]);
 

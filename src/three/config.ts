@@ -14,10 +14,10 @@ export type QualityTier = "low" | "med" | "high" | "ultra";
 // Particle simulation grid edge per tier → particleCount = SIZE².
 //   ultra 1024² ≈ 1.05M   high 640² ≈ 410k   med 448² ≈ 200k   low 256² ≈ 65k
 export const SIM_SIZE: Record<QualityTier, number> = {
-  ultra: 1024,
-  high: 640,
-  med: 448,
-  low: 256,
+  ultra: 768, // ~590k
+  high: 512, // ~262k
+  med: 384, // ~147k
+  low: 224, // ~50k
 };
 
 export const DPR_CAP: Record<QualityTier, [number, number]> = {
@@ -40,10 +40,10 @@ export const FX: Record<
 
 // Foreground dust-mote count per tier (atmospheric depth layer).
 export const MOTES: Record<QualityTier, number> = {
-  ultra: 4000,
-  high: 2600,
-  med: 1500,
-  low: 700,
+  ultra: 2200,
+  high: 1400,
+  med: 800,
+  low: 350,
 };
 
 // ─── Dark "drafting-table" theme (secondary; the toggle) ─────────────────────
@@ -74,100 +74,100 @@ export const LIGHT = {
   formEdge: "#3d5a80",
 };
 
-// ─── Per-section accent ──────────────────────────────────────────────────────
-//   0 hero        identity - the seed forms
-//   1 approach    the philosophy: complexity → a single clean line
-//   2 experience  the career columns rise (JPMorgan · Cisco · HashiCorp · IBM)
-//   3 impact      shards become a vase - quota, never below 100%
-//   4 toolbelt    scattered tools snap into an ordered lattice
-//   5 contact     a clean ring - let's connect
+// ─── Per-section visuals. Order: person first, then proof. ───────────────────
+//   0 hero       identity (icosahedron)
+//   1 about      who I am (particles cleared, photos lead)
+//   2 howiwork   strengths + growth (arrow)
+//   3 approach   the philosophy (funnel)
+//   4 experience the career towers
+//   5 record     the rising graph (never below 100%)
+//   6 toolbelt   the lattice cube
+//   7 contact    the hub (let's connect)
 
-// Light theme - restrained, professional; mostly cool slate/teal with one warm
-// "achievement" moment on the impact section.
+// Light theme - restrained, professional; mostly cool slate/teal with warm
+// accents on the human beats.
 export const CHAPTER_ACCENT_LIGHT: string[] = [
-  "#3d5a80", // 0 hero      - slate blue
-  "#2f7d7a", // 1 approach  - teal (clarity)
-  "#44567f", // 2 experience- indigo slate
-  "#b07d2b", // 3 record    - bronze/gold (the 100% mark)
-  "#2f6f8e", // 4 how I work - trust teal-blue
-  "#4a6076", // 5 toolbelt  - steel blue
-  "#9c6450", // 6 about     - warm terracotta (the human)
-  "#355f9e", // 7 contact   - confident blue
+  "#3d5a80", // 0 hero       - slate blue
+  "#9c6450", // 1 about      - warm terracotta (the human)
+  "#2f6f8e", // 2 how I work - trust teal-blue
+  "#2f7d7a", // 3 approach   - teal (clarity)
+  "#44567f", // 4 experience - indigo slate
+  "#b07d2b", // 5 record     - bronze/gold (the 100% mark)
+  "#4a6076", // 6 toolbelt   - steel blue
+  "#355f9e", // 7 contact    - confident blue
 ];
 
 // Dark theme accents - cooler, luminous (drive bloom/godrays).
 export const CHAPTER_ACCENT: string[] = [
   "#7fa8e8", // 0 hero
-  "#4fd0c0", // 1 approach - cyan clarity
-  "#9fb6cc", // 2 experience - cold steel
-  "#f4b14a", // 3 record - warm gold (achievement)
-  "#6fb8d8", // 4 how I work - trust teal-blue
-  "#a6b0f0", // 5 toolbelt - indigo
-  "#e0a07a", // 6 about - warm amber (the human)
+  "#e0a07a", // 1 about - warm amber (the human)
+  "#6fb8d8", // 2 how I work - trust teal-blue
+  "#4fd0c0", // 3 approach - cyan clarity
+  "#9fb6cc", // 4 experience - cold steel
+  "#f4b14a", // 5 record - warm gold (achievement)
+  "#a6b0f0", // 6 toolbelt - indigo
   "#8fc0ff", // 7 contact - sky blue
 ];
 
 // ─── Sky top/horizon per section ─────────────────────────────────────────────
-// Light: very subtle paper variations - the mood shifts without ever leaving
-// "clean studio daylight". Dark: moody drafting-room gradients.
 export const CHAPTER_SKY_LIGHT: { top: string; horizon: string }[] = [
-  { top: "#eef1f5", horizon: "#dde3ea" }, // hero
-  { top: "#ecf2f2", horizon: "#d6e3e2" }, // approach - faint teal
-  { top: "#edeef4", horizon: "#d9dce8" }, // experience - faint indigo
-  { top: "#f3f0ea", horizon: "#e7ddca" }, // record - faint warm
-  { top: "#eef2f4", horizon: "#d8e6e8" }, // how I work - faint teal
-  { top: "#eef0f5", horizon: "#dadfe9" }, // toolbelt - faint steel
-  { top: "#f4efe9", horizon: "#e8d8c8" }, // about - faint warm
-  { top: "#edf0f6", horizon: "#d8e0ee" }, // contact - faint blue
+  { top: "#eef1f5", horizon: "#dde3ea" }, // 0 hero
+  { top: "#f4efe9", horizon: "#e8d8c8" }, // 1 about - faint warm
+  { top: "#eef2f4", horizon: "#d8e6e8" }, // 2 how I work - faint teal
+  { top: "#ecf2f2", horizon: "#d6e3e2" }, // 3 approach - faint teal
+  { top: "#edeef4", horizon: "#d9dce8" }, // 4 experience - faint indigo
+  { top: "#f3f0ea", horizon: "#e7ddca" }, // 5 record - faint warm
+  { top: "#eef0f5", horizon: "#dadfe9" }, // 6 toolbelt - faint steel
+  { top: "#edf0f6", horizon: "#d8e0ee" }, // 7 contact - faint blue
 ];
 
 export const CHAPTER_SKY: { top: string; horizon: string }[] = [
-  { top: "#05060c", horizon: "#1b233a" }, // hero
-  { top: "#04080c", horizon: "#103030" }, // approach
-  { top: "#070a12", horizon: "#16202c" }, // experience
-  { top: "#0a0810", horizon: "#2a1e10" }, // record - warm horizon
-  { top: "#05090c", horizon: "#0e2630" }, // how I work - teal
-  { top: "#06070e", horizon: "#181830" }, // toolbelt
-  { top: "#0a0710", horizon: "#2a1a12" }, // about - warm
-  { top: "#06060e", horizon: "#1c2c46" }, // contact
+  { top: "#05060c", horizon: "#1b233a" }, // 0 hero
+  { top: "#0a0710", horizon: "#2a1a12" }, // 1 about - warm
+  { top: "#05090c", horizon: "#0e2630" }, // 2 how I work - teal
+  { top: "#04080c", horizon: "#103030" }, // 3 approach
+  { top: "#070a12", horizon: "#16202c" }, // 4 experience
+  { top: "#0a0810", horizon: "#2a1e10" }, // 5 record - warm horizon
+  { top: "#06070e", horizon: "#181830" }, // 6 toolbelt
+  { top: "#06060e", horizon: "#1c2c46" }, // 7 contact
 ];
 
 // ─── Camera keyframes (one per section). Damped between on scroll. ───────────
-// Framed for the new abstract forms; consistent target heights keep the damping
-// between sections smooth.
 export interface CamKey {
   pos: [number, number, number];
   target: [number, number, number];
   fov: number;
 }
 export const CAM_KEYS: CamKey[] = [
-  { pos: [0, 4.2, 30], target: [0, 4.2, 0], fov: 42 }, // 0 hero - face the icosahedron
-  { pos: [-7, 7, 27], target: [0, 7, 0], fov: 46 }, // 1 approach - the converging funnel
-  { pos: [7, 9.5, 50], target: [6, 8, 0], fov: 50 }, // 2 experience - towers, right of the cards
-  { pos: [0, 6.5, 29], target: [0, 6.5, 0], fov: 40 }, // 3 record - the rising graph
-  { pos: [8, 8.5, 46], target: [2, 8, 0], fov: 48 }, // 4 how I work - the arrow, right of the text
-  { pos: [-11, 7.5, 31], target: [0, 6.5, 0], fov: 50 }, // 5 toolbelt - orbit the lattice cube
-  { pos: [9, 6.2, 34], target: [5, 6, 0], fov: 48 }, // 6 about - constellation, right of the photos
-  { pos: [0, 6, 30], target: [0, 6, 0], fov: 42 }, // 7 contact - face the hub
+  { pos: [0, 4.2, 30], target: [0, 4.2, 0], fov: 42 }, // 0 hero - icosahedron
+  { pos: [9, 6.2, 34], target: [5, 6, 0], fov: 48 }, // 1 about - constellation, off to the side
+  { pos: [8, 8.5, 46], target: [2, 8, 0], fov: 48 }, // 2 how I work - the arrow
+  { pos: [-7, 7, 27], target: [0, 7, 0], fov: 46 }, // 3 approach - the funnel
+  { pos: [7, 9.5, 50], target: [6, 8, 0], fov: 50 }, // 4 experience - the towers
+  { pos: [0, 6.5, 29], target: [0, 6.5, 0], fov: 40 }, // 5 record - the rising graph
+  { pos: [-11, 7.5, 31], target: [0, 6.5, 0], fov: 50 }, // 6 toolbelt - the lattice cube
+  { pos: [0, 6, 30], target: [0, 6, 0], fov: 42 }, // 7 contact - the hub
 ];
 
-// Portrait/phone framing - each shape is re-centred and pulled back to sit
-// nicely on a narrow screen. (The desktop right-bias + aspect-dolly blow-up
-// shoved shapes off-frame and shrank them to faint traces on mobile.)
+// Portrait/phone framing - each shape re-centred + pulled back to fit a narrow screen.
 export const CAM_KEYS_MOBILE: CamKey[] = [
   { pos: [0, 4.6, 36], target: [0, 4.6, 0], fov: 56 }, // 0 hero
-  { pos: [0, 7.0, 40], target: [0, 7.0, 0], fov: 56 }, // 1 approach
-  { pos: [7, 8.0, 60], target: [7, 8.0, 0], fov: 54 }, // 2 experience
-  { pos: [0, 6.5, 42], target: [0, 6.5, 0], fov: 52 }, // 3 record
-  { pos: [2, 7.5, 48], target: [2, 7.5, 0], fov: 54 }, // 4 how I work
-  { pos: [0, 6.4, 40], target: [0, 6.4, 0], fov: 56 }, // 5 toolbelt
-  { pos: [5, 6.0, 44], target: [5, 6.0, 0], fov: 54 }, // 6 about
+  { pos: [5, 6.0, 44], target: [5, 6.0, 0], fov: 54 }, // 1 about
+  { pos: [2, 7.5, 48], target: [2, 7.5, 0], fov: 54 }, // 2 how I work
+  { pos: [0, 7.0, 40], target: [0, 7.0, 0], fov: 56 }, // 3 approach
+  { pos: [7, 8.0, 60], target: [7, 8.0, 0], fov: 54 }, // 4 experience
+  { pos: [0, 6.5, 42], target: [0, 6.5, 0], fov: 52 }, // 5 record
+  { pos: [0, 6.4, 40], target: [0, 6.4, 0], fov: 56 }, // 6 toolbelt
   { pos: [0, 6.0, 38], target: [0, 6.0, 0], fov: 50 }, // 7 contact
 ];
 
 export const CHAPTER_COUNT = CAM_KEYS.length;
 
+// Sections where the particle graphic should fade away to a clean background
+// (so personal content isn't fighting a distracting dot field). Index 1 = about.
+export const MINIMAL_GRAPHIC_SECTIONS = new Set<number>([1]);
+
 // Morph timing.
-export const MORPH_DURATION = 1.7; // seconds for a dissolve→reform
+export const MORPH_DURATION = 1.25; // seconds for a dissolve→reform (snappy)
 export const MONUMENT_RADIUS = 9; // governs all morph-target scales
 export const TERRAIN_Y = -9;

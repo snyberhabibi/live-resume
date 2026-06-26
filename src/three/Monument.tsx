@@ -14,6 +14,7 @@ import {
   SIM_SIZE,
   CHAPTER_ACCENT,
   LIGHT,
+  MINIMAL_GRAPHIC_SECTIONS,
   MORPH_DURATION,
   PALETTE,
   type QualityTier,
@@ -21,11 +22,12 @@ import {
 
 // The particles ARE the show - full opacity on the assembled shape. Heavy
 // additive overlap still means per-grain opacity stays small.
+// sizes bumped to keep the wireframes solid now that particle counts are lower
 const SIZE_PARAMS: Record<QualityTier, { size: number; opacity: number }> = {
-  ultra: { size: 0.95, opacity: 0.05 },
-  high: { size: 1.2, opacity: 0.07 },
-  med: { size: 1.55, opacity: 0.11 },
-  low: { size: 2.1, opacity: 0.17 },
+  ultra: { size: 1.25, opacity: 0.06 },
+  high: { size: 1.55, opacity: 0.085 },
+  med: { size: 1.95, opacity: 0.13 },
+  low: { size: 2.6, opacity: 0.2 },
 };
 
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -220,6 +222,9 @@ export function Monument({ quality }: { quality: QualityTier }) {
   const seeded = useRef(false);
   const framesRendered = useRef(0);
   const lastLight = useRef(useScene.getState().theme === "light");
+  // fade the whole particle field away on "minimal graphic" sections (e.g. the
+  // personal "who I am" beat) so the dust isn't fighting the content
+  const graphicFade = useRef(MINIMAL_GRAPHIC_SECTIONS.has(useScene.getState().chapter) ? 0 : 1);
 
   useEffect(() => {
     // fresh load (chapter 0) reforms from the scattered cloud - the intro.
@@ -305,7 +310,10 @@ export function Monument({ quality }: { quality: QualityTier }) {
 
     const light = st.theme === "light";
     // ink (normal blending) needs more coverage to read than additive glow
-    pointsMat.uniforms.uOpacity.value = params.opacity * (light ? 2.4 : 1);
+    // ease the particle field toward near-invisible on minimal-graphic sections
+    const fadeTarget = MINIMAL_GRAPHIC_SECTIONS.has(st.chapter) ? 0 : 1;
+    graphicFade.current += (fadeTarget - graphicFade.current) * (1 - Math.exp(-5 * dt));
+    pointsMat.uniforms.uOpacity.value = params.opacity * (light ? 2.4 : 1) * graphicFade.current;
     pointsMat.uniforms.uLight.value += ((light ? 1 : 0) - pointsMat.uniforms.uLight.value) * (1 - Math.exp(-4 * dt));
     // kinetic energy: grains swell with scroll speed + audio loudness
     pointsMat.uniforms.uKinetic.value = Math.min(1, st.velocity * 1.4 + getAudioLevel() * 0.9);
