@@ -80,7 +80,7 @@ function ScrollHint() {
 function Headline({ lines, isHero, center }: { lines: string[]; isHero: boolean; center: boolean }) {
   const Tag = isHero ? "h1" : "h2";
   const size = isHero
-    ? "text-[clamp(1.9rem,7.5vw,5.8rem)]"
+    ? "text-[clamp(1.9rem,5.8vw,4.4rem)]"
     : center
       ? "text-[clamp(1.9rem,6vw,4.2rem)]"
       : "text-[clamp(1.5rem,4.4vw,3.1rem)]";
@@ -381,7 +381,7 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
               alt="Yusuf Rahman"
               width={104}
               height={104}
-              className="mb-4 h-16 w-16 rounded-full object-cover shadow-xl ring-1 ring-[var(--fg)]/25 sm:mb-5 sm:h-24 sm:w-24"
+              className="mb-4 h-16 w-16 rounded-full object-cover shadow-xl ring-1 ring-[var(--fg)]/25 sm:mb-4 sm:h-20 sm:w-20"
               style={{ objectPosition: "center 22%" }}
               initial={{ opacity: 0, scale: 0.92, y: 8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
