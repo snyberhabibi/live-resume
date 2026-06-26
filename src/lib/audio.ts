@@ -1,7 +1,9 @@
-// Fully procedural audio - no asset files. A low ambient drone (detuned
-// oscillators + filtered noise + a slow filter LFO) plus short synthesized UI
-// blips. The graph is built lazily on the first user-gesture enable, so there's
-// never an autoplay violation; master gain ramps in/out for the mute toggle.
+// Fully procedural audio - no asset files. An "oud ambient" piece: a soft D
+// drone bed (detuned oscillators + filtered noise) under a synthesized OUD
+// (Karplus-Strong plucked strings) that improvises a slow, sparse phrase in
+// Maqam Kurd (Phrygian) through a generated reverb. Built lazily on the first
+// user-gesture enable, so there's never an autoplay violation; master gain
+// ramps in/out for the mute toggle.
 
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
@@ -9,6 +11,97 @@ let analyser: AnalyserNode | null = null;
 let levelData: Uint8Array<ArrayBuffer> | null = null;
 let smoothLevel = 0;
 let enabled = false;
+
+// oud voice plumbing (set up in buildGraph)
+let oudBus: GainNode | null = null;
+let oudBuffers: AudioBuffer[] = [];
+let oudIdx = 0;
+let oudTimer = 0;
+
+// Maqam Kurd (D Phrygian) across ~1.5 octaves - tonic at index 0.
+const OUD_SCALE = [146.83, 155.56, 174.61, 196.0, 220.0, 233.08, 261.63, 293.66, 311.13, 349.23];
+
+// ─── Karplus-Strong plucked string → a warm, woody oud-like pluck ────────────
+function ksPluck(ac: AudioContext, freq: number, dur = 2.8): AudioBuffer {
+  const sr = ac.sampleRate;
+  const N = Math.max(2, Math.round(sr / freq)); // delay-line length sets the pitch
+  const len = Math.floor(sr * dur);
+  const buf = ac.createBuffer(1, len, sr);
+  const out = buf.getChannelData(0);
+  const line = new Float32Array(N);
+  for (let i = 0; i < N; i++) line[i] = Math.random() * 2 - 1; // excitation burst
+  const decay = 0.9945; // string sustain
+  const blend = 0.55; // loop low-pass amount (higher = darker / more oud-like)
+  let idx = 0;
+  for (let i = 0; i < len; i++) {
+    const cur = line[idx];
+    out[i] = cur;
+    const nxt = line[(idx + 1) % N];
+    line[idx] = (cur * (1 - blend) + nxt * blend) * decay;
+    idx = (idx + 1) % N;
+  }
+  // soften the very start (attack) and tail (release) to avoid clicks
+  const atk = Math.floor(sr * 0.004);
+  for (let i = 0; i < atk; i++) out[i] *= i / atk;
+  const rel = Math.floor(sr * 0.5);
+  for (let i = 0; i < rel; i++) out[len - 1 - i] *= i / rel;
+  return buf;
+}
+
+// ─── a decaying-noise impulse response → spacious ambient reverb ─────────────
+function makeImpulse(ac: AudioContext, seconds = 3.4, decay = 2.6): AudioBuffer {
+  const len = Math.floor(ac.sampleRate * seconds);
+  const imp = ac.createBuffer(2, len, ac.sampleRate);
+  for (let ch = 0; ch < 2; ch++) {
+    const d = imp.getChannelData(ch);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+  }
+  return imp;
+}
+
+// ─── play one oud note (mostly stepwise, occasionally a leap or a resolve) ───
+function playOudNote(ac: AudioContext) {
+  if (!oudBus || !oudBuffers.length) return;
+  const r = Math.random();
+  if (r < 0.2) {
+    oudIdx = 0; // resolve to the tonic now and then
+  } else {
+    const small = Math.random() < 0.72;
+    const dir = Math.random() < 0.5 ? -1 : 1;
+    oudIdx += dir * (small ? 1 : 2);
+  }
+  oudIdx = Math.max(0, Math.min(oudBuffers.length - 1, oudIdx));
+
+  const t = ac.currentTime + 0.02;
+  const vel = 0.45 + Math.random() * 0.5;
+
+  const play = (i: number, at: number, gain: number) => {
+    const src = ac.createBufferSource();
+    src.buffer = oudBuffers[i];
+    src.detune.value = (Math.random() * 2 - 1) * 6; // micro-tuning for a human feel
+    const g = ac.createGain();
+    g.gain.value = gain;
+    src.connect(g);
+    g.connect(oudBus as GainNode);
+    src.start(at);
+    src.stop(at + (oudBuffers[i].duration ?? 2.8));
+  };
+
+  play(oudIdx, t, vel * 0.5);
+  // occasionally a quick second note - a little melodic phrase
+  if (Math.random() < 0.28) {
+    const i2 = Math.max(0, Math.min(oudBuffers.length - 1, oudIdx + (Math.random() < 0.5 ? 1 : 2)));
+    play(i2, t + 0.16 + Math.random() * 0.12, vel * 0.38);
+  }
+}
+
+function scheduleOud(ac: AudioContext) {
+  const gap = 0.9 + Math.random() * 1.9; // sparse, ambient spacing (seconds)
+  oudTimer = window.setTimeout(() => {
+    if (enabled) playOudNote(ac);
+    scheduleOud(ac);
+  }, gap * 1000);
+}
 
 function buildGraph(ac: AudioContext) {
   master = ac.createGain();
@@ -21,29 +114,38 @@ function buildGraph(ac: AudioContext) {
   levelData = new Uint8Array(analyser.frequencyBinCount);
   master.connect(analyser);
 
+  // ── shared ambient reverb ──
+  const reverb = ac.createConvolver();
+  reverb.buffer = makeImpulse(ac);
+  const reverbGain = ac.createGain();
+  reverbGain.gain.value = 0.5;
+  reverb.connect(reverbGain);
+  reverbGain.connect(master);
+
+  // ── soft D drone bed (sits well under the oud's key) ──
   const droneGain = ac.createGain();
-  droneGain.gain.value = 0.5;
+  droneGain.gain.value = 0.3;
   droneGain.connect(master);
 
   const lp = ac.createBiquadFilter();
   lp.type = "lowpass";
-  lp.frequency.value = 320;
+  lp.frequency.value = 300;
   lp.Q.value = 0.7;
   lp.connect(droneGain);
 
   const o1 = ac.createOscillator();
   o1.type = "sine";
-  o1.frequency.value = 55;
+  o1.frequency.value = 73.42; // D2
   const o2 = ac.createOscillator();
   o2.type = "triangle";
-  o2.frequency.value = 82.5;
-  o2.detune.value = 6;
+  o2.frequency.value = 110.0; // A2 (the fifth)
+  o2.detune.value = 5;
   const o3 = ac.createOscillator();
   o3.type = "sine";
-  o3.frequency.value = 110;
+  o3.frequency.value = 146.83; // D3
   o3.detune.value = -4;
   const og = ac.createGain();
-  og.gain.value = 0.25;
+  og.gain.value = 0.22;
   o1.connect(og);
   o2.connect(og);
   o3.connect(og);
@@ -52,9 +154,9 @@ function buildGraph(ac: AudioContext) {
   // slow filter sweep so the drone breathes
   const lfo = ac.createOscillator();
   lfo.type = "sine";
-  lfo.frequency.value = 0.06;
+  lfo.frequency.value = 0.05;
   const lfoGain = ac.createGain();
-  lfoGain.gain.value = 130;
+  lfoGain.gain.value = 120;
   lfo.connect(lfoGain);
   lfoGain.connect(lp.frequency);
 
@@ -67,19 +169,36 @@ function buildGraph(ac: AudioContext) {
   noise.loop = true;
   const nf = ac.createBiquadFilter();
   nf.type = "bandpass";
-  nf.frequency.value = 600;
+  nf.frequency.value = 560;
   nf.Q.value = 0.5;
   const ng = ac.createGain();
-  ng.gain.value = 0.04;
+  ng.gain.value = 0.03;
   noise.connect(nf);
   nf.connect(ng);
   ng.connect(droneGain);
+
+  // ── the oud voice: dry + a generous reverb send, gently warmed ──
+  oudBus = ac.createGain();
+  oudBus.gain.value = 0.9;
+  const oudLP = ac.createBiquadFilter();
+  oudLP.type = "lowpass";
+  oudLP.frequency.value = 2600; // tame the pluck's brightness → woody/warm
+  oudLP.Q.value = 0.4;
+  oudBus.connect(oudLP);
+  oudLP.connect(master); // dry
+  const oudSend = ac.createGain();
+  oudSend.gain.value = 0.6;
+  oudLP.connect(oudSend);
+  oudSend.connect(reverb); // wet
+
+  oudBuffers = OUD_SCALE.map((f) => ksPluck(ac, f));
 
   o1.start();
   o2.start();
   o3.start();
   lfo.start();
   noise.start();
+  scheduleOud(ac);
 }
 
 function ensureAudio() {

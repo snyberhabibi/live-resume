@@ -30,19 +30,30 @@ function Eyebrow({ label, accent, left = false }: { label: string; accent: strin
   );
 }
 
-// persistent scroll indicator: shows on every section until the last, so a
-// visitor always knows there's more below
+// persistent scroll control: shows on every section until the last. Tapping it
+// advances to the next section (handy on touch, where there's nothing to "wheel").
 function ScrollHint() {
   const chapter = useScene((s) => s.chapter);
   const show = chapter < CHAPTERS.length - 1;
   return (
     <motion.div
-      aria-hidden
       className="pointer-events-none fixed inset-x-0 bottom-[7vh] z-[80] flex justify-center sm:bottom-4"
       animate={{ opacity: show ? 0.92 : 0, y: show ? 0 : 8 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex items-center gap-2.5 rounded-full border border-[var(--fg)]/12 bg-[rgb(var(--scrim))]/75 px-4 py-2.5 backdrop-blur-md sm:gap-2 sm:px-3 sm:py-1.5">
+      <button
+        type="button"
+        aria-label="Go to the next section"
+        tabIndex={show ? 0 : -1}
+        onClick={() =>
+          window.dispatchEvent(
+            new CustomEvent("lr:goto", { detail: useScene.getState().chapter + 1 }),
+          )
+        }
+        className={`flex items-center gap-2.5 rounded-full border border-[var(--fg)]/12 bg-[rgb(var(--scrim))]/75 px-4 py-2.5 backdrop-blur-md transition-colors hover:border-[var(--fg)]/25 hover:bg-[rgb(var(--scrim))]/90 sm:gap-2 sm:px-3 sm:py-1.5 ${
+          show ? "pointer-events-auto cursor-pointer" : "pointer-events-none"
+        }`}
+      >
         <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-[var(--fg)]/65 sm:text-[8px]">
           scroll
         </span>
@@ -61,7 +72,7 @@ function ScrollHint() {
             strokeLinejoin="round"
           />
         </motion.svg>
-      </div>
+      </button>
     </motion.div>
   );
 }
