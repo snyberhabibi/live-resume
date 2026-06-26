@@ -9,7 +9,7 @@ import { Scramble } from "./Scramble";
 
 // theme-aware scrim (rgb(var(--scrim)) = paper in light, ink in dark)
 const SCRIM =
-  "pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgb(var(--scrim))]/92 via-[rgb(var(--scrim))]/35 to-transparent";
+  "pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgb(var(--scrim))]/97 via-[rgb(var(--scrim))]/60 to-transparent";
 
 function Eyebrow({ label, accent, left = false }: { label: string; accent: string; left?: boolean }) {
   return (
@@ -395,6 +395,23 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
         {chapter.eyebrow && <Eyebrow label={chapter.eyebrow} accent={accent} left />}
         <Headline lines={chapter.lines} isHero={false} center={false} />
 
+        {chapter.tag && (
+          <motion.div
+            className="mb-5"
+            initial={{ opacity: 0, y: 8 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ ...SPRING, delay: 0.3 }}
+          >
+            <span
+              className="inline-flex items-center rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-[0.22em]"
+              style={{ borderColor: accent, color: accent }}
+            >
+              {chapter.tag}
+            </span>
+          </motion.div>
+        )}
+
         {chapter.sub && (
           <motion.p
             className="mb-1 max-w-xl font-display text-[15px] italic text-readable-subtle sm:text-base"
@@ -417,6 +434,48 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
         )}
 
         {chapter.skills && <Skills skills={chapter.skills} accent={accent} />}
+
+        {chapter.strengths && (
+          <div className="mt-6 max-w-4xl">
+            <ul className="grid gap-x-9 gap-y-2.5 sm:grid-cols-2">
+              {chapter.strengths.map((s, i) => (
+                <motion.li
+                  key={i}
+                  className="flex gap-2.5 text-[13.5px] leading-relaxed text-readable-subtle text-[var(--fg)]/85 sm:text-[14px]"
+                  initial={{ opacity: 0, x: -8 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ ...SPRING_SNAPPY, delay: 0.4 + i * 0.08 }}
+                >
+                  <span className="shrink-0" style={{ color: accent }}>
+                    ▸
+                  </span>
+                  <span>{s}</span>
+                </motion.li>
+              ))}
+            </ul>
+            {chapter.growth && (
+              <motion.div
+                className="mt-6 max-w-xl border-l-2 pl-4"
+                style={{ borderColor: accent }}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ ...SPRING, delay: 0.6 }}
+              >
+                <p
+                  className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.3em]"
+                  style={{ color: accent }}
+                >
+                  Growth areas
+                </p>
+                <p className="text-[13px] leading-relaxed text-readable-subtle text-[var(--fg)]/80 sm:text-[14px]">
+                  {chapter.growth}
+                </p>
+              </motion.div>
+            )}
+          </div>
+        )}
 
         {chapter.persona && (
           <div className="mt-6 grid max-w-4xl items-center gap-6 lg:grid-cols-2 lg:gap-10">

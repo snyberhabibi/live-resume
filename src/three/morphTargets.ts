@@ -321,6 +321,32 @@ function constellation(): Graph {
 }
 const CONSTELLATION = constellation();
 
+// how I work: a bold upward arrow (direction, growth, revenue)
+function arrow(): Graph {
+  const tail: Vec3 = [-2.5, 2.5, 0];
+  const tip: Vec3 = [5, 13.5, 0];
+  const mid1: Vec3 = [tail[0] + (tip[0] - tail[0]) / 3, tail[1] + (tip[1] - tail[1]) / 3, 0];
+  const mid2: Vec3 = [tail[0] + ((tip[0] - tail[0]) * 2) / 3, tail[1] + ((tip[1] - tail[1]) * 2) / 3, 0];
+  const dx = tip[0] - tail[0];
+  const dy = tip[1] - tail[1];
+  const len = Math.hypot(dx, dy) || 1;
+  const ux = dx / len;
+  const uy = dy / len;
+  const barbLen = 3.2;
+  const barbWide = 2.2;
+  const barb1: Vec3 = [tip[0] - ux * barbLen - uy * barbWide, tip[1] - uy * barbLen + ux * barbWide, 0];
+  const barb2: Vec3 = [tip[0] - ux * barbLen + uy * barbWide, tip[1] - uy * barbLen - ux * barbWide, 0];
+  const nodes: Vec3[] = [tail, mid1, mid2, tip, barb1, barb2];
+  const edges: Edge[] = [];
+  for (const e of [[0, 1], [1, 2], [2, 3]] as Edge[]) {
+    edges.push(e); // shaft weighted twice so it reads bold
+    edges.push(e);
+  }
+  edges.push([3, 4], [3, 5]); // arrowhead barbs
+  return { nodes, edges };
+}
+const ARROW = arrow();
+
 // ─── intro - scattered cloud the experience reforms from ─────────────────────
 function introCloud(count: number): Float32Array {
   return build(count, 99, (i, t, rng) => {
@@ -346,6 +372,7 @@ export function generateTargets(count: number): {
       buildGraph(count, 2, FUNNEL, { nodeFrac: 0.24, nodeJitter: 0.12, edgeJitter: 0.05 }),
       buildGraph(count, 3, TOWERS, { nodeFrac: 0.3, nodeJitter: 0.11, edgeJitter: 0.05 }),
       buildGraph(count, 4, GRAPH, { nodeFrac: 0.26, nodeJitter: 0.12, edgeJitter: 0.05 }),
+      buildGraph(count, 8, ARROW, { nodeFrac: 0.24, nodeJitter: 0.14, edgeJitter: 0.05 }),
       buildLattice(count, 5),
       buildGraph(count, 6, CONSTELLATION, { nodeFrac: 0.38, nodeJitter: 0.17, edgeJitter: 0.05 }),
       buildGraph(count, 7, HUB, { nodeFrac: 0.3, nodeJitter: 0.14, edgeJitter: 0.05 }),

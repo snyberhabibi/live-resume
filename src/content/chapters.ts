@@ -39,6 +39,9 @@ export interface Chapter {
   persona?: string[]; // about: the "I'm a ..." lines
   portrait?: string; // about: circular headshot src
   photo?: { src: string; alt: string; caption?: string }; // about: feature photo
+  strengths?: string[]; // "how I work": strengths
+  growth?: string; // "how I work": growth-areas note
+  tag?: string; // small badge, e.g. MBTI type
   note?: string; // small footer note
   links?: { text: string; href: string }[];
 }
@@ -90,6 +93,7 @@ export const CHAPTERS: Chapter[] = [
         current: true,
         bullets: [
           "Technical anchor through HashiCorp's acquisition by IBM: same customers, a larger platform, more on the line.",
+          "Saved at-risk renewals and opened net-new relationships by genuinely investing in each account, not just the deal.",
           "Still never below 100% on renewals and net-new ACV alike.",
         ],
       },
@@ -139,7 +143,26 @@ export const CHAPTERS: Chapter[] = [
     ],
   },
 
-  // 4  TOOLBELT
+  // 4  HOW I WORK (strengths + growth areas)
+  {
+    id: "howiwork",
+    nav: "How I Work",
+    kind: "left",
+    eyebrow: "HOW I WORK",
+    lines: ["I lead with trust,", "not ego."],
+    tag: "ENFJ · The Protagonist",
+    strengths: [
+      "I connect with anyone, and I genuinely care about the account, not just the number.",
+      "A real team player. I thrive where collaboration is part of the culture, and I do my best to keep that teamwork alive.",
+      "Fast learner, and not too proud to ask. I treat asking for help as a strength, not a weakness.",
+      "Very coachable: when a problem is outside my depth, I lean on people with deeper expertise to guide me through the maze, rather than guess.",
+      "Comfortable presenting and running live demos, and always working to get sharper.",
+    ],
+    growth:
+      "Focus, when the problem isn't clearly defined. I'll take on anything, so the discipline I keep building is choosing the right thing first. With no SE playbook to follow, I'll ask for guidance and weigh building the process against staying customer-facing by one test: which one actually drives revenue. Then I commit and protect my time.",
+  },
+
+  // 5  TOOLBELT
   {
     id: "toolbelt",
     nav: "Toolbelt",
@@ -147,14 +170,17 @@ export const CHAPTERS: Chapter[] = [
     eyebrow: "THE TOOLBELT",
     lines: ["Deep enough to build it.", "Fluent enough to sell it."],
     skills: [
-      { group: "Cloud & IaC", items: ["AWS", "Azure", "Terraform", "Vault", "Consul", "Nomad"] },
+      {
+        group: "Cloud & IaC",
+        items: ["AWS", "Azure", "Terraform", "Vault", "Consul", "Nomad", "Supabase"],
+      },
       {
         group: "Containers & Delivery",
         items: ["Kubernetes", "Docker", "Ansible", "GitHub Actions", "Git"],
       },
       {
         group: "Observability",
-        items: ["OpenTelemetry", "Grafana", "Datadog", "Splunk", "AppDynamics"],
+        items: ["OpenTelemetry", "Grafana", "Datadog", "PostHog", "Splunk", "AppDynamics"],
       },
       { group: "Languages & AI", items: ["Python", "TypeScript", "SQL", "Bash", "LLMs & RAG", "MCP"] },
     ],

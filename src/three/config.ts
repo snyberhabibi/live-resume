@@ -88,10 +88,11 @@ export const CHAPTER_ACCENT_LIGHT: string[] = [
   "#3d5a80", // 0 hero      - slate blue
   "#2f7d7a", // 1 approach  - teal (clarity)
   "#44567f", // 2 experience- indigo slate
-  "#b07d2b", // 3 impact    - bronze/gold (the 100% mark)
-  "#4a6076", // 4 toolbelt  - steel blue
-  "#9c6450", // 5 about     - warm terracotta (the human)
-  "#355f9e", // 6 contact   - confident blue
+  "#b07d2b", // 3 record    - bronze/gold (the 100% mark)
+  "#2f6f8e", // 4 how I work - trust teal-blue
+  "#4a6076", // 5 toolbelt  - steel blue
+  "#9c6450", // 6 about     - warm terracotta (the human)
+  "#355f9e", // 7 contact   - confident blue
 ];
 
 // Dark theme accents - cooler, luminous (drive bloom/godrays).
@@ -99,10 +100,11 @@ export const CHAPTER_ACCENT: string[] = [
   "#7fa8e8", // 0 hero
   "#4fd0c0", // 1 approach - cyan clarity
   "#9fb6cc", // 2 experience - cold steel
-  "#f4b14a", // 3 impact - warm gold (achievement)
-  "#a6b0f0", // 4 toolbelt - indigo
-  "#e0a07a", // 5 about - warm amber (the human)
-  "#8fc0ff", // 6 contact - sky blue
+  "#f4b14a", // 3 record - warm gold (achievement)
+  "#6fb8d8", // 4 how I work - trust teal-blue
+  "#a6b0f0", // 5 toolbelt - indigo
+  "#e0a07a", // 6 about - warm amber (the human)
+  "#8fc0ff", // 7 contact - sky blue
 ];
 
 // ─── Sky top/horizon per section ─────────────────────────────────────────────
@@ -112,7 +114,8 @@ export const CHAPTER_SKY_LIGHT: { top: string; horizon: string }[] = [
   { top: "#eef1f5", horizon: "#dde3ea" }, // hero
   { top: "#ecf2f2", horizon: "#d6e3e2" }, // approach - faint teal
   { top: "#edeef4", horizon: "#d9dce8" }, // experience - faint indigo
-  { top: "#f3f0ea", horizon: "#e7ddca" }, // impact - faint warm
+  { top: "#f3f0ea", horizon: "#e7ddca" }, // record - faint warm
+  { top: "#eef2f4", horizon: "#d8e6e8" }, // how I work - faint teal
   { top: "#eef0f5", horizon: "#dadfe9" }, // toolbelt - faint steel
   { top: "#f4efe9", horizon: "#e8d8c8" }, // about - faint warm
   { top: "#edf0f6", horizon: "#d8e0ee" }, // contact - faint blue
@@ -122,7 +125,8 @@ export const CHAPTER_SKY: { top: string; horizon: string }[] = [
   { top: "#05060c", horizon: "#1b233a" }, // hero
   { top: "#04080c", horizon: "#103030" }, // approach
   { top: "#070a12", horizon: "#16202c" }, // experience
-  { top: "#0a0810", horizon: "#2a1e10" }, // impact - warm horizon
+  { top: "#0a0810", horizon: "#2a1e10" }, // record - warm horizon
+  { top: "#05090c", horizon: "#0e2630" }, // how I work - teal
   { top: "#06070e", horizon: "#181830" }, // toolbelt
   { top: "#0a0710", horizon: "#2a1a12" }, // about - warm
   { top: "#06060e", horizon: "#1c2c46" }, // contact
@@ -140,10 +144,11 @@ export const CAM_KEYS: CamKey[] = [
   { pos: [0, 4.2, 30], target: [0, 4.2, 0], fov: 42 }, // 0 hero - face the icosahedron
   { pos: [-7, 7, 27], target: [0, 7, 0], fov: 46 }, // 1 approach - the converging funnel
   { pos: [7, 9.5, 50], target: [6, 8, 0], fov: 50 }, // 2 experience - towers, right of the cards
-  { pos: [0, 6.5, 29], target: [0, 6.5, 0], fov: 40 }, // 3 impact - the rising graph
-  { pos: [-11, 7.5, 31], target: [0, 6.5, 0], fov: 50 }, // 4 toolbelt - orbit the lattice cube
-  { pos: [9, 6.2, 34], target: [5, 6, 0], fov: 48 }, // 5 about - constellation, right of the photos
-  { pos: [0, 6, 30], target: [0, 6, 0], fov: 42 }, // 6 contact - face the hub
+  { pos: [0, 6.5, 29], target: [0, 6.5, 0], fov: 40 }, // 3 record - the rising graph
+  { pos: [8, 8.5, 46], target: [2, 8, 0], fov: 48 }, // 4 how I work - the arrow, right of the text
+  { pos: [-11, 7.5, 31], target: [0, 6.5, 0], fov: 50 }, // 5 toolbelt - orbit the lattice cube
+  { pos: [9, 6.2, 34], target: [5, 6, 0], fov: 48 }, // 6 about - constellation, right of the photos
+  { pos: [0, 6, 30], target: [0, 6, 0], fov: 42 }, // 7 contact - face the hub
 ];
 
 // Portrait/phone framing - each shape is re-centred and pulled back to sit
@@ -154,9 +159,10 @@ export const CAM_KEYS_MOBILE: CamKey[] = [
   { pos: [0, 7.0, 40], target: [0, 7.0, 0], fov: 56 }, // 1 approach
   { pos: [7, 8.0, 60], target: [7, 8.0, 0], fov: 54 }, // 2 experience
   { pos: [0, 6.5, 42], target: [0, 6.5, 0], fov: 52 }, // 3 record
-  { pos: [0, 6.4, 40], target: [0, 6.4, 0], fov: 56 }, // 4 toolbelt
-  { pos: [5, 6.0, 44], target: [5, 6.0, 0], fov: 54 }, // 5 about
-  { pos: [0, 6.0, 38], target: [0, 6.0, 0], fov: 50 }, // 6 contact
+  { pos: [2, 7.5, 48], target: [2, 7.5, 0], fov: 54 }, // 4 how I work
+  { pos: [0, 6.4, 40], target: [0, 6.4, 0], fov: 56 }, // 5 toolbelt
+  { pos: [5, 6.0, 44], target: [5, 6.0, 0], fov: 54 }, // 6 about
+  { pos: [0, 6.0, 38], target: [0, 6.0, 0], fov: 50 }, // 7 contact
 ];
 
 export const CHAPTER_COUNT = CAM_KEYS.length;

@@ -92,11 +92,12 @@ body {
 /* legibility over a luminous, shifting 3D backdrop.
    Light theme: a soft paper halo lifts dark text off the drifting particles. */
 .text-readable {
-  text-shadow: 0 1px 22px rgba(238, 240, 243, 0.92), 0 1px 3px rgba(238, 240, 243, 0.85);
+  text-shadow: 0 0 16px rgba(238, 240, 243, 0.96), 0 1px 24px rgba(238, 240, 243, 0.92),
+    0 1px 3px rgba(238, 240, 243, 0.85);
 }
 
 .text-readable-subtle {
-  text-shadow: 0 1px 14px rgba(238, 240, 243, 0.85);
+  text-shadow: 0 0 12px rgba(238, 240, 243, 0.95), 0 1px 16px rgba(238, 240, 243, 0.88);
 }
 
 /* dark theme flips the legibility halo from paper to ink */
