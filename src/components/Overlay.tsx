@@ -29,20 +29,41 @@ function Eyebrow({ label, accent, left = false }: { label: string; accent: strin
   );
 }
 
-function ScrollCue() {
+// persistent scroll indicator: shows on every section until the last, so a
+// visitor always knows there's more below
+function ScrollHint() {
+  const chapter = useScene((s) => s.chapter);
+  const show = chapter < CHAPTERS.length - 1;
   return (
-    <div className="flex flex-col items-center gap-2">
-      <span className="font-mono text-[8px] uppercase tracking-[0.45em] text-[var(--fg)]/55">
-        Scroll
-      </span>
-      <span className="relative block h-9 w-px overflow-hidden bg-[var(--fg)]/15">
-        <motion.span
-          className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-[var(--fg)]/60 to-transparent"
-          animate={{ y: ["-100%", "200%"] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </span>
-    </div>
+    <motion.div
+      aria-hidden
+      className="pointer-events-none fixed inset-x-0 bottom-3 z-[80] flex justify-center"
+      animate={{ opacity: show ? 0.9 : 0, y: show ? 0 : 8 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="flex items-center gap-2 rounded-full border border-[var(--fg)]/10 bg-[rgb(var(--scrim))]/70 px-3 py-1.5 backdrop-blur-md">
+        <span className="font-mono text-[8px] uppercase tracking-[0.35em] text-[var(--fg)]/60">
+          scroll
+        </span>
+        <motion.svg
+          width="10"
+          height="13"
+          viewBox="0 0 10 13"
+          fill="none"
+          className="text-[var(--fg)]/60"
+          animate={{ y: [0, 3, 0] }}
+          transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <path
+            d="M5 1v10M1.5 7.5 5 11l3.5-3.5"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </motion.svg>
+      </div>
+    </motion.div>
   );
 }
 
@@ -132,47 +153,53 @@ function CodeCard({ code, accent }: { code: string[]; accent: string }) {
   );
 }
 
-// ─── experience role cards ────────────────────────────────────────────────────
-function RoleCard({ role, accent, delay }: { role: RoleEntry; accent: string; delay: number }) {
+// ─── experience: each role as a terminal window ──────────────────────────────
+function slug(s: string) {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+function TerminalRole({ role, accent, delay }: { role: RoleEntry; accent: string; delay: number }) {
   return (
     <motion.article
-      className="border-l border-[var(--fg)]/15 py-1 pl-4"
-      initial={{ opacity: 0, x: -10 }}
-      whileInView={{ opacity: 1, x: 0 }}
+      className="overflow-hidden rounded-lg border border-[var(--fg)]/12 bg-[rgb(var(--scrim))]/85 shadow-[0_12px_36px_-14px_rgba(0,0,0,0.3)] backdrop-blur-md"
+      initial={{ opacity: 0, y: 14 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ ...SPRING, delay }}
     >
-      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
-        <h3 className="font-display text-[15px] font-semibold text-[var(--fg)] sm:text-[17px]">
-          {role.company}
-        </h3>
-        <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.12em] text-[var(--fg)]/65">
-          {role.period}
-          {role.current && (
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: accent }} />
-          )}
+      <div className="flex items-center gap-1.5 border-b border-[var(--fg)]/10 px-3 py-2">
+        <span className="h-2 w-2 rounded-full bg-[var(--fg)]/20" />
+        <span className="h-2 w-2 rounded-full bg-[var(--fg)]/20" />
+        <span className="h-2 w-2 rounded-full bg-[var(--fg)]/20" />
+        <span className="ml-2 truncate font-mono text-[9px] uppercase tracking-[0.18em] text-[var(--fg)]/50">
+          {slug(role.company)} — zsh
         </span>
+        {role.current && (
+          <span className="ml-auto flex shrink-0 items-center gap-1 font-mono text-[8px] uppercase tracking-[0.2em] text-[var(--fg)]/55">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: accent }} />
+            live
+          </span>
+        )}
       </div>
-      <p
-        className="mb-2 font-mono text-[11px] uppercase tracking-[0.16em] sm:text-[12px]"
-        style={{ color: accent }}
-      >
-        {role.role}
-        {role.note && <span className="ml-2 text-[var(--fg)]/60 normal-case">· {role.note}</span>}
-      </p>
-      <ul className="space-y-1">
+      <div className="px-4 py-3 font-mono text-[11px] leading-relaxed sm:text-[12px]">
+        <div className="text-[var(--fg)]/90">
+          <span style={{ color: accent }}>$</span> <span className="font-semibold">{role.company}</span>
+        </div>
+        <div className="mb-2 text-[var(--fg)]/65">
+          {role.role} · {role.period}
+          {role.note ? ` (${role.note})` : ""}
+        </div>
         {role.bullets.map((b, i) => (
-          <li
-            key={i}
-            className="flex gap-2 text-[12px] leading-relaxed text-[var(--fg)]/80 sm:text-[13px]"
-          >
+          <div key={i} className="flex gap-2 text-[var(--fg)]/80">
             <span className="shrink-0" style={{ color: accent }}>
-              ·
+              ›
             </span>
-            <span className="min-w-0">{b}</span>
-          </li>
+            <span>{b}</span>
+          </div>
         ))}
-      </ul>
+      </div>
     </motion.article>
   );
 }
@@ -380,7 +407,6 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
                 {chapter.sub}
               </p>
             )}
-            <ScrollCue />
           </motion.div>
         )}
       </section>
@@ -426,9 +452,9 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
         )}
 
         {chapter.roles && (
-          <div className="mt-6 grid max-w-4xl gap-x-10 gap-y-6 sm:grid-cols-2">
+          <div className="mt-6 grid max-w-4xl gap-4 sm:grid-cols-2">
             {chapter.roles.map((role, i) => (
-              <RoleCard key={role.company} role={role} accent={accent} delay={0.4 + i * 0.08} />
+              <TerminalRole key={role.company} role={role} accent={accent} delay={0.35 + i * 0.07} />
             ))}
           </div>
         )}
@@ -543,10 +569,13 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
 
 export function Overlay() {
   return (
-    <main className="relative z-10">
-      {CHAPTERS.map((chapter, i) => (
-        <Section key={chapter.id} chapter={chapter} index={i} />
-      ))}
-    </main>
+    <>
+      <main className="relative z-10">
+        {CHAPTERS.map((chapter, i) => (
+          <Section key={chapter.id} chapter={chapter} index={i} />
+        ))}
+      </main>
+      <ScrollHint />
+    </>
   );
 }

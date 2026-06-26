@@ -91,12 +91,12 @@ export function Rig() {
     if (!introDone.current) {
       if (st.reducedMotion || st.progress > 0.03) {
         introDone.current = true;
-      } else if (state.clock.elapsedTime < 2.0) {
+      } else if (state.clock.elapsedTime < 1.0) {
         // hold deep in the dust while the boot screen is still up
         tmpPos.copy(introStartPos);
         tmpTgt.copy(introStartTgt);
       } else {
-        introT.current = Math.min(1, introT.current + dt / 3.6);
+        introT.current = Math.min(1, introT.current + dt / 2.2);
         const e = 1 - Math.pow(1 - introT.current, 3); // easeOutCubic
         tmpPos.lerpVectors(introStartPos, tmpPos, e);
         tmpTgt.lerpVectors(introStartTgt, tmpTgt, e);

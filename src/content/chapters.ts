@@ -1,7 +1,8 @@
 // =============================================================================
-//  Content: the resume itself. A Solutions Engineer's story in seven beats.
-//  Strictly professional; the visual world is the theatre, these are the words
-//  a hiring manager reads.
+//  Content: the resume itself. A Solutions Engineer's story in eight beats,
+//  ordered "person first, then proof". One throughline end to end: I make
+//  complex technology simple for the people deciding to buy it, and I win on
+//  trust. Strictly professional; the words a hiring manager reads.
 // =============================================================================
 
 export interface RoleEntry {
@@ -33,41 +34,83 @@ export interface Chapter {
   sub?: string;
   body?: string; // a short supporting paragraph
   code?: string[]; // monospace code block (the motto)
-  roles?: RoleEntry[]; // experience cards
+  roles?: RoleEntry[]; // experience cards / terminals
   stats?: Stat[]; // the record
   skills?: SkillGroup[]; // the toolbelt
-  persona?: string[]; // about: the "I'm a ..." lines
-  portrait?: string; // about: circular headshot src
-  photo?: { src: string; alt: string; caption?: string }; // about: feature photo
   strengths?: string[]; // "how I work": strengths
   growth?: string; // "how I work": growth-areas note
   tag?: string; // small badge, e.g. MBTI type
+  persona?: string[]; // "who I am": the "I'm a ..." lines
+  portrait?: string; // circular headshot src
+  photo?: { src: string; alt: string; caption?: string }; // feature photo
   note?: string; // small footer note
   links?: { text: string; href: string }[];
 }
 
 export const CHAPTERS: Chapter[] = [
-  // 0  HERO
+  // 0  INTRO
   {
     id: "hero",
-    nav: "Welcome",
+    nav: "Intro",
     kind: "center",
     eyebrow: "HI, I'M",
     lines: ["Yusuf", "Rahman"],
     role: "Solutions Engineer · Dallas, TX",
     portrait: "/portrait.jpg",
-    sub: "I turn complexity into clarity, at work and off the clock. Give me 60 seconds and I'll tell you my story.",
+    sub: "I make complex technology simple for the people deciding whether to buy it. Scroll down and I'll introduce myself.",
   },
 
-  // 1  APPROACH
+  // 1  WHO I AM (person first)
+  {
+    id: "about",
+    nav: "Me",
+    kind: "left",
+    eyebrow: "WHO I AM",
+    lines: ["Start with", "the person."],
+    sub: "Before the résumé, here's who you'd actually be working with.",
+    portrait: "/portrait.jpg",
+    photo: {
+      src: "/dabka.jpg",
+      alt: "Yusuf teaching Middle Eastern folklore dance to a room of students",
+      caption: "Teaching Middle Eastern folklore dance to a room of students",
+    },
+    persona: [
+      "I'm a father to Talia, one year old, and the reason behind everything I do.",
+      "I'm a performer of Middle Eastern folklore dance at weddings, going on 10+ years.",
+      "I'm a community guy who loves supporting local and meeting new people.",
+      "I'm a builder, always tinkering with new tech and AI tools.",
+      "I work to live, not the other way around.",
+    ],
+  },
+
+  // 2  HOW I WORK
+  {
+    id: "howiwork",
+    nav: "How I Work",
+    kind: "left",
+    eyebrow: "HOW I WORK",
+    lines: ["I lead with trust,", "not ego."],
+    tag: "ENFJ · The Protagonist",
+    strengths: [
+      "I connect with anyone, and I genuinely care about the account, not just the number.",
+      "A real team player. I thrive where collaboration is part of the culture, and I do my best to keep that teamwork alive.",
+      "Fast learner, and not too proud to ask. I treat asking for help as a strength, not a weakness.",
+      "Very coachable: when a problem is outside my depth, I lean on people with deeper expertise to guide me through it, rather than guess.",
+      "Comfortable presenting and running live demos, and always working to get sharper.",
+    ],
+    growth:
+      "Focus, when the problem isn't clearly defined. I'll take on anything, so the discipline I keep building is choosing the right thing first. With no SE playbook to follow, I'll ask for guidance and weigh building the process against staying customer-facing by one test: which one actually drives revenue. Then I commit and protect my time.",
+  },
+
+  // 3  THE APPROACH
   {
     id: "approach",
     nav: "Approach",
     kind: "center",
     eyebrow: "THE APPROACH",
-    lines: ["Complex in.", "Simple out."],
-    sub: "A hundred moving parts, narrowed to the one that matters.",
-    body: "Every problem worth solving starts as noise: a stalled deal, a fractured architecture, a system nobody fully understands. My job is to find the one line through it and hand back something clean enough to trust.",
+    lines: ["I make complex things", "simple."],
+    sub: "That's really the whole job.",
+    body: "Customers come to me with messy, half-defined problems: a stalled deal, a system nobody fully understands, too many priorities at once. My job is to cut through the noise, figure out what actually matters, and give them one clear, workable answer they can trust.",
     code: [
       "// life motto",
       "if (sad() === true) {",
@@ -77,7 +120,7 @@ export const CHAPTERS: Chapter[] = [
     ],
   },
 
-  // 2  EXPERIENCE
+  // 4  THE WORK (experience, rendered as terminals)
   {
     id: "experience",
     nav: "Work",
@@ -127,14 +170,14 @@ export const CHAPTERS: Chapter[] = [
     ],
   },
 
-  // 3  THE RECORD
+  // 5  THE RECORD
   {
     id: "impact",
     nav: "Record",
     kind: "center",
     eyebrow: "THE RECORD",
     lines: ["Never below 100%."],
-    sub: "Renewals and net-new ACV, every year I've carried a quota.",
+    sub: "Quota, hit every single year I've carried one. Renewals and net-new alike.",
     stats: [
       { value: "100%+", label: "quota attainment, every year in sales" },
       { value: "$25M+", label: "team quota carried (year one, Cisco)" },
@@ -143,26 +186,7 @@ export const CHAPTERS: Chapter[] = [
     ],
   },
 
-  // 4  HOW I WORK (strengths + growth areas)
-  {
-    id: "howiwork",
-    nav: "How I Work",
-    kind: "left",
-    eyebrow: "HOW I WORK",
-    lines: ["I lead with trust,", "not ego."],
-    tag: "ENFJ · The Protagonist",
-    strengths: [
-      "I connect with anyone, and I genuinely care about the account, not just the number.",
-      "A real team player. I thrive where collaboration is part of the culture, and I do my best to keep that teamwork alive.",
-      "Fast learner, and not too proud to ask. I treat asking for help as a strength, not a weakness.",
-      "Very coachable: when a problem is outside my depth, I lean on people with deeper expertise to guide me through the maze, rather than guess.",
-      "Comfortable presenting and running live demos, and always working to get sharper.",
-    ],
-    growth:
-      "Focus, when the problem isn't clearly defined. I'll take on anything, so the discipline I keep building is choosing the right thing first. With no SE playbook to follow, I'll ask for guidance and weigh building the process against staying customer-facing by one test: which one actually drives revenue. Then I commit and protect my time.",
-  },
-
-  // 5  TOOLBELT
+  // 6  THE TOOLBELT
   {
     id: "toolbelt",
     nav: "Toolbelt",
@@ -186,30 +210,7 @@ export const CHAPTERS: Chapter[] = [
     ],
   },
 
-  // 5  OFF THE CLOCK (the human)
-  {
-    id: "about",
-    nav: "Life",
-    kind: "left",
-    eyebrow: "OFF THE CLOCK",
-    lines: ["A family man,", "first."],
-    sub: "Relationships are the whole job, so here's who you'd actually be working with.",
-    portrait: "/portrait.jpg",
-    photo: {
-      src: "/dabka.jpg",
-      alt: "Yusuf teaching Middle Eastern folklore dance to a room of students",
-      caption: "Teaching Middle Eastern folklore dance to a room of students",
-    },
-    persona: [
-      "I'm a father to Talia, one year old, and the purpose behind all of it.",
-      "I'm a performer of Middle Eastern folklore dance at weddings for 10+ years.",
-      "I'm a community guy who loves supporting local and meeting new people.",
-      "I'm a builder, always playing with new tech and AI tools.",
-      "I work to live, not the other way around.",
-    ],
-  },
-
-  // 6  CONTACT
+  // 7  CONTACT
   {
     id: "contact",
     nav: "Contact",
