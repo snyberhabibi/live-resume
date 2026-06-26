@@ -75,7 +75,7 @@ export const LIGHT = {
 };
 
 // ─── Per-section visuals. Order: person first, then proof. ───────────────────
-//   0 hero       identity (icosahedron)
+//   0 hero       identity (field cycles one glyph per "hat")
 //   1 about      who I am (particles cleared, photos lead)
 //   2 howiwork   strengths + growth (arrow)
 //   3 approach   the philosophy (funnel)
@@ -139,7 +139,7 @@ export interface CamKey {
   fov: number;
 }
 export const CAM_KEYS: CamKey[] = [
-  { pos: [0, 4.2, 30], target: [0, 4.2, 0], fov: 42 }, // 0 hero - icosahedron
+  { pos: [0, 4.2, 30], target: [0, 4.2, 0], fov: 42 }, // 0 hero - the "many hats" glyphs
   { pos: [9, 6.2, 34], target: [5, 6, 0], fov: 48 }, // 1 about - constellation, off to the side
   { pos: [8, 8.5, 46], target: [2, 8, 0], fov: 48 }, // 2 how I work - the arrow
   { pos: [-7, 7, 27], target: [0, 7, 0], fov: 46 }, // 3 approach - the funnel

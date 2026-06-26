@@ -48,10 +48,14 @@ export function Monument({ quality }: { quality: QualityTier }) {
 
   // ── morph target textures (built once, client-side) ──
   const targets = useMemo(() => {
-    const { initial, chapters } = generateTargets(count);
+    const { initial, chapters, hats } = generateTargets(count);
+    const hatsTex = hats.map((c) => dataTex(c, SIZE));
+    // chapter 0 IS the first hat - reuse its texture (the intro cycles the hats)
+    const chaptersTex = chapters.map((c, i) => (i === 0 ? hatsTex[0] : dataTex(c, SIZE)));
     return {
       initial: dataTex(initial, SIZE),
-      chapters: chapters.map((c) => dataTex(c, SIZE)),
+      chapters: chaptersTex,
+      hats: hatsTex,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count, SIZE]);
@@ -59,7 +63,9 @@ export function Monument({ quality }: { quality: QualityTier }) {
   useEffect(() => {
     return () => {
       targets.initial.dispose();
-      targets.chapters.forEach((t) => t.dispose());
+      // chapters[0] === hats[0]; dispose it once (via hats) to avoid double-free
+      targets.chapters.slice(1).forEach((t) => t.dispose());
+      targets.hats.forEach((t) => t.dispose());
     };
   }, [targets]);
 
@@ -231,7 +237,7 @@ export function Monument({ quality }: { quality: QualityTier }) {
     // a mid-experience quality remount lands already-formed on its chapter.
     morph.current =
       useScene.getState().chapter === 0 ? { t: 0, active: true } : { t: 1, active: false };
-    const unsub = useScene.subscribe(
+    const unsubChapter = useScene.subscribe(
       (s) => s.chapter,
       (chapter) => {
         simMat.uniforms.uPrev.value = simMat.uniforms.uTarget.value;
@@ -242,7 +248,22 @@ export function Monument({ quality }: { quality: QualityTier }) {
         if (!useScene.getState().reducedMotion) pulseTransition();
       },
     );
-    return unsub;
+    // on the intro, cycle the field through one glyph per "hat" (synced to the
+    // "I wear many hats" line via the shared hatIndex). A gentle reform each time -
+    // no camera surge, so the landing stays calm.
+    const unsubHat = useScene.subscribe(
+      (s) => s.hatIndex,
+      (hi) => {
+        if (useScene.getState().chapter !== 0) return;
+        simMat.uniforms.uPrev.value = simMat.uniforms.uTarget.value;
+        simMat.uniforms.uTarget.value = targets.hats[hi % targets.hats.length];
+        morph.current = { t: 0, active: true };
+      },
+    );
+    return () => {
+      unsubChapter();
+      unsubHat();
+    };
   }, [simMat, targets]);
 
   const tmpPlane = useMemo(() => new THREE.Plane(), []);

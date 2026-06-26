@@ -5,7 +5,7 @@
 //  resolves into the next clean structure ("complexity → clarity").
 //
 //  Order is person-first (matches CHAPTERS / the config arrays):
-//   0 hero       a faceted icosahedron        - a polished whole; identity
+//   0 hero       cycles through "many hats" glyphs - who Yusuf is
 //   1 about      a constellation (FADED OUT)  - the personal beat stays clean
 //   2 how I work an upward arrow              - direction, growth, revenue
 //   3 approach   a converging funnel          - complexity narrowed to a point
@@ -95,41 +95,7 @@ function buildGraph(
 
 const dist3 = (a: Vec3, b: Vec3) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 
-// connect every pair of nodes whose spacing is within `factor` of the minimum -
-// reconstructs the edges of a regular polyhedron from its vertices alone
-function minEdges(nodes: Vec3[], factor = 1.06): Edge[] {
-  let min = Infinity;
-  for (let i = 0; i < nodes.length; i++)
-    for (let j = i + 1; j < nodes.length; j++) {
-      const d = dist3(nodes[i], nodes[j]);
-      if (d > 1e-6 && d < min) min = d;
-    }
-  const edges: Edge[] = [];
-  const thr = min * factor;
-  for (let i = 0; i < nodes.length; i++)
-    for (let j = i + 1; j < nodes.length; j++) {
-      if (dist3(nodes[i], nodes[j]) <= thr) edges.push([i, j]);
-    }
-  return edges;
-}
-
 const HERO_Y = 4.6;
-
-// ─── 0 - hero: faceted icosahedron (12 vertices, 30 edges) ───────────────────
-function icosahedron(radius: number, cy: number): Graph {
-  const t = (1 + Math.sqrt(5)) / 2;
-  const raw: Vec3[] = [
-    [-1, t, 0], [1, t, 0], [-1, -t, 0], [1, -t, 0],
-    [0, -1, t], [0, 1, t], [0, -1, -t], [0, 1, -t],
-    [t, 0, -1], [t, 0, 1], [-t, 0, -1], [-t, 0, 1],
-  ];
-  const nodes: Vec3[] = raw.map((v) => {
-    const l = Math.hypot(v[0], v[1], v[2]);
-    return [(v[0] / l) * radius, (v[1] / l) * radius + cy, (v[2] / l) * radius];
-  });
-  return { nodes, edges: minEdges(nodes, 1.05) };
-}
-const HERO = icosahedron(R * 0.82, HERO_Y);
 
 // ─── 1 - approach: converging funnel (wide square rings → a point) ───────────
 function funnel(): Graph {
@@ -349,6 +315,230 @@ function arrow(): Graph {
 }
 const ARROW = arrow();
 
+// ─── INTRO HATS ──────────────────────────────────────────────────────────────
+//  "I wear many hats." On the landing, the field morphs through one wireframe
+//  icon per hat, in lock-step with the cycling text: a HAT (Solutions Engineer),
+//  a parent + child (Father), a dancer (Performer), a circle of people
+//  (Community builder), a wrench (Tinkerer), a lightbulb (Problem solver).
+//  Each icon is a flat, camera-facing glyph so it reads cleanly head-on. The
+//  glyphs ride high (above the lower-third title block) so they're never hidden
+//  behind the portrait or name.
+const HAT_CY = 10.2;
+
+// shared graph utilities for composing/normalising the glyphs
+function offsetY(g: Graph, dy: number): Graph {
+  return { nodes: g.nodes.map(([x, y, z]) => [x, y + dy, z] as Vec3), edges: g.edges };
+}
+function mergeGraphs(...gs: Graph[]): Graph {
+  const nodes: Vec3[] = [];
+  const edges: Edge[] = [];
+  for (const g of gs) {
+    const base = nodes.length;
+    for (const n of g.nodes) nodes.push(n);
+    for (const [a, b] of g.edges) edges.push([a + base, b + base]);
+  }
+  return { nodes, edges };
+}
+// shift so the glyph's bounding box is centred on the origin
+function recenter(g: Graph): Graph {
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (const [x, y] of g.nodes) {
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+  const cx = (minX + maxX) / 2;
+  const cy = (minY + maxY) / 2;
+  return { nodes: g.nodes.map(([x, y, z]) => [x - cx, y - cy, z] as Vec3), edges: g.edges };
+}
+// scale uniformly so the dominant half-extent matches `half` (consistent sizes)
+function fit(g: Graph, half: number): Graph {
+  let m = 0;
+  for (const [x, y] of g.nodes) m = Math.max(m, Math.abs(x), Math.abs(y));
+  const s = m > 1e-6 ? half / m : 1;
+  return { nodes: g.nodes.map(([x, y, z]) => [x * s, y * s, z] as Vec3), edges: g.edges };
+}
+
+// a simple posable stick person - fixed 14-node layout:
+//   0..7 head ring · 8 neck · 9 hip · 10 armL · 11 armR · 12 legL · 13 legR
+function person(
+  cx: number,
+  feetY: number,
+  h: number,
+  pose: { armL?: Vec3; armR?: Vec3; legL?: Vec3; legR?: Vec3 } = {},
+): Graph {
+  const nodes: Vec3[] = [];
+  const edges: Edge[] = [];
+  const headR = h * 0.14;
+  const headCy = feetY + h - headR;
+  const SEG = 8;
+  for (let k = 0; k < SEG; k++) {
+    const a = (k / SEG) * TAU;
+    nodes.push([cx + Math.cos(a) * headR, headCy + Math.sin(a) * headR, 0]);
+  }
+  for (let k = 0; k < SEG; k++) edges.push([k, (k + 1) % SEG]);
+  const neckY = headCy - headR;
+  const hipY = feetY + h * 0.4;
+  nodes.push([cx, neckY, 0]); // 8 neck
+  nodes.push([cx, hipY, 0]); // 9 hip
+  edges.push([8, 9], [8, 9]); // spine (bold)
+  const shY = neckY - (neckY - hipY) * 0.22; // shoulder height
+  const aL = pose.armL ?? ([-h * 0.2, -h * 0.16, 0] as Vec3);
+  const aR = pose.armR ?? ([h * 0.2, -h * 0.16, 0] as Vec3);
+  nodes.push([cx + aL[0], shY + aL[1], 0]); // 10 armL tip
+  nodes.push([cx + aR[0], shY + aR[1], 0]); // 11 armR tip
+  edges.push([8, 10], [8, 11]);
+  const lL = pose.legL ?? ([-h * 0.15, -h * 0.4, 0] as Vec3);
+  const lR = pose.legR ?? ([h * 0.15, -h * 0.4, 0] as Vec3);
+  nodes.push([cx + lL[0], hipY + lL[1], 0]); // 12 legL foot
+  nodes.push([cx + lR[0], hipY + lR[1], 0]); // 13 legR foot
+  edges.push([9, 12], [9, 13]);
+  return { nodes, edges };
+}
+
+// Solutions Engineer - a hat (the "many hats" anchor)
+function hatIcon(): Graph {
+  const nodes: Vec3[] = [
+    [-5.4, -1.1, 0], [-3.1, -0.4, 0], [0, -0.7, 0], [3.1, -0.4, 0], [5.4, -1.1, 0], // brim 0-4
+    [-2.5, -0.5, 0], [-1.9, 3.3, 0], [1.9, 3.3, 0], [2.5, -0.5, 0], // crown 5-8
+    [-2.3, 0.1, 0], [2.3, 0.1, 0], // band 9-10
+  ];
+  const edges: Edge[] = [
+    [0, 1], [1, 2], [2, 3], [3, 4], // brim arc
+    [5, 6], [6, 7], [7, 8], [8, 5], // crown
+    [9, 10], // band
+    [5, 1], [8, 3], // seat crown on the brim
+  ];
+  return { nodes, edges };
+}
+
+// Father - a tall figure holding a small child's hand
+function fatherIcon(): Graph {
+  const parent = person(-1.9, -5, 9.0, { armR: [2.8, -2.3, 0] });
+  const child = person(2.6, -5, 5.4, { armL: [-1.3, 0.2, 0] });
+  const g = mergeGraphs(parent, child);
+  g.edges.push([11, 24]); // parent.armR (11) holds child.armL (14+10)
+  return g;
+}
+
+// Performer - a dancer mid-step (arms up, one leg kicked out)
+function dancerIcon(): Graph {
+  return person(0, -4.6, 9.4, {
+    armL: [-2.7, 2.5, 0],
+    armR: [2.7, 2.8, 0],
+    legL: [-2.3, -3.6, 0],
+    legR: [2.9, -2.3, 0],
+  });
+}
+
+// Community builder - a circle of people gathered, hands joined
+function communityIcon(): Graph {
+  const nodes: Vec3[] = [];
+  const edges: Edge[] = [];
+  const cx = 0, cy = 0, ringR = 3.5, headR = 0.82, N = 6, SEG = 8;
+  const inner: number[] = [];
+  for (let p = 0; p < N; p++) {
+    const a = (p / N) * TAU - Math.PI / 2;
+    const hx = cx + Math.cos(a) * ringR;
+    const hy = cy + Math.sin(a) * ringR;
+    const head0 = nodes.length;
+    for (let k = 0; k < SEG; k++) {
+      const aa = (k / SEG) * TAU;
+      nodes.push([hx + Math.cos(aa) * headR, hy + Math.sin(aa) * headR, 0]);
+    }
+    for (let k = 0; k < SEG; k++) edges.push([head0 + k, head0 + ((k + 1) % SEG)]);
+    const inIdx = nodes.length;
+    nodes.push([cx + Math.cos(a) * (ringR - 1.7), cy + Math.sin(a) * (ringR - 1.7), 0]);
+    edges.push([head0, inIdx]); // short body toward the centre
+    inner.push(inIdx);
+  }
+  for (let p = 0; p < N; p++) edges.push([inner[p], inner[(p + 1) % N]]); // joined hands
+  return { nodes, edges };
+}
+
+// Tinkerer - an open-end wrench
+function wrenchIcon(): Graph {
+  const A: Vec3 = [-3.0, -4.0, 0];
+  const B: Vec3 = [1.3, 1.4, 0];
+  const dx = B[0] - A[0];
+  const dy = B[1] - A[1];
+  const len = Math.hypot(dx, dy) || 1;
+  const ux = dx / len, uy = dy / len; // along the handle
+  const px = -uy, py = ux; // perpendicular
+  const hw = 0.42; // half handle width
+  const jw = 1.1; // jaw half width
+  const jl = 2.0; // jaw length
+  const nodes: Vec3[] = [
+    [A[0] + px * hw, A[1] + py * hw, 0], // 0 handle L bottom
+    [A[0] - px * hw, A[1] - py * hw, 0], // 1 handle R bottom
+    [B[0] + px * hw, B[1] + py * hw, 0], // 2 handle L top
+    [B[0] - px * hw, B[1] - py * hw, 0], // 3 handle R top
+    [B[0] + px * jw, B[1] + py * jw, 0], // 4 jaw base L
+    [B[0] - px * jw, B[1] - py * jw, 0], // 5 jaw base R
+    [B[0] + px * jw + ux * jl, B[1] + py * jw + uy * jl, 0], // 6 jaw tip L
+    [B[0] - px * jw + ux * jl, B[1] - py * jw + uy * jl, 0], // 7 jaw tip R
+  ];
+  const edges: Edge[] = [
+    [0, 2], [1, 3], [0, 1], // handle sides + bottom cap
+    [2, 4], [3, 5], // shoulders into the jaw
+    [4, 5], // jaw inner base (the notch)
+    [4, 6], [5, 7], // jaw prongs (open between 6 and 7)
+  ];
+  return { nodes, edges };
+}
+
+// Problem solver - a lightbulb (the idea)
+function bulbIcon(): Graph {
+  const nodes: Vec3[] = [];
+  const edges: Edge[] = [];
+  const bcy = 1.5, br = 2.5, SEG = 14;
+  for (let k = 0; k < SEG; k++) {
+    const a = (k / SEG) * TAU;
+    nodes.push([Math.cos(a) * br, bcy + Math.sin(a) * br, 0]);
+  }
+  for (let k = 0; k < SEG; k++) edges.push([k, (k + 1) % SEG]);
+  const topY = bcy - br + 0.1;
+  const w = 0.9;
+  const i0 = nodes.length;
+  nodes.push([-w, topY, 0], [w, topY, 0], [w, topY - 1.6, 0], [-w, topY - 1.6, 0]); // base box i0..i0+3
+  edges.push([i0, i0 + 1], [i0 + 1, i0 + 2], [i0 + 2, i0 + 3], [i0 + 3, i0]);
+  const t1 = nodes.length;
+  nodes.push([-w, topY - 0.55, 0], [w, topY - 0.55, 0]); // thread line 1
+  edges.push([t1, t1 + 1]);
+  const t2 = nodes.length;
+  nodes.push([-w, topY - 1.1, 0], [w, topY - 1.1, 0]); // thread line 2
+  edges.push([t2, t2 + 1]);
+  const tip = nodes.length;
+  nodes.push([-0.45, topY - 2.1, 0], [0.45, topY - 2.1, 0]); // contact tip
+  edges.push([i0 + 3, tip], [i0 + 2, tip + 1], [tip, tip + 1]);
+  const f = nodes.length;
+  nodes.push(
+    [-1.0, topY + 0.4, 0], [-0.45, bcy + 0.9, 0], [0.0, topY + 0.5, 0],
+    [0.45, bcy + 0.9, 0], [1.0, topY + 0.4, 0], // filament (a W)
+  );
+  edges.push([f, f + 1], [f + 1, f + 2], [f + 2, f + 3], [f + 3, f + 4]);
+  edges.push([i0, f], [i0 + 1, f + 4]); // filament legs down to the base
+  return { nodes, edges };
+}
+
+// each glyph: recentre, scale to a common size, lift to the hero height
+const HAT_HALF = 4.9;
+const HATS: Graph[] = [
+  hatIcon(), // 0 Solutions Engineer
+  fatherIcon(), // 1 Father
+  dancerIcon(), // 2 Performer
+  communityIcon(), // 3 Community builder
+  wrenchIcon(), // 4 Tinkerer
+  bulbIcon(), // 5 Problem solver
+].map((g) => offsetY(fit(recenter(g), HAT_HALF), HAT_CY));
+
+function buildHats(count: number): Float32Array[] {
+  return HATS.map((g, i) =>
+    buildGraph(count, 20 + i, g, { nodeFrac: 0.3, nodeJitter: 0.12, edgeJitter: 0.06 }),
+  );
+}
+
 // ─── intro - scattered cloud the experience reforms from ─────────────────────
 function introCloud(count: number): Float32Array {
   return build(count, 99, (i, t, rng) => {
@@ -366,11 +556,13 @@ function introCloud(count: number): Float32Array {
 export function generateTargets(count: number): {
   initial: Float32Array;
   chapters: Float32Array[];
+  hats: Float32Array[];
 } {
+  const hats = buildHats(count);
   return {
     initial: introCloud(count),
     chapters: [
-      buildGraph(count, 1, HERO, { nodeFrac: 0.22, nodeJitter: 0.13, edgeJitter: 0.045 }), // 0 hero
+      hats[0], // 0 hero - the first hat; the intro cycles through every hat
       buildGraph(count, 6, CONSTELLATION, { nodeFrac: 0.38, nodeJitter: 0.17, edgeJitter: 0.05 }), // 1 about (faded)
       buildGraph(count, 8, ARROW, { nodeFrac: 0.24, nodeJitter: 0.14, edgeJitter: 0.05 }), // 2 how I work
       buildGraph(count, 2, FUNNEL, { nodeFrac: 0.24, nodeJitter: 0.12, edgeJitter: 0.05 }), // 3 approach
@@ -379,5 +571,6 @@ export function generateTargets(count: number): {
       buildLattice(count, 5), // 6 toolbelt
       buildGraph(count, 7, HUB, { nodeFrac: 0.3, nodeJitter: 0.14, edgeJitter: 0.05 }), // 7 contact
     ],
+    hats,
   };
 }
