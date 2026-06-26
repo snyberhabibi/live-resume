@@ -59,6 +59,9 @@ export function useLenis() {
         force: true,
         onComplete: () => {
           animating = false;
+          // move focus to the landed section so SR/keyboard users are told where
+          // they are (sections are tabindex=-1, so no visible ring on mouse nav)
+          els[next]?.focus?.({ preventScroll: true });
         },
       });
     };

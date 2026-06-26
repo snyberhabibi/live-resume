@@ -4,13 +4,15 @@
 //  Between any two shapes the cloud blows apart into turbulent chaos and then
 //  resolves into the next clean structure ("complexity → clarity").
 //
+//  Order is person-first (matches CHAPTERS / the config arrays):
 //   0 hero       a faceted icosahedron        - a polished whole; identity
-//   1 approach   a converging funnel          - complexity narrowed to a point
-//   2 experience four ascending tower frames  - JPMorgan · Cisco · HashiCorp · IBM
-//   3 impact     a rising performance graph   - never below the 100% baseline
-//   4 toolbelt   a 4×4×4 lattice cube         - the structured toolkit
-//   5 about      a loose constellation        - community, family, connection
-//   6 contact    a hub-and-spoke network      - let's connect
+//   1 about      a constellation (FADED OUT)  - the personal beat stays clean
+//   2 how I work an upward arrow              - direction, growth, revenue
+//   3 approach   a converging funnel          - complexity narrowed to a point
+//   4 experience four ascending tower frames  - JPMorgan · Cisco · HashiCorp · IBM
+//   5 record     a rising performance graph   - never below the 100% baseline
+//   6 toolbelt   a 4×4×4 lattice cube         - the structured toolkit
+//   7 contact    a hub-and-spoke network      - let's connect
 //
 //  RGBA-packed (xyz = position, w = 1) for a FloatType DataTexture, count = SIZE².
 // ───────────────────────────────────────────────────────────────────────────
