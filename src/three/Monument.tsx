@@ -312,7 +312,7 @@ export function Monument({ quality }: { quality: QualityTier }) {
     // ink (normal blending) needs more coverage to read than additive glow
     // ease the particle field toward near-invisible on minimal-graphic sections
     const fadeTarget = MINIMAL_GRAPHIC_SECTIONS.has(st.chapter) ? 0 : 1;
-    graphicFade.current += (fadeTarget - graphicFade.current) * (1 - Math.exp(-5 * dt));
+    graphicFade.current += (fadeTarget - graphicFade.current) * (1 - Math.exp(-10 * dt));
     pointsMat.uniforms.uOpacity.value = params.opacity * (light ? 2.4 : 1) * graphicFade.current;
     pointsMat.uniforms.uLight.value += ((light ? 1 : 0) - pointsMat.uniforms.uLight.value) * (1 - Math.exp(-4 * dt));
     // kinetic energy: grains swell with scroll speed + audio loudness

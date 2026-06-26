@@ -31,6 +31,7 @@ export interface Chapter {
   eyebrow?: string;
   lines: string[];
   role?: string; // hero subtitle (e.g. "Solutions Engineer")
+  hats?: string[]; // hero "I wear many hats" cycling roles
   sub?: string;
   body?: string; // a short supporting paragraph
   code?: string[]; // monospace code block (the motto)
@@ -56,6 +57,7 @@ export const CHAPTERS: Chapter[] = [
     eyebrow: "HI, I'M",
     lines: ["Yusuf", "Rahman"],
     role: "Solutions Engineer · Dallas, TX",
+    hats: ["Solutions Engineer", "Father", "Performer", "Community builder", "Tinkerer", "Problem solver"],
     portrait: "/portrait.jpg",
     sub: "I make complex technology simple for the people deciding whether to buy it. Scroll down and I'll introduce myself.",
   },

@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { CHAPTERS, type Chapter, type RoleEntry } from "@/content/chapters";
 import { CHAPTER_ACCENT, CHAPTER_ACCENT_LIGHT } from "@/three/config";
 import { useScene } from "@/three/store";
@@ -89,6 +90,40 @@ function Headline({ lines, isHero, center }: { lines: string[]; isHero: boolean;
   );
 }
 
+// ─── "I wear many hats": a cycling role line on the intro ────────────────────
+function ManyHats({ hats, accent }: { hats: string[]; accent: string }) {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setI((x) => (x + 1) % hats.length), 2200);
+    return () => clearInterval(t);
+  }, [hats.length]);
+  return (
+    <motion.div
+      className="mt-4 flex items-center justify-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-readable-subtle sm:text-[12px]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ ...SPRING, delay: 0.7 }}
+    >
+      <span className="text-[var(--fg)]/55">I wear many hats:</span>
+      <span className="relative inline-block h-[1.4em] min-w-[12em] text-left">
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={i}
+            className="absolute left-0 top-0 whitespace-nowrap font-semibold"
+            style={{ color: accent }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3 }}
+          >
+            {hats[i]}
+          </motion.span>
+        </AnimatePresence>
+      </span>
+    </motion.div>
+  );
+}
+
 // ─── the life-motto, as a small editor card ──────────────────────────────────
 const KEYWORDS = new Set(["if", "else", "return", "const", "let", "var", "function", "new"]);
 const LITERALS = new Set(["true", "false", "null", "undefined"]);
@@ -174,7 +209,7 @@ function TerminalRole({ role, accent, delay }: { role: RoleEntry; accent: string
         <span className="h-2 w-2 rounded-full bg-[var(--fg)]/20" />
         <span className="h-2 w-2 rounded-full bg-[var(--fg)]/20" />
         <span className="ml-2 truncate font-mono text-[9px] uppercase tracking-[0.18em] text-[var(--fg)]/50">
-          {slug(role.company)} — zsh
+          {slug(role.company)} · zsh
         </span>
         {role.current && (
           <span className="ml-auto flex shrink-0 items-center gap-1 font-mono text-[8px] uppercase tracking-[0.2em] text-[var(--fg)]/55">
@@ -282,7 +317,10 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
     const isContact = chapter.id === "contact";
     return (
       <section
-        className={`relative flex min-h-[100svh] justify-center overflow-hidden px-6 sm:px-12 ${
+        id={`chapter-${chapter.id}`}
+        aria-label={chapter.nav}
+        tabIndex={-1}
+        className={`relative flex min-h-[100svh] justify-center overflow-hidden px-6 outline-none sm:px-12 ${
           isContact ? "items-end pb-[8vh]" : "items-center"
         }`}
       >
@@ -325,6 +363,8 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
               {chapter.role}
             </motion.p>
           )}
+
+          {isHero && chapter.hats && <ManyHats hats={chapter.hats} accent={accent} />}
 
           {/* sub line - for non-hero centers shows directly under the headline */}
           {chapter.sub && !isHero && (
@@ -384,7 +424,7 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
           )}
           {isContact && chapter.note && (
             <motion.p
-              className="mt-7 font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--fg)]/40"
+              className="mt-7 font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--fg)]/60"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
@@ -413,9 +453,14 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
     );
   }
 
-  // ── LEFT sections: experience, toolbelt ──
+  // ── LEFT sections: about, how I work, experience, toolbelt ──
   return (
-    <section className="relative flex min-h-[100svh] items-end overflow-hidden">
+    <section
+      id={`chapter-${chapter.id}`}
+      aria-label={chapter.nav}
+      tabIndex={-1}
+      className="relative flex min-h-[100svh] items-end overflow-hidden outline-none"
+    >
       <div aria-hidden className={`${SCRIM} h-[92%]`} />
       <div className="relative z-[1] w-full max-w-4xl px-6 pb-16 sm:px-10 sm:pb-20 lg:px-[9%] lg:pb-24">
         {chapter.eyebrow && <Eyebrow label={chapter.eyebrow} accent={accent} left />}

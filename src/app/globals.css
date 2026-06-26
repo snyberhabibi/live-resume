@@ -9,6 +9,7 @@
   --fg-dim: rgba(27, 34, 43, 0.7);
   --scrim: 238, 240, 243;
   --accent: #3d5a80;
+  color-scheme: light;
 }
 
 /* DRAFTING TABLE - dark theme (the toggle) */
@@ -20,6 +21,7 @@
   --fg-dim: rgba(238, 242, 248, 0.82);
   --scrim: 7, 8, 9;
   --accent: #7fa8e8;
+  color-scheme: dark;
 }
 
 @theme inline {
