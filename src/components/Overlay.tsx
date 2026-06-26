@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { CHAPTERS, type Chapter, type RoleEntry } from "@/content/chapters";
 import { CHAPTER_ACCENT, CHAPTER_ACCENT_LIGHT } from "@/three/config";
 import { useScene } from "@/three/store";
@@ -71,7 +71,7 @@ function ScrollHint() {
 function Headline({ lines, isHero, center }: { lines: string[]; isHero: boolean; center: boolean }) {
   const Tag = isHero ? "h1" : "h2";
   const size = isHero
-    ? "text-[clamp(2.4rem,9vw,7rem)]"
+    ? "text-[clamp(2.1rem,8vw,5.8rem)]"
     : center
       ? "text-[clamp(1.9rem,6vw,4.2rem)]"
       : "text-[clamp(1.5rem,4.4vw,3.1rem)]";
@@ -90,36 +90,69 @@ function Headline({ lines, isHero, center }: { lines: string[]; isHero: boolean;
   );
 }
 
-// ─── "I wear many hats": a cycling role line on the intro ────────────────────
-function ManyHats({ hats, accent }: { hats: string[]; accent: string }) {
-  const [i, setI] = useState(0);
+// a blinking terminal block cursor
+function Cursor({ accent }: { accent: string }) {
+  return (
+    <motion.span
+      aria-hidden
+      className="ml-1 inline-block h-[0.95em] w-[0.5em] translate-y-[0.1em] align-baseline"
+      style={{ background: accent }}
+      animate={{ opacity: [1, 1, 0, 0] }}
+      transition={{ duration: 0.85, repeat: Infinity, times: [0, 0.5, 0.5, 1], ease: "linear" }}
+    />
+  );
+}
+
+// types `text` out one character at a time, terminal-style, with a block cursor.
+// An invisible sizer reserves the full width so the line doesn't jitter as it types.
+function Typewriter({ text, accent }: { text: string; accent: string }) {
+  const [n, setN] = useState(0);
   useEffect(() => {
-    const t = setInterval(() => setI((x) => (x + 1) % hats.length), 2200);
+    setN(0);
+    if (!text) return;
+    let k = 0;
+    const id = setInterval(() => {
+      k += 1;
+      setN(k);
+      if (k >= text.length) clearInterval(id);
+    }, 55);
+    return () => clearInterval(id);
+  }, [text]);
+  return (
+    <span className="relative inline-block text-left align-baseline">
+      <span aria-hidden className="invisible whitespace-nowrap font-semibold">
+        {text}
+      </span>
+      <span className="absolute left-0 top-0 flex items-center whitespace-nowrap font-semibold" style={{ color: accent }}>
+        {text.slice(0, n)}
+        <Cursor accent={accent} />
+      </span>
+    </span>
+  );
+}
+
+// ─── "I wear many hats": the role types in like a terminal, in lock-step with
+//     the 3D glyph above it (both read the shared hatIndex) ──────────────────
+function ManyHats({ hats, accent }: { hats: string[]; accent: string }) {
+  const i = useScene((s) => s.hatIndex) % hats.length;
+  const setHatIndex = useScene((s) => s.setHatIndex);
+  useEffect(() => {
+    setHatIndex(0); // entering the intro restarts at the first hat
+    const t = setInterval(
+      () => setHatIndex((useScene.getState().hatIndex + 1) % hats.length),
+      2600,
+    );
     return () => clearInterval(t);
-  }, [hats.length]);
+  }, [hats.length, setHatIndex]);
   return (
     <motion.div
-      className="mt-4 flex items-center justify-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-readable-subtle sm:text-[12px]"
+      className="mt-4 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-mono text-[11px] uppercase tracking-[0.2em] text-readable-subtle sm:text-[12px]"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ ...SPRING, delay: 0.7 }}
     >
       <span className="text-[var(--fg)]/55">I wear many hats:</span>
-      <span className="relative inline-block h-[1.4em] min-w-[12em] text-left">
-        <AnimatePresence mode="wait">
-          <motion.span
-            key={i}
-            className="absolute left-0 top-0 whitespace-nowrap font-semibold"
-            style={{ color: accent }}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3 }}
-          >
-            {hats[i]}
-          </motion.span>
-        </AnimatePresence>
-      </span>
+      <Typewriter text={hats[i]} accent={accent} />
     </motion.div>
   );
 }
@@ -321,11 +354,15 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
         aria-label={chapter.nav}
         tabIndex={-1}
         className={`relative flex min-h-[100svh] justify-center overflow-hidden px-6 outline-none sm:px-12 ${
-          isContact ? "items-end pb-[8vh]" : "items-center"
+          isContact ? "items-end pb-[8vh]" : isHero ? "items-end pb-[9vh] sm:pb-[11vh]" : "items-center"
         }`}
       >
-        {isContact && <div aria-hidden className={`${SCRIM} h-[58%]`} />}
-        {!isContact && (
+        {/* hero + contact: the title sits low; a bottom scrim lifts it off the form.
+            the morphing "many hats" glyph owns the clear upper half. */}
+        {(isContact || isHero) && (
+          <div aria-hidden className={`${SCRIM} ${isHero ? "h-[62%]" : "h-[58%]"}`} />
+        )}
+        {!isContact && !isHero && (
           // soft paper halo lifts the centered text/code off the dark ink form
           <div
             aria-hidden
@@ -337,20 +374,22 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
           />
         )}
         <div className="relative z-[1] max-w-4xl text-center">
+          {/* hero lead: the morphing "many hats" glyph rides above; the portrait
+              sits between "Hi, I'm" and the name as a human anchor */}
+          {chapter.eyebrow && <Eyebrow label={chapter.eyebrow} accent={accent} />}
           {isHero && chapter.portrait && (
             <motion.img
               src={chapter.portrait}
               alt="Yusuf Rahman"
-              width={112}
-              height={112}
-              className="mx-auto mb-6 h-24 w-24 rounded-full object-cover shadow-xl ring-1 ring-[var(--fg)]/25 sm:h-28 sm:w-28"
+              width={88}
+              height={88}
+              className="mx-auto mb-4 mt-1 h-16 w-16 rounded-full object-cover shadow-lg ring-1 ring-[var(--fg)]/25 sm:h-20 sm:w-20"
               style={{ objectPosition: "center 22%" }}
-              initial={{ opacity: 0, scale: 0.92, y: 10 }}
+              initial={{ opacity: 0, scale: 0.92, y: 8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ ...SPRING, delay: 0.15 }}
+              transition={{ ...SPRING, delay: 0.3 }}
             />
           )}
-          {chapter.eyebrow && <Eyebrow label={chapter.eyebrow} accent={accent} />}
           <Headline lines={chapter.lines} isHero={isHero} center />
 
           {isHero && chapter.role && (
@@ -365,6 +404,17 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
           )}
 
           {isHero && chapter.hats && <ManyHats hats={chapter.hats} accent={accent} />}
+
+          {isHero && chapter.sub && (
+            <motion.p
+              className="mx-auto mt-5 max-w-sm text-balance font-display text-[15px] text-[var(--fg)]/85 text-readable sm:max-w-xl sm:text-lg"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...SPRING, delay: 0.95 }}
+            >
+              {chapter.sub}
+            </motion.p>
+          )}
 
           {/* sub line - for non-hero centers shows directly under the headline */}
           {chapter.sub && !isHero && (
@@ -435,20 +485,6 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
           )}
         </div>
 
-        {isHero && (
-          <motion.div
-            className="absolute inset-x-0 bottom-8 z-[1] flex flex-col items-center gap-6 px-6"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...SPRING, delay: 1.4 }}
-          >
-            {chapter.sub && (
-              <p className="max-w-sm text-balance text-center font-display text-base text-[var(--fg)]/85 text-readable sm:max-w-xl sm:text-xl">
-                {chapter.sub}
-              </p>
-            )}
-          </motion.div>
-        )}
       </section>
     );
   }

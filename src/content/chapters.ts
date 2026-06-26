@@ -81,7 +81,6 @@ export const CHAPTERS: Chapter[] = [
       "I'm a performer of Middle Eastern folklore dance at weddings, going on 10+ years.",
       "I'm a community guy who loves supporting local and meeting new people.",
       "I'm a builder, always tinkering with new tech and AI tools.",
-      "I work to live, not the other way around.",
     ],
   },
 
@@ -94,7 +93,7 @@ export const CHAPTERS: Chapter[] = [
     lines: ["I lead with trust,", "not ego."],
     tag: "ENFJ · The Protagonist",
     strengths: [
-      "I connect with anyone, and I genuinely care about the account, not just the number.",
+      "I love to connect with people, and I genuinely care about the account, not just the number.",
       "A real team player. I thrive where collaboration is part of the culture, and I do my best to keep that teamwork alive.",
       "Fast learner, and not too proud to ask. I treat asking for help as a strength, not a weakness.",
       "Very coachable: when a problem is outside my depth, I lean on people with deeper expertise to guide me through it, rather than guess.",
