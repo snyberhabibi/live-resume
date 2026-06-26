@@ -139,7 +139,7 @@ export interface CamKey {
   fov: number;
 }
 export const CAM_KEYS: CamKey[] = [
-  { pos: [0, 4.2, 30], target: [0, 4.2, 0], fov: 42 }, // 0 hero - the "many hats" glyphs
+  { pos: [0, 9.5, 48], target: [0, 9.5, 0], fov: 42 }, // 0 hero - glyph sits in the lower-middle, clear of the title above
   { pos: [9, 6.2, 34], target: [5, 6, 0], fov: 48 }, // 1 about - constellation, off to the side
   { pos: [8, 8.5, 46], target: [2, 8, 0], fov: 48 }, // 2 how I work - the arrow
   { pos: [-7, 7, 27], target: [0, 7, 0], fov: 46 }, // 3 approach - the funnel
