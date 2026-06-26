@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* DAYLIGHT — primary theme (a clean architectural blueprint) */
+/* DAYLIGHT - primary theme (a clean architectural blueprint) */
 :root {
   --background: #eef0f3;
   --foreground: #1b222b;
@@ -11,7 +11,7 @@
   --accent: #3d5a80;
 }
 
-/* DRAFTING TABLE — dark theme (the toggle) */
+/* DRAFTING TABLE - dark theme (the toggle) */
 [data-theme="dark"] {
   --background: #070809;
   --foreground: #eef2f8;
@@ -120,4 +120,44 @@ button:focus-visible {
   outline-offset: 4px;
   border-radius: 2px;
   cursor: auto !important;
+}
+
+/* Print / save-as-PDF: drop the canvas + chrome, lay the résumé out as a clean
+   black-on-white document with link URLs spelled out. */
+@media print {
+  canvas,
+  [aria-hidden="true"] {
+    display: none !important;
+  }
+  :root {
+    --bg: #fff;
+    --fg: #14181d;
+    --scrim: 255, 255, 255;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  .text-readable,
+  .text-readable-subtle {
+    text-shadow: none !important;
+  }
+  main {
+    position: static !important;
+  }
+  main > section {
+    min-height: auto !important;
+    display: block !important;
+    padding: 1.25rem 1.5rem !important;
+    break-inside: avoid;
+  }
+  a {
+    color: #14181d !important;
+    text-decoration: underline;
+  }
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #555;
+  }
 }

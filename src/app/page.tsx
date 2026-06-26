@@ -11,7 +11,7 @@ import { Cursor } from "@/components/Cursor";
 import { Preloader } from "@/components/Preloader";
 import { SoundToggle } from "@/components/SoundToggle";
 
-// The WebGL world is client-only — never server-rendered.
+// The WebGL world is client-only - never server-rendered.
 const Experience = dynamic(() => import("@/three/Experience").then((m) => m.Experience), {
   ssr: false,
 });
@@ -44,11 +44,11 @@ export default function Home() {
       <Cursor />
       <Nav />
       <SoundToggle />
-      {/* fixed full-bleed canvas — decorative, hidden from assistive tech */}
+      {/* fixed full-bleed canvas - decorative, hidden from assistive tech */}
       <div aria-hidden="true">
         <Experience />
       </div>
-      {/* scrolling narrative — drives Lenis progress → scene */}
+      {/* scrolling narrative - drives Lenis progress → scene */}
       <Overlay />
     </MotionConfig>
   );

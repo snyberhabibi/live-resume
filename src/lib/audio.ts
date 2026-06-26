@@ -1,4 +1,4 @@
-// Fully procedural audio — no asset files. A low ambient drone (detuned
+// Fully procedural audio - no asset files. A low ambient drone (detuned
 // oscillators + filtered noise + a slow filter LFO) plus short synthesized UI
 // blips. The graph is built lazily on the first user-gesture enable, so there's
 // never an autoplay violation; master gain ramps in/out for the mute toggle.

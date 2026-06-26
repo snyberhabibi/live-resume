@@ -167,7 +167,7 @@ function RoleCard({ role, accent, delay }: { role: RoleEntry; accent: string; de
             className="flex gap-2 text-[12px] leading-relaxed text-[var(--fg)]/80 sm:text-[13px]"
           >
             <span className="shrink-0" style={{ color: accent }}>
-              —
+              ·
             </span>
             <span className="min-w-0">{b}</span>
           </li>
@@ -272,6 +272,19 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
           />
         )}
         <div className="relative z-[1] max-w-4xl text-center">
+          {isHero && chapter.portrait && (
+            <motion.img
+              src={chapter.portrait}
+              alt="Yusuf Rahman"
+              width={112}
+              height={112}
+              className="mx-auto mb-6 h-24 w-24 rounded-full object-cover shadow-xl ring-1 ring-[var(--fg)]/25 sm:h-28 sm:w-28"
+              style={{ objectPosition: "center 22%" }}
+              initial={{ opacity: 0, scale: 0.92, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ ...SPRING, delay: 0.15 }}
+            />
+          )}
           {chapter.eyebrow && <Eyebrow label={chapter.eyebrow} accent={accent} />}
           <Headline lines={chapter.lines} isHero={isHero} center />
 
@@ -286,7 +299,7 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
             </motion.p>
           )}
 
-          {/* sub line — for non-hero centers shows directly under the headline */}
+          {/* sub line - for non-hero centers shows directly under the headline */}
           {chapter.sub && !isHero && (
             <motion.p
               className={`mx-auto max-w-lg font-display text-readable ${

@@ -7,8 +7,8 @@ import { useScene } from "./store";
 import { CHAPTER_ACCENT } from "./config";
 
 // A soft glowing orb at the heart of the monument. Alpha falls to zero at the
-// rim (facing-ratio falloff) so it has NO hard edge — it dissolves into the
-// dust bloom — while still being a bright source for the GodRays shafts.
+// rim (facing-ratio falloff) so it has NO hard edge - it dissolves into the
+// dust bloom - while still being a bright source for the GodRays shafts.
 const VERT = /* glsl */ `
 varying vec3 vN;
 varying vec3 vView;

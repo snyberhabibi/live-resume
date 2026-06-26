@@ -1,16 +1,16 @@
 // ───────────────────────────────────────────────────────────────────────────
-//  Morph targets — each section assembles into a clean WIREFRAME GRAPHIC built
+//  Morph targets - each section assembles into a clean WIREFRAME GRAPHIC built
 //  from nodes + edges (the same drafting-table language as the toolbelt cube).
 //  Between any two shapes the cloud blows apart into turbulent chaos and then
 //  resolves into the next clean structure ("complexity → clarity").
 //
-//   0 hero       a faceted icosahedron        — a polished whole; identity
-//   1 approach   a converging funnel          — complexity narrowed to a point
-//   2 experience four ascending tower frames  — JPMorgan · Cisco · HashiCorp · IBM
-//   3 impact     a rising performance graph   — never below the 100% baseline
-//   4 toolbelt   a 4×4×4 lattice cube         — the structured toolkit
-//   5 about      a loose constellation        — community, family, connection
-//   6 contact    a hub-and-spoke network      — let's connect
+//   0 hero       a faceted icosahedron        - a polished whole; identity
+//   1 approach   a converging funnel          - complexity narrowed to a point
+//   2 experience four ascending tower frames  - JPMorgan · Cisco · HashiCorp · IBM
+//   3 impact     a rising performance graph   - never below the 100% baseline
+//   4 toolbelt   a 4×4×4 lattice cube         - the structured toolkit
+//   5 about      a loose constellation        - community, family, connection
+//   6 contact    a hub-and-spoke network      - let's connect
 //
 //  RGBA-packed (xyz = position, w = 1) for a FloatType DataTexture, count = SIZE².
 // ───────────────────────────────────────────────────────────────────────────
@@ -52,7 +52,7 @@ function build(count: number, seed: number, fn: Filler): Float32Array {
   return arr;
 }
 
-// ─── shared wireframe filler — particles land in node clusters (bright joints)
+// ─── shared wireframe filler - particles land in node clusters (bright joints)
 //     or scattered along the edges between them (the structure lines) ─────────
 function buildGraph(
   count: number,
@@ -93,7 +93,7 @@ function buildGraph(
 
 const dist3 = (a: Vec3, b: Vec3) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 
-// connect every pair of nodes whose spacing is within `factor` of the minimum —
+// connect every pair of nodes whose spacing is within `factor` of the minimum -
 // reconstructs the edges of a regular polyhedron from its vertices alone
 function minEdges(nodes: Vec3[], factor = 1.06): Edge[] {
   let min = Infinity;
@@ -113,7 +113,7 @@ function minEdges(nodes: Vec3[], factor = 1.06): Edge[] {
 
 const HERO_Y = 4.6;
 
-// ─── 0 — hero: faceted icosahedron (12 vertices, 30 edges) ───────────────────
+// ─── 0 - hero: faceted icosahedron (12 vertices, 30 edges) ───────────────────
 function icosahedron(radius: number, cy: number): Graph {
   const t = (1 + Math.sqrt(5)) / 2;
   const raw: Vec3[] = [
@@ -129,7 +129,7 @@ function icosahedron(radius: number, cy: number): Graph {
 }
 const HERO = icosahedron(R * 0.82, HERO_Y);
 
-// ─── 1 — approach: converging funnel (wide square rings → a point) ───────────
+// ─── 1 - approach: converging funnel (wide square rings → a point) ───────────
 function funnel(): Graph {
   const LV = 5;
   const nodes: Vec3[] = [];
@@ -150,12 +150,12 @@ function funnel(): Graph {
 }
 const FUNNEL = funnel();
 
-// ─── 2 — experience: four ascending wireframe towers (with floors) ───────────
+// ─── 2 - experience: four ascending wireframe towers (with floors) ───────────
 function towers(): Graph {
   // shifted right of centre so they clear the left-aligned experience cards
   const defs = [
     { x: -R * 0.35, w: 2.3, d: 2.3, h: R * 0.95 }, // JPMorgan Chase
-    { x: R * 0.4, w: 2.3, d: 2.3, h: R * 1.3 }, // Cisco — AppDynamics
+    { x: R * 0.4, w: 2.3, d: 2.3, h: R * 1.3 }, // Cisco - AppDynamics
     { x: R * 1.15, w: 2.3, d: 2.3, h: R * 1.7 }, // HashiCorp
     { x: R * 1.9, w: 2.5, d: 2.5, h: R * 2.05 }, // IBM (current, tallest)
   ];
@@ -180,7 +180,7 @@ function towers(): Graph {
 }
 const TOWERS = towers();
 
-// ─── 3 — impact: a rising performance graph above the 100% baseline ──────────
+// ─── 3 - impact: a rising performance graph above the 100% baseline ──────────
 // One baseline (the "100%" floor), columns rising to each year's data point, and
 // a bold trend line climbing up-and-to-the-right. The trend edges are weighted
 // (pushed twice) so the climb reads as the dominant line, not the grid.
@@ -209,7 +209,7 @@ function performanceGraph(): Graph {
     nodes.push([x, baseY, 0]);
     edges.push([di, dd]); // column to baseline
   }
-  // the climb — weighted twice so it's the dominant line
+  // the climb - weighted twice so it's the dominant line
   for (let i = 0; i < N - 1; i++) {
     edges.push([data[i], data[i + 1]]);
     edges.push([data[i], data[i + 1]]);
@@ -218,7 +218,7 @@ function performanceGraph(): Graph {
 }
 const GRAPH = performanceGraph();
 
-// ─── 4 — toolbelt: the 4×4×4 lattice cube (the one you liked) ────────────────
+// ─── 4 - toolbelt: the 4×4×4 lattice cube (the one you liked) ────────────────
 const GRID = 4; // 4³ = 64 nodes
 const GSP = R * 0.4; // node spacing
 const LAT_CY = 6.4; // lattice center height
@@ -265,7 +265,7 @@ function buildLattice(count: number, seed: number): Float32Array {
   return arr;
 }
 
-// ─── 5 — contact: a hub-and-spoke network (let's connect) ────────────────────
+// ─── 5 - contact: a hub-and-spoke network (let's connect) ────────────────────
 function hub(): Graph {
   const nodes: Vec3[] = [];
   const edges: Edge[] = [];
@@ -292,7 +292,7 @@ function hub(): Graph {
 }
 const HUB = hub();
 
-// ─── 5 — about: a loose constellation (community / people / connection) ──────
+// ─── 5 - about: a loose constellation (community / people / connection) ──────
 function constellation(): Graph {
   const rng = mulberry32(77);
   const N = 20;
@@ -321,7 +321,7 @@ function constellation(): Graph {
 }
 const CONSTELLATION = constellation();
 
-// ─── intro — scattered cloud the experience reforms from ─────────────────────
+// ─── intro - scattered cloud the experience reforms from ─────────────────────
 function introCloud(count: number): Float32Array {
   return build(count, 99, (i, t, rng) => {
     const inc = Math.acos(1 - 2 * rng());

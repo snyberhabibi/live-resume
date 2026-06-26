@@ -19,7 +19,7 @@ import {
   type QualityTier,
 } from "./config";
 
-// The particles ARE the show — full opacity on the assembled shape. Heavy
+// The particles ARE the show - full opacity on the assembled shape. Heavy
 // additive overlap still means per-grain opacity stays small.
 const SIZE_PARAMS: Record<QualityTier, { size: number; opacity: number }> = {
   ultra: { size: 0.95, opacity: 0.05 },
@@ -181,7 +181,7 @@ export function Monument({ quality }: { quality: QualityTier }) {
 
   const pointsMat = useMemo(
     () => {
-      // light is the primary theme — initialise as ink/normal-blended so there's
+      // light is the primary theme - initialise as ink/normal-blended so there's
       // no additive-glow flash on first paint
       const initLight = useScene.getState().theme === "light";
       return new THREE.ShaderMaterial({
@@ -212,7 +212,7 @@ export function Monument({ quality }: { quality: QualityTier }) {
   );
   useEffect(() => () => pointsMat.dispose(), [pointsMat]);
 
-  // ── morph driver (transient subscription — no React re-renders) ──
+  // ── morph driver (transient subscription - no React re-renders) ──
   const morph = useRef({ t: 1, active: false });
   const accent = useRef(new THREE.Color(CHAPTER_ACCENT[useScene.getState().chapter]));
   const accentTarget = useRef(new THREE.Color(CHAPTER_ACCENT[useScene.getState().chapter]));
@@ -222,7 +222,7 @@ export function Monument({ quality }: { quality: QualityTier }) {
   const lastLight = useRef(useScene.getState().theme === "light");
 
   useEffect(() => {
-    // fresh load (chapter 0) reforms from the scattered cloud — the intro.
+    // fresh load (chapter 0) reforms from the scattered cloud - the intro.
     // a mid-experience quality remount lands already-formed on its chapter.
     morph.current =
       useScene.getState().chapter === 0 ? { t: 0, active: true } : { t: 1, active: false };
@@ -233,7 +233,7 @@ export function Monument({ quality }: { quality: QualityTier }) {
         simMat.uniforms.uTarget.value = targets.chapters[chapter];
         morph.current = { t: 0, active: true };
         accentTarget.current.set(CHAPTER_ACCENT[chapter]);
-        // cinematic surge: FX + camera + dust burst — suppressed for reduced motion
+        // cinematic surge: FX + camera + dust burst - suppressed for reduced motion
         if (!useScene.getState().reducedMotion) pulseTransition();
       },
     );
@@ -290,7 +290,7 @@ export function Monument({ quality }: { quality: QualityTier }) {
     simMat.uniforms.uTime.value = time;
     simMat.uniforms.uDelta.value = dt;
     simMat.uniforms.uBurst.value = fx.transitionEnergy;
-    // no crumble in this build — the career columns stand. (uWave stays 0.)
+    // no crumble in this build - the career columns stand. (uWave stays 0.)
     simMat.uniforms.uWave.value = 0;
 
     // ── GPGPU step: read → write ──

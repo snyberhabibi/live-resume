@@ -43,7 +43,7 @@ export function Effects({
   useEffect(() => () => composerRef.current?.dispose(), []);
 
   // chromatic aberration + bloom react to scroll velocity AND surge on a
-  // chapter transition — that surge is what makes a scroll feel like a film cut
+  // chapter transition - that surge is what makes a scroll feel like a film cut
   useFrame(() => {
     const v = useScene.getState().velocity;
     const te = fx.transitionEnergy;

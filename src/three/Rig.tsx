@@ -6,7 +6,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { damp, damp3 } from "maath/easing";
 import { useScene } from "./store";
 import { fx } from "./fx";
-import { CAM_KEYS, CHAPTER_COUNT } from "./config";
+import { CAM_KEYS, CAM_KEYS_MOBILE, CHAPTER_COUNT } from "./config";
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -21,16 +21,25 @@ export function Rig() {
   const introStartTgt = useMemo(() => new THREE.Vector3(0, 2, 0), []);
   const introT = useRef(0);
   const introDone = useRef(false);
+  // touch/coarse pointers shouldn't drive the camera (it lurches while scrolling)
+  const coarse = useMemo(
+    () => typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches,
+    [],
+  );
 
   useFrame((state, delta) => {
     const st = useScene.getState();
     const dt = Math.min(delta, 1 / 30);
 
+    const aspect = state.size.width / Math.max(1, state.size.height);
+    const portrait = aspect < 1;
+    const keys = portrait ? CAM_KEYS_MOBILE : CAM_KEYS;
+
     const scaled = st.progress * (CHAPTER_COUNT - 1);
     const i0 = Math.max(0, Math.min(CHAPTER_COUNT - 2, Math.floor(scaled)));
     const f = easeInOut(scaled - i0);
-    const a = CAM_KEYS[i0];
-    const b = CAM_KEYS[i0 + 1];
+    const a = keys[i0];
+    const b = keys[i0 + 1];
 
     tmpPos.set(
       lerp(a.pos[0], b.pos[0], f),
@@ -44,19 +53,20 @@ export function Rig() {
     );
     const fov = lerp(a.fov, b.fov, f);
 
-    // Aspect-aware dolly: the keyframes are framed for landscape. On a narrow /
-    // portrait screen the vertical FOV stays the same but the horizontal view
-    // shrinks, so the monument blows up and crops. Pull the camera back to keep
-    // it framed. factor === 1 for any landscape aspect → desktop is untouched.
-    const aspect = state.size.width / Math.max(1, state.size.height);
-    const REF_ASPECT = 1.5;
-    const factor = Math.min(3.2, Math.max(1, REF_ASPECT / aspect));
-    if (factor > 1.001) {
-      tmpPos.sub(tmpTgt).multiplyScalar(factor).add(tmpTgt);
+    // Aspect-aware dolly for LANDSCAPE only - portrait uses pre-framed mobile keys
+    // so the shapes stay centred and correctly sized instead of blowing up/cropping.
+    if (!portrait) {
+      const REF_ASPECT = 1.5;
+      const factor = Math.min(3.2, Math.max(1, REF_ASPECT / aspect));
+      if (factor > 1.001) {
+        tmpPos.sub(tmpTgt).multiplyScalar(factor).add(tmpTgt);
+      }
     }
 
-    // gentle drifting orbit + pointer parallax (subject stays centered)
-    if (!st.reducedMotion) {
+    // gentle drifting orbit + pointer parallax - DESKTOP only. On touch the scene
+    // stays perfectly still (no drift, no parallax) so it reads as deliberate and
+    // doesn't lurch while scrolling.
+    if (!st.reducedMotion && !coarse) {
       const ang = Math.sin(state.clock.elapsedTime * 0.08) * 0.12 + st.pointer.x * 0.22;
       const dx = tmpPos.x - tmpTgt.x;
       const dz = tmpPos.z - tmpTgt.z;
