@@ -1,15 +1,32 @@
 @import "tailwindcss";
 
+/* DAYLIGHT — primary theme (a clean architectural blueprint) */
 :root {
-  --background: #09090b;
-  --foreground: #ededed;
+  --background: #eef0f3;
+  --foreground: #1b222b;
+  --bg: #eef0f3;
+  --fg: #1b222b;
+  --fg-dim: rgba(27, 34, 43, 0.7);
+  --scrim: 238, 240, 243;
+  --accent: #3d5a80;
+}
+
+/* DRAFTING TABLE — dark theme (the toggle) */
+[data-theme="dark"] {
+  --background: #070809;
+  --foreground: #eef2f8;
+  --bg: #070809;
+  --fg: #eef2f8;
+  --fg-dim: rgba(238, 242, 248, 0.82);
+  --scrim: 7, 8, 9;
+  --accent: #7fa8e8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-display: var(--font-el-messiri);
-  --font-mono: var(--font-ibm-plex-mono);
+  --font-display: var(--font-sora);
+  --font-mono: var(--font-plex-mono);
 }
 
 @layer base {
@@ -20,7 +37,8 @@
   }
 }
 
-html.lenis, html.lenis body {
+html.lenis,
+html.lenis body {
   height: auto;
 }
 
@@ -36,45 +54,70 @@ html.lenis, html.lenis body {
   overflow: hidden;
 }
 
+html {
+  scrollbar-width: none;
+  background: var(--bg);
+}
+
 body {
-  background: #09090b;
-  color: #ededed;
+  background: var(--bg);
+  color: var(--foreground);
+  overflow-x: hidden;
+  transition: background-color 0.6s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background: rgba(232, 168, 56, 0.25);
+  background: rgba(61, 90, 128, 0.2);
+  color: #0f1620;
+}
+[data-theme="dark"] ::selection {
+  background: rgba(127, 168, 232, 0.3);
   color: #fff;
-}
-
-.font-display {
-  font-family: var(--font-el-messiri), serif;
-}
-
-.font-mono {
-  font-family: var(--font-ibm-plex-mono), monospace;
 }
 
 ::-webkit-scrollbar {
   display: none;
 }
 
-html {
-  scrollbar-width: none;
+.font-display {
+  font-family: var(--font-sora), system-ui, -apple-system, sans-serif;
 }
 
-/* Text readability over variable backgrounds */
+.font-mono {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+}
+
+/* legibility over a luminous, shifting 3D backdrop.
+   Light theme: a soft paper halo lifts dark text off the drifting particles. */
 .text-readable {
-  text-shadow: 0 2px 20px rgba(0,0,0,0.8), 0 1px 4px rgba(0,0,0,0.6);
+  text-shadow: 0 1px 22px rgba(238, 240, 243, 0.92), 0 1px 3px rgba(238, 240, 243, 0.85);
 }
 
 .text-readable-subtle {
-  text-shadow: 0 1px 12px rgba(0,0,0,0.6), 0 1px 3px rgba(0,0,0,0.4);
+  text-shadow: 0 1px 14px rgba(238, 240, 243, 0.85);
+}
+
+/* dark theme flips the legibility halo from paper to ink */
+[data-theme="dark"] .text-readable {
+  text-shadow: 0 2px 28px rgba(0, 0, 0, 0.85), 0 1px 5px rgba(0, 0, 0, 0.7);
+}
+[data-theme="dark"] .text-readable-subtle {
+  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.7), 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 @media (min-width: 1024px) {
   * {
     cursor: none !important;
   }
+}
+
+/* keyboard focus must stay visible even with the custom cursor hidden */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+  cursor: auto !important;
 }
