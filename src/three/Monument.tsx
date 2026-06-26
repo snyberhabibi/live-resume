@@ -200,7 +200,7 @@ export function Monument({ quality }: { quality: QualityTier }) {
           uGold: { value: new THREE.Color(PALETTE.gold) },
           uAccent: { value: new THREE.Color(CHAPTER_ACCENT[useScene.getState().chapter]) },
           uAccentMix: { value: 0.55 },
-          uOpacity: { value: params.opacity * (initLight ? 2.6 : 1) },
+          uOpacity: { value: params.opacity * (initLight ? 2.4 : 1) },
           uSpeedScale: { value: 0.12 },
           uLight: { value: initLight ? 1 : 0 },
           uInk: { value: new THREE.Color(LIGHT.ink) },
@@ -305,7 +305,7 @@ export function Monument({ quality }: { quality: QualityTier }) {
 
     const light = st.theme === "light";
     // ink (normal blending) needs more coverage to read than additive glow
-    pointsMat.uniforms.uOpacity.value = params.opacity * (light ? 2.6 : 1);
+    pointsMat.uniforms.uOpacity.value = params.opacity * (light ? 2.4 : 1);
     pointsMat.uniforms.uLight.value += ((light ? 1 : 0) - pointsMat.uniforms.uLight.value) * (1 - Math.exp(-4 * dt));
     // kinetic energy: grains swell with scroll speed + audio loudness
     pointsMat.uniforms.uKinetic.value = Math.min(1, st.velocity * 1.4 + getAudioLevel() * 0.9);
