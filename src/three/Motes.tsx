@@ -8,7 +8,7 @@ import { LIGHT, PALETTE } from "./config";
 
 // Foreground/volumetric dust motes drifting through the whole space. Because
 // they live in world space, camera motion parallaxes them, and the ones nearest
-// the lens blur into soft bokeh under DOF — that's most of the "depth" jump.
+// the lens blur into soft bokeh under DOF - that's most of the "depth" jump.
 const VERT = /* glsl */ `
 precision highp float;
 uniform float uTime;

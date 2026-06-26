@@ -1,5 +1,5 @@
 // Render pass for the monument. The `position` attribute holds each particle's
-// reference UV (refU, refV, 0) into the simulation texture — actual world
+// reference UV (refU, refV, 0) into the simulation texture - actual world
 // position is fetched from uPositions in the vertex shader. Frustum culling is
 // disabled on the Points object since CPU positions stay near origin.
 export const POINTS_VERT = /* glsl */ `
@@ -58,13 +58,13 @@ void main(){
   col = mix(col, uAccent, uAccentMix);
   col *= (0.7 + vColor * 0.6);
 
-  // incandescent core — only the very center of fast/hot grains
+  // incandescent core - only the very center of fast/hot grains
   col += uGold * smoothstep(0.18, 0.0, r) * (0.06 + t * 0.32);
 
   // light theme: grains become dark ink (rendered with NORMAL blending)
   col = mix(col, uInk * (0.7 + vColor * 0.5), uLight);
 
-  // linear output — the EffectComposer (ToneMapping) handles encoding
+  // linear output - the EffectComposer (ToneMapping) handles encoding
   gl_FragColor = vec4(col, alpha * uOpacity);
 }
 `;

@@ -32,7 +32,7 @@ export function Scene() {
       <Terrain segments={SEGMENTS[quality]} />
       <Sun onReady={setSun} />
       <Motes count={MOTES[quality]} />
-      {/* the dust monument — assembles into a clear, story-relevant shape per chapter */}
+      {/* the dust monument - assembles into a clear, story-relevant shape per chapter */}
       <Monument key={quality} quality={quality} />
       <Rig />
       <Effects

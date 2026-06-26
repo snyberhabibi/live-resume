@@ -6,7 +6,7 @@ import { useScene } from "@/three/store";
 
 // Paged / snap navigation: each swipe (or wheel flick, arrow key, or nav-dot
 // click) glides to the NEXT section and locks there, so the particle shape fully
-// assembles and holds — until you swipe again. Lenis powers the smooth glide;
+// assembles and holds - until you swipe again. Lenis powers the smooth glide;
 // we own all the input. Momentum is debounced so one flick = exactly one section.
 export function useLenis() {
   useEffect(() => {
@@ -80,7 +80,7 @@ export function useLenis() {
       syncIndex(); // re-anchor in case focus/anchor scrolling drifted us
       const els = getSections();
       const cur = els[index];
-      // tall sections (content exceeds the viewport — e.g. Experience on a small
+      // tall sections (content exceeds the viewport - e.g. Experience on a small
       // phone): reveal the overflow WITHIN the section before advancing, so no
       // résumé content is ever unreachable. The scroll stays inside the section's
       // offset range, so the chapter/morph holds steady.

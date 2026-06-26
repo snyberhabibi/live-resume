@@ -16,9 +16,9 @@ const ibmPlexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
-const TITLE = "Hire Yusuf — Solutions Engineer";
+const TITLE = "Hire Yusuf · Solutions Engineer";
 const DESC =
-  "Your search for talent ends here. A Solutions Engineer who turns complexity into clarity — never below 100% of quota across Cisco, HashiCorp & IBM. Give me 60 seconds.";
+  "Your search for talent ends here. A Solutions Engineer who turns complexity into clarity. Never below 100% of quota across Cisco, HashiCorp, and IBM. Give me 60 seconds.";
 
 // Structured data so a recruiter's search/share surfaces the right person.
 const PERSON_LD = {
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     url: "https://hireyusuf.com",
     siteName: "Hire Yusuf",
     type: "website",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Yusuf Rahman — Solutions Engineer" }],
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Yusuf Rahman, Solutions Engineer" }],
   },
   twitter: {
     card: "summary_large_image",

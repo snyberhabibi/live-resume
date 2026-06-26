@@ -9,7 +9,7 @@ import { useScene } from "./store";
 import { CAM_KEYS, DPR_CAP, LIGHT, PALETTE, type QualityTier } from "./config";
 
 // Drive the renderer DPR from the active quality tier. (drei's AdaptiveDpr is
-// inert here — nothing calls regress — so we wire DPR to the tier instead, and
+// inert here - nothing calls regress - so we wire DPR to the tier instead, and
 // PerformanceMonitor steps the tier down under load.)
 function DprController() {
   const setDpr = useThree((s) => s.setDpr);
@@ -48,6 +48,14 @@ export function Experience() {
     return q;
   });
   const lastStepRef = useRef(0);
+  // pause the render loop entirely while the tab is hidden - the GPGPU sim is
+  // expensive and there's nothing to see; resume on return
+  const [frameloop, setFrameloop] = useState<"always" | "never">("always");
+  useEffect(() => {
+    const onVis = () => setFrameloop(document.hidden ? "never" : "always");
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -56,6 +64,8 @@ export function Experience() {
     mq.addEventListener("change", apply);
 
     const onMove = (e: PointerEvent) => {
+      // touch shouldn't drive parallax/sculpt - it makes the scene lurch on scroll
+      if (e.pointerType === "touch") return;
       const x = (e.clientX / window.innerWidth) * 2 - 1;
       const y = -((e.clientY / window.innerHeight) * 2 - 1);
       useScene.getState().setPointer(x, y, true);
@@ -64,24 +74,13 @@ export function Experience() {
       const p = useScene.getState().pointer;
       useScene.getState().setPointer(p.x, p.y, false);
     };
-    const onTouch = (e: TouchEvent) => {
-      if (!e.touches[0]) return;
-      const t = e.touches[0];
-      const x = (t.clientX / window.innerWidth) * 2 - 1;
-      const y = -((t.clientY / window.innerHeight) * 2 - 1);
-      useScene.getState().setPointer(x, y, true);
-    };
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerleave", onLeave);
-    window.addEventListener("touchmove", onTouch, { passive: true });
-    window.addEventListener("touchend", onLeave);
 
     return () => {
       mq.removeEventListener("change", apply);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerleave", onLeave);
-      window.removeEventListener("touchmove", onTouch);
-      window.removeEventListener("touchend", onLeave);
     };
   }, []);
 
@@ -95,7 +94,7 @@ export function Experience() {
       }}
       dpr={DPR_CAP[quality]}
       camera={{ position: CAM_KEYS[0].pos, fov: CAM_KEYS[0].fov, near: 0.1, far: 1000 }}
-      frameloop="always"
+      frameloop={frameloop}
       style={{ position: "fixed", inset: 0, zIndex: 0 }}
     >
       <color

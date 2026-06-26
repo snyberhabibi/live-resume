@@ -2,7 +2,7 @@
 //  Global scroll/scene store.
 //  React-driving fields (chapter, ready, quality) trigger re-renders sparingly.
 //  High-frequency fields (progress, pointer, velocity) are read TRANSIENTLY via
-//  getState() inside useFrame — never subscribed — so the canvas never re-renders.
+//  getState() inside useFrame - never subscribed - so the canvas never re-renders.
 // ───────────────────────────────────────────────────────────────────────────
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";

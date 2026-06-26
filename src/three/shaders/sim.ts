@@ -13,7 +13,7 @@ void main(){
 // A position-only damped spring toward the (morph-blended) target keeps the
 // system unconditionally stable & frame-rate independent; curl turbulence and
 // pointer repulsion are added as displacement. During a morph the spring relaxes
-// (dissolve) then re-engages (reform) — that's the "returns to dust / rebuilt".
+// (dissolve) then re-engages (reform) - that's the "returns to dust / rebuilt".
 export const SIM_FRAG = /* glsl */ `
 precision highp float;
 varying vec2 vUv;
@@ -33,7 +33,7 @@ uniform float uMouseStrength;
 uniform float uReduced;       // prefers-reduced-motion → calmer
 uniform float uBurst;         // 0..1 transition surge
 uniform float uBuildMax;      // height scale for bottom-up assembly
-uniform float uWave;          // 0..1 — builder collapse wave sweeps left→right
+uniform float uWave;          // 0..1 - builder collapse wave sweeps left→right
 
 ${NOISE_GLSL}
 
@@ -67,7 +67,7 @@ void main(){
   vec3 effTarget = mix(target, rubble, collapse);        // tower → rubble
   float toppling = collapse * (1.0 - collapse) * 4.0;    // peaks AS it falls
 
-  // bell curve — peaks mid-morph: the cloud blows apart, then reassembles
+  // bell curve - peaks mid-morph: the cloud blows apart, then reassembles
   float dissolve = sin(m * 3.14159265) * (1.0 - uReduced * 0.7);
 
   // damped spring toward the effective target (stable at any dt)
@@ -78,7 +78,7 @@ void main(){
   k *= smoothstep(heightFrac - 0.30, heightFrac + 0.05, m);
   vec3 settled = mix(pos, effTarget, k);
 
-  // curl turbulence — surges during dissolve, transitions, and the topple puff
+  // curl turbulence - surges during dissolve, transitions, and the topple puff
   float curlAmp = uCurl * (0.18 + dissolve * 1.7 + uBurst * 1.3 + toppling * 2.6);
   vec3 curl = curlNoise(pos * uCurlFreq + vec3(0.0, uTime * 0.05, 0.0)) * curlAmp;
 
@@ -100,7 +100,7 @@ void main(){
 }
 `;
 
-// Copy/seed pass — used once to initialise both ping-pong targets from a
+// Copy/seed pass - used once to initialise both ping-pong targets from a
 // CPU-built DataTexture (a scattered cloud the intro reforms from).
 export const COPY_FRAG = /* glsl */ `
 precision highp float;
