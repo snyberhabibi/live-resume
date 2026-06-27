@@ -169,7 +169,7 @@ export const CHAPTERS: Chapter[] = [
         role: "Senior Enterprise Sales Engineer",
         period: "2021 to 2023",
         bullets: [
-          "Sole technical lead across 30+ enterprise accounts; 100% of personal quota and a $25M+ team number in year one.",
+          "Sole technical lead across 30+ enterprise accounts, carrying 100% of personal quota from year one.",
           "Delivered 100+ technical demos and built the custom dashboards that made the buying decision obvious.",
         ],
       },
@@ -195,7 +195,7 @@ export const CHAPTERS: Chapter[] = [
     sub: "Quota, hit every single year I've carried one. Renewals and net-new alike.",
     stats: [
       { value: "100%+", label: "quota attainment, every year in sales" },
-      { value: "$25M+", label: "team quota carried (year one, Cisco)" },
+      { value: "$15M+", label: "in software sold, renewals + net-new ACV" },
       { value: "30+", label: "enterprise accounts owned" },
       { value: "100+", label: "technical demos delivered" },
     ],

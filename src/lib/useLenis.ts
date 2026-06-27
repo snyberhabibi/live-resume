@@ -53,8 +53,8 @@ export function useLenis() {
       index = next;
       animating = true;
       lenis.scrollTo(els[next], {
-        duration: reduce ? 0.001 : 1.3,
-        easing: (t: number) => 1 - Math.pow(1 - t, 3),
+        duration: reduce ? 0.001 : 0.85,
+        easing: (t: number) => 1 - Math.pow(1 - t, 4), // quart - quick, smooth settle
         lock: true,
         force: true,
         onComplete: () => {
@@ -65,12 +65,12 @@ export function useLenis() {
         },
       });
     };
-    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+    const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
     const scrollWithin = (px: number) => {
       animating = true;
       lenis.scrollTo(px, {
-        duration: reduce ? 0.001 : 0.9,
-        easing: easeOutCubic,
+        duration: reduce ? 0.001 : 0.62,
+        easing: easeOutQuart,
         lock: true,
         force: true,
         onComplete: () => {
@@ -106,7 +106,7 @@ export function useLenis() {
       clearTimeout(cdTimer);
       cdTimer = window.setTimeout(() => {
         cooldown = false;
-      }, 240);
+      }, 170);
     };
 
     const onWheel = (e: WheelEvent) => {
