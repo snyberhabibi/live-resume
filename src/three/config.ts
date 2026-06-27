@@ -169,6 +169,6 @@ export const CHAPTER_COUNT = CAM_KEYS.length;
 export const MINIMAL_GRAPHIC_SECTIONS = new Set<number>([1, 2]);
 
 // Morph timing.
-export const MORPH_DURATION = 1.25; // seconds for a dissolve→reform (snappy)
+export const MORPH_DURATION = 1.5; // seconds for a fluid flow from one form to the next
 export const MONUMENT_RADIUS = 9; // governs all morph-target scales
 export const TERRAIN_Y = -9;
