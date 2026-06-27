@@ -8,7 +8,7 @@
 //   0 hero       cycles through "many hats" glyphs - who Yusuf is
 //   1 about      a constellation (FADED OUT)  - the personal beat stays clean
 //   2 how I work an upward arrow (FADED OUT)  - text reads clean, no distraction
-//   3 approach   a converging funnel          - complexity narrowed to a point
+//   3 approach   one clean flowing line       - complexity resolved to simplicity
 //   4 experience four ascending tower frames  - JPMorgan · Cisco · HashiCorp · IBM
 //   5 record     a rising performance graph   - never below the 100% baseline
 //   6 toolbelt   a 4×4×4 lattice cube         - the structured toolkit
@@ -97,26 +97,28 @@ const dist3 = (a: Vec3, b: Vec3) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - 
 
 const HERO_Y = 4.6;
 
-// ─── 1 - approach: converging funnel (wide square rings → a point) ───────────
-function funnel(): Graph {
-  const LV = 5;
+// ─── 3 - approach: ONE clean flowing line. "I make complex things simple" -
+//     the tangle resolves into a single confident through-line, alive with a
+//     gentle 3D undulation. ────────────────────────────────────────────────
+function clarityLine(): Graph {
+  const N = 80;
+  const cy = 7.0;
   const nodes: Vec3[] = [];
   const edges: Edge[] = [];
-  for (let l = 0; l < LV; l++) {
-    const f = l / (LV - 1); // 0 top → 1 bottom
-    const y = 13.2 - f * 11.4;
-    const half = R * 0.52 * (1 - f) + 0.18; // wide → near-point
-    const b = nodes.length;
-    nodes.push([-half, y, -half], [half, y, -half], [half, y, half], [-half, y, half]);
-    edges.push([b, b + 1], [b + 1, b + 2], [b + 2, b + 3], [b + 3, b]);
-    if (l > 0) {
-      const p = b - 4;
-      for (let k = 0; k < 4; k++) edges.push([p + k, b + k]);
+  for (let i = 0; i < N; i++) {
+    const t = i / (N - 1);
+    const x = (t * 2 - 1) * R * 1.25;
+    const y = cy + Math.sin(t * Math.PI) * 0.6; // a barely-there arc
+    const z = Math.sin(t * Math.PI * 2.0) * 1.2; // gentle 3D flow for life
+    nodes.push([x, y, z]);
+    if (i > 0) {
+      edges.push([i - 1, i]);
+      edges.push([i - 1, i]); // weighted twice → a dense, solid line
     }
   }
   return { nodes, edges };
 }
-const FUNNEL = funnel();
+const CLARITY = clarityLine();
 
 // ─── 2 - experience: four ascending wireframe towers (with floors) ───────────
 function towers(): Graph {
@@ -566,7 +568,7 @@ export function generateTargets(count: number): {
       hats[0], // 0 hero - the first hat; the intro cycles through every hat
       buildGraph(count, 6, CONSTELLATION, { nodeFrac: 0.38, nodeJitter: 0.17, edgeJitter: 0.05 }), // 1 about (faded)
       buildGraph(count, 8, ARROW, { nodeFrac: 0.24, nodeJitter: 0.14, edgeJitter: 0.05 }), // 2 how I work
-      buildGraph(count, 2, FUNNEL, { nodeFrac: 0.24, nodeJitter: 0.12, edgeJitter: 0.05 }), // 3 approach
+      buildGraph(count, 2, CLARITY, { nodeFrac: 0.1, nodeJitter: 0.09, edgeJitter: 0.12 }), // 3 approach
       buildGraph(count, 3, TOWERS, { nodeFrac: 0.3, nodeJitter: 0.11, edgeJitter: 0.05 }), // 4 experience
       buildGraph(count, 4, GRAPH, { nodeFrac: 0.26, nodeJitter: 0.12, edgeJitter: 0.05 }), // 5 record
       buildLattice(count, 5), // 6 toolbelt

@@ -67,20 +67,29 @@ void main(){
   vec3 effTarget = mix(target, rubble, collapse);        // tower → rubble
   float toppling = collapse * (1.0 - collapse) * 4.0;    // peaks AS it falls
 
-  // bell curve - peaks mid-morph: the cloud blows apart, then reassembles
-  float dissolve = sin(m * 3.14159265) * (1.0 - uReduced * 0.7);
+  // bell that peaks mid-transition - but the cloud FLOWS, it does not explode
+  float flow = sin(m * 3.14159265) * (1.0 - uReduced * 0.6);
 
-  // damped spring toward the effective target (stable at any dt)
+  // the spring stays largely engaged so the cloud holds together and trends
+  // continuously toward the target - a liquid reshape, not a scatter-and-rebuild
   float k = 1.0 - exp(-uStiff * uDelta);
-  k *= max(0.0, 1.0 - dissolve * 0.9 - uBurst * 0.25);
+  k *= max(0.0, 1.0 - flow * 0.5 - uBurst * 0.12);
   // bottom-up assembly: lower particles settle before higher ones
   float heightFrac = clamp(effTarget.y / uBuildMax, 0.0, 1.0);
   k *= smoothstep(heightFrac - 0.30, heightFrac + 0.05, m);
   vec3 settled = mix(pos, effTarget, k);
 
-  // curl turbulence - surges during dissolve, transitions, and the topple puff
-  float curlAmp = uCurl * (0.18 + dissolve * 1.7 + uBurst * 1.3 + toppling * 2.6);
-  vec3 curl = curlNoise(pos * uCurlFreq + vec3(0.0, uTime * 0.05, 0.0)) * curlAmp;
+  // ── FLUID FLOW FIELD ────────────────────────────────────────────────────────
+  // A large-scale, low-frequency curl makes neighbouring grains drift TOGETHER
+  // like a current, so reshaping reads as flowing liquid rather than dust; a fine
+  // layer adds shimmer. A gentle base keeps even settled forms quietly alive
+  // (always breathing); the flow swells smoothly through a transition so the form
+  // appears to stream onward and become the next element.
+  float ft = uTime * 0.06;
+  vec3 flowMaj = curlNoise(pos * (uCurlFreq * 0.5) + vec3(0.0, ft, ft * 0.5));
+  vec3 flowMin = curlNoise(pos * (uCurlFreq * 2.1) + vec3(ft * 1.4, 0.0, ft)) * 0.32;
+  float curlAmp = uCurl * (0.16 + flow * 1.15 + uBurst * 0.7 + toppling * 2.6);
+  vec3 curl = (flowMaj + flowMin) * curlAmp;
 
   // pointer SCULPTING: smooth radial push + a tangential swirl around the cursor
   vec3 d = pos - uMouse;
