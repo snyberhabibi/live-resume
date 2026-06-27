@@ -356,7 +356,8 @@ function Gallery({ items }: { items: { src: string; alt: string; caption?: strin
   }, [items.length]);
   return (
     <motion.div
-      className="w-full max-w-md lg:max-w-none"
+      // square sized off the viewport HEIGHT so the whole section fits any phone
+      className="mx-auto w-[min(15rem,30svh)] lg:mx-0 lg:w-full lg:max-w-sm"
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -591,7 +592,7 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
       className="relative flex min-h-[100svh] items-end overflow-hidden outline-none"
     >
       <div aria-hidden className={`${SCRIM} h-[92%]`} />
-      <div className="relative z-[1] w-full max-w-4xl px-6 pb-16 sm:px-10 sm:pb-20 lg:px-[9%] lg:pb-24">
+      <div className="relative z-[1] w-full max-w-4xl px-6 pb-20 sm:px-10 sm:pb-20 lg:px-[9%] lg:pb-24">
         {chapter.eyebrow && <Eyebrow label={chapter.eyebrow} accent={accent} left />}
         <Headline lines={chapter.lines} isHero={false} center={false} />
 
@@ -678,7 +679,7 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
         )}
 
         {chapter.persona && (
-          <div className="mt-6 grid max-w-4xl items-center gap-6 lg:grid-cols-2 lg:gap-10">
+          <div className="mt-5 grid max-w-4xl items-center gap-4 lg:grid-cols-2 lg:gap-10">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
               {chapter.portrait && (
                 // eslint-disable-next-line @next/next/no-img-element
