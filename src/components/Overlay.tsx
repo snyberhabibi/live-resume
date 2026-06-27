@@ -347,6 +347,66 @@ function Skills({
   );
 }
 
+// ─── "who I am": an auto-shuffling photo carousel ─────────────────────────────
+function Gallery({ items }: { items: { src: string; alt: string; caption?: string }[] }) {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setI((x) => (x + 1) % items.length), 4200);
+    return () => clearInterval(t);
+  }, [items.length]);
+  return (
+    <motion.div
+      className="w-full max-w-md lg:max-w-none"
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ ...SPRING, delay: 0.5 }}
+    >
+      <div className="relative aspect-square w-full overflow-hidden rounded-2xl shadow-xl ring-1 ring-[var(--fg)]/12">
+        {items.map((it, k) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <motion.img
+            key={it.src}
+            src={it.src}
+            alt={it.alt}
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+            initial={false}
+            animate={{ opacity: k === i ? 1 : 0, scale: k === i ? 1 : 1.05 }}
+            transition={{ duration: 0.9, ease: "easeInOut" }}
+          />
+        ))}
+        {/* caption over a soft gradient */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent px-4 pb-3.5 pt-14">
+          <motion.p
+            key={i}
+            className="text-[11px] font-medium leading-snug text-white/95 sm:text-[12px]"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {items[i].caption}
+          </motion.p>
+        </div>
+        {/* progress dots (tap to jump) */}
+        <div className="absolute right-3 top-3 flex gap-1.5">
+          {items.map((it, k) => (
+            <button
+              key={it.src}
+              type="button"
+              aria-label={`Show photo ${k + 1} of ${items.length}`}
+              onClick={() => setI(k)}
+              className={`h-1.5 rounded-full bg-white shadow transition-all duration-300 ${
+                k === i ? "w-5 opacity-95" : "w-1.5 opacity-50 hover:opacity-80"
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function Section({ chapter, index }: { chapter: Chapter; index: number }) {
   const light = useScene((s) => s.theme === "light");
   const accent = light ? CHAPTER_ACCENT_LIGHT[index] : CHAPTER_ACCENT[index];
@@ -650,30 +710,7 @@ function Section({ chapter, index }: { chapter: Chapter; index: number }) {
                 ))}
               </ul>
             </div>
-            {chapter.photo && (
-              <motion.figure
-                className="w-full max-w-md overflow-hidden rounded-2xl shadow-xl ring-1 ring-[var(--fg)]/12 lg:max-w-none"
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ ...SPRING, delay: 0.5 }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={chapter.photo.src}
-                  alt={chapter.photo.alt}
-                  loading="lazy"
-                  width={1000}
-                  height={721}
-                  className="block max-h-[42vh] w-full object-cover lg:max-h-[48vh]"
-                />
-                {chapter.photo.caption && (
-                  <figcaption className="bg-[rgb(var(--scrim))]/75 px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--fg)]/60 backdrop-blur">
-                    {chapter.photo.caption}
-                  </figcaption>
-                )}
-              </motion.figure>
-            )}
+            {chapter.gallery && <Gallery items={chapter.gallery} />}
           </div>
         )}
       </div>

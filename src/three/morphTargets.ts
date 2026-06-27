@@ -8,7 +8,7 @@
 //   0 hero       cycles through "many hats" glyphs - who Yusuf is
 //   1 about      a constellation (FADED OUT)  - the personal beat stays clean
 //   2 how I work an upward arrow (FADED OUT)  - text reads clean, no distraction
-//   3 approach   one clean flowing line       - complexity resolved to simplicity
+//   3 approach   a lightbulb                  - the idea; complexity made clear
 //   4 experience four ascending tower frames  - JPMorgan · Cisco · HashiCorp · IBM
 //   5 record     a rising performance graph   - never below the 100% baseline
 //   6 toolbelt   a 4×4×4 lattice cube         - the structured toolkit
@@ -97,28 +97,9 @@ const dist3 = (a: Vec3, b: Vec3) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - 
 
 const HERO_Y = 4.6;
 
-// ─── 3 - approach: ONE clean flowing line. "I make complex things simple" -
-//     the tangle resolves into a single confident through-line, alive with a
-//     gentle 3D undulation. ────────────────────────────────────────────────
-function clarityLine(): Graph {
-  const N = 80;
-  const cy = 7.0;
-  const nodes: Vec3[] = [];
-  const edges: Edge[] = [];
-  for (let i = 0; i < N; i++) {
-    const t = i / (N - 1);
-    const x = (t * 2 - 1) * R * 1.25;
-    const y = cy + Math.sin(t * Math.PI) * 0.6; // a barely-there arc
-    const z = Math.sin(t * Math.PI * 2.0) * 1.2; // gentle 3D flow for life
-    nodes.push([x, y, z]);
-    if (i > 0) {
-      edges.push([i - 1, i]);
-      edges.push([i - 1, i]); // weighted twice → a dense, solid line
-    }
-  }
-  return { nodes, edges };
-}
-const CLARITY = clarityLine();
+// 3 - approach: a lightbulb. "I make complex things simple" - the idea, the
+// moment it clicks. Reuses the Problem-solver bulb glyph (see APPROACH_BULB,
+// defined below once bulbIcon is in scope).
 
 // ─── 2 - experience: four ascending wireframe towers (with floors) ───────────
 function towers(): Graph {
@@ -542,6 +523,9 @@ function checkmarkBox(): Graph {
 }
 const CHECK = offsetY(fit(recenter(checkmarkBox()), 4.8), 7.0);
 
+// 3 - approach: the bulb glyph, scaled + lifted into the approach frame
+const APPROACH_BULB = offsetY(fit(recenter(bulbIcon()), 5.2), 7.0);
+
 // ─── intro - scattered cloud the experience reforms from ─────────────────────
 function introCloud(count: number): Float32Array {
   return build(count, 99, (i, t, rng) => {
@@ -568,7 +552,7 @@ export function generateTargets(count: number): {
       hats[0], // 0 hero - the first hat; the intro cycles through every hat
       buildGraph(count, 6, CONSTELLATION, { nodeFrac: 0.38, nodeJitter: 0.17, edgeJitter: 0.05 }), // 1 about (faded)
       buildGraph(count, 8, ARROW, { nodeFrac: 0.24, nodeJitter: 0.14, edgeJitter: 0.05 }), // 2 how I work
-      buildGraph(count, 2, CLARITY, { nodeFrac: 0.1, nodeJitter: 0.09, edgeJitter: 0.12 }), // 3 approach
+      buildGraph(count, 2, APPROACH_BULB, { nodeFrac: 0.3, nodeJitter: 0.12, edgeJitter: 0.06 }), // 3 approach
       buildGraph(count, 3, TOWERS, { nodeFrac: 0.3, nodeJitter: 0.11, edgeJitter: 0.05 }), // 4 experience
       buildGraph(count, 4, GRAPH, { nodeFrac: 0.26, nodeJitter: 0.12, edgeJitter: 0.05 }), // 5 record
       buildLattice(count, 5), // 6 toolbelt

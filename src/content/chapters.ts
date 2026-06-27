@@ -44,6 +44,7 @@ export interface Chapter {
   persona?: string[]; // "who I am": the "I'm a ..." lines
   portrait?: string; // circular headshot src
   photo?: { src: string; alt: string; caption?: string }; // feature photo
+  gallery?: { src: string; alt: string; caption?: string }[]; // auto-shuffling carousel
   note?: string; // small footer note
   links?: { text: string; href: string }[];
 }
@@ -69,13 +70,26 @@ export const CHAPTERS: Chapter[] = [
     kind: "left",
     eyebrow: "WHO I AM",
     lines: ["Start with", "the person."],
-    sub: "Before the résumé, here's who you'd actually be working with.",
+    sub: "Before the resume, here's who you'd actually be working with.",
     portrait: "/portrait.jpg",
-    photo: {
-      src: "/dabka.jpg",
-      alt: "Yusuf teaching Middle Eastern folklore dance to a room of students",
-      caption: "Teaching Middle Eastern folklore dance to a room of students",
-    },
+    gallery: [
+      {
+        src: "/hashiconf.jpg",
+        alt: "Yusuf MC'ing on the HashiConf 2024 main stage",
+        caption: "MC at HashiConf '24.",
+      },
+      {
+        src: "/dabka.jpg",
+        alt: "Yusuf teaching Middle Eastern folklore dance to a room of students",
+        caption: "Teaching Middle Eastern folklore dance to a room of students.",
+      },
+      {
+        src: "/band.jpg",
+        alt: "Yusuf performing at a Middle Eastern wedding with his band",
+        caption:
+          "Performing at a Middle Eastern wedding with our band of friends. Doctors, Engineers, Pharmacists, Accountants. We formed it while in college together.",
+      },
+    ],
     persona: [
       "I'm a proud husband, and a proud father to Talia, my one-year-old daughter, who makes every day brighter.",
       "I'm a performer of Middle Eastern folklore dance at weddings, going on 10+ years.",
