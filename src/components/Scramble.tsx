@@ -63,8 +63,11 @@ export function Scramble({
   }, [active, text, delay, charMs, reduce]);
 
   return (
-    <span ref={ref} className={className} aria-label={text}>
+    // expose the real text to assistive tech via a visually-hidden node (aria-label
+    // is prohibited on a plain span's generic role); the churn is decorative
+    <span ref={ref} className={className}>
       <span aria-hidden="true">{shown}</span>
+      <span className="sr-only">{text}</span>
     </span>
   );
 }

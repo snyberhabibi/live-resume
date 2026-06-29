@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useScene } from "@/three/store";
 
@@ -35,8 +35,10 @@ export function Preloader() {
   const reduced = useScene((s) => s.reducedMotion);
   const [elapsed, setElapsed] = useState(0);
   const [gone, setGone] = useState(false);
+  const startRef = useRef(0);
 
   useEffect(() => {
+    startRef.current = performance.now();
     const id = setInterval(() => setElapsed((e) => e + 33), 33);
     return () => clearInterval(id);
   }, []);
@@ -51,8 +53,12 @@ export function Preloader() {
   }
   const animEnd = t;
 
-  const minDone = elapsed >= (reduced ? 450 : animEnd);
-  const done = ready && minDone;
+  // Reveal gating runs on REAL wall-clock time (not the throttle-sensitive tick
+  // accumulator) so the hero - the LCP element - paints on schedule even when a
+  // slow CPU starves the interval; cap the WebGL wait so it never blocks LCP.
+  const realElapsed = startRef.current ? performance.now() - startRef.current : 0;
+  const minDone = realElapsed >= (reduced ? 450 : animEnd);
+  const done = minDone && (ready || realElapsed >= animEnd + 1400);
 
   useEffect(() => {
     if (!done) return;

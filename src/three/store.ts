@@ -19,6 +19,7 @@ interface SceneState {
   // discrete (React)
   chapter: number; // 0..CHAPTER_COUNT-1
   hatIndex: number; // which "hat" the intro is showing (text + 3D glyph share it)
+  glGen: number; // bumps on WebGL context restore → the sim re-seeds its buffers
   ready: boolean;
   quality: QualityTier;
   reducedMotion: boolean;
@@ -32,6 +33,7 @@ interface SceneState {
   setProgress: (p: number) => void;
   setPointer: (x: number, y: number, active: boolean) => void;
   setHatIndex: (i: number) => void;
+  bumpGlGen: () => void;
   setReady: (r: boolean) => void;
   setQuality: (q: QualityTier) => void;
   setReducedMotion: (r: boolean) => void;
@@ -48,6 +50,7 @@ export const useScene = create<SceneState>()(
     pointerActive: false,
     chapter: 0,
     hatIndex: 0,
+    glGen: 0,
     ready: false,
     quality: "high",
     reducedMotion: false,
@@ -80,6 +83,7 @@ export const useScene = create<SceneState>()(
 
     setPointer: (x, y, active) => set({ pointer: { x, y }, pointerActive: active }),
     setHatIndex: (i) => set({ hatIndex: i }),
+    bumpGlGen: () => set((s) => ({ glGen: s.glGen + 1 })),
     setReady: (r) => set({ ready: r }),
     setQuality: (q) => set({ quality: q }),
     setReducedMotion: (r) => set({ reducedMotion: r }),

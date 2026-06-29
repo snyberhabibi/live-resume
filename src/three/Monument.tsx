@@ -226,6 +226,7 @@ export function Monument({ quality }: { quality: QualityTier }) {
   const accentTarget = useRef(new THREE.Color(CHAPTER_ACCENT[useScene.getState().chapter]));
 
   const seeded = useRef(false);
+  const seededGen = useRef(0);
   const framesRendered = useRef(0);
   const lastLight = useRef(useScene.getState().theme === "light");
   // fade the whole particle field away on "minimal graphic" sections (e.g. the
@@ -276,9 +277,34 @@ export function Monument({ quality }: { quality: QualityTier }) {
     const dt = Math.min(delta, 1 / 30);
     const time = state.clock.elapsedTime;
 
-    // one-time seed: copy the intro cloud into both targets
-    if (!seeded.current) {
+    // Seed the ping-pong buffers. First run: from the intro cloud, so the
+    // landing animates in. After a WebGL CONTEXT RESTORE (glGen bumped when the
+    // GPU reclaims the context on a tab-switch / app-switch): rebuild from the
+    // CURRENT already-formed shape, so the monument simply reappears instead of
+    // dying and forcing a reload.
+    if (!seeded.current || seededGen.current !== st.glGen) {
+      const restoring = seeded.current; // already seeded once → this is a restore
       seeded.current = true;
+      seededGen.current = st.glGen;
+      if (restoring) {
+        // the GPU copies are gone: force re-upload + reset the sim to the
+        // settled current shape (no intro replay, no morph mid-flight)
+        targets.initial.needsUpdate = true;
+        targets.chapters.forEach((t) => (t.needsUpdate = true));
+        targets.hats.forEach((t) => (t.needsUpdate = true));
+        const cur =
+          st.chapter === 0
+            ? targets.hats[st.hatIndex % targets.hats.length]
+            : targets.chapters[st.chapter];
+        simMat.uniforms.uPrev.value = cur;
+        simMat.uniforms.uTarget.value = cur;
+        simMat.uniforms.uMorph.value = 1;
+        copyMat.uniforms.uSrc.value = cur;
+        morph.current = { t: 1, active: false };
+        accent.current.set(CHAPTER_ACCENT[st.chapter]);
+        accentTarget.current.set(CHAPTER_ACCENT[st.chapter]);
+        framesRendered.current = 0;
+      }
       simQuad.material = copyMat;
       gl.setRenderTarget(fbo.current.read);
       gl.render(simScene, simCam);

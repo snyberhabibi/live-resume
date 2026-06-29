@@ -20,6 +20,26 @@ function DprController() {
   return null;
 }
 
+// Recover gracefully when the GPU reclaims the WebGL context - iOS Safari does
+// this on app-switch ("swipe out and back"). preventDefault keeps the context
+// restorable; on restore we bump glGen so the Monument re-seeds its buffers, so
+// the scene simply reappears instead of dying and forcing a reload.
+function ContextGuard() {
+  const gl = useThree((s) => s.gl);
+  useEffect(() => {
+    const canvas = gl.domElement;
+    const onLost = (e: Event) => e.preventDefault();
+    const onRestored = () => useScene.getState().bumpGlGen();
+    canvas.addEventListener("webglcontextlost", onLost, false);
+    canvas.addEventListener("webglcontextrestored", onRestored, false);
+    return () => {
+      canvas.removeEventListener("webglcontextlost", onLost);
+      canvas.removeEventListener("webglcontextrestored", onRestored);
+    };
+  }, [gl]);
+  return null;
+}
+
 function detectQuality(): QualityTier {
   if (typeof navigator === "undefined") return "high";
   const ua = navigator.userAgent;
@@ -117,6 +137,7 @@ export function Experience() {
         }}
       />
       <DprController />
+      <ContextGuard />
       <Scene />
     </Canvas>
   );

@@ -43,7 +43,7 @@ function ScrollHint() {
     >
       <button
         type="button"
-        aria-label="Go to the next section"
+        aria-label="Scroll to the next section"
         tabIndex={show ? 0 : -1}
         onClick={() =>
           window.dispatchEvent(
